@@ -60,6 +60,11 @@ function Modal() {
       );
       // 가입 성공 시의 동작을 구현하세요.
       console.log("가입 성공", userCredential.user);
+      setIsModalOpen2(false); // 모달 닫기
+      setEmail("");
+      setPassword("");
+      setVerifyPassword("");
+      setNickName("");
     } catch (error) {
       // 가입 실패 시의 동작을 구현하세요.
       console.log("가입 실패", error.code, error.message);
