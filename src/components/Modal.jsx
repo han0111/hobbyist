@@ -1,4 +1,16 @@
 import React, { useState } from "react";
+import { auth } from "../firebase";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+import {
+  Label,
+  Input,
+  Button,
+  ModalContainer,
+  ModalContainerModal2,
+  CancelBtn,
+  SubmitBtn,
+} from "./styledcomponents/Styled";
 
 function Modal() {
   const [isModalOpen2, setIsModalOpen2] = useState(false);
@@ -7,13 +19,7 @@ function Modal() {
   const [verifypassword, setVerifyPassword] = useState("");
   const [nickname, setNickName] = useState("");
 
-  const openModal2 = () => {
-    setIsModalOpen2(true);
-  };
-
-  const closeModal2 = () => {
-    setIsModalOpen2(false);
-  };
+  const auth = getAuth();
 
   const emailChangeHandler = (event) => {
     setEmail(event.target.value);
@@ -35,7 +41,7 @@ function Modal() {
     setNickName("");
   };
 
-  const SubmitBtnHandler = (event) => {
+  const SubmitBtnHandler = async (event) => {
     event.preventDefault();
     if (
       email.trim() === "" ||
@@ -44,6 +50,19 @@ function Modal() {
       nickname.trim() === ""
     ) {
       alert("양식을 전부 입력해 주세요!");
+      return;
+    }
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // 가입 성공 시의 동작을 구현하세요.
+      console.log("가입 성공", userCredential.user);
+    } catch (error) {
+      // 가입 실패 시의 동작을 구현하세요.
+      console.log("가입 실패", error.code, error.message);
     }
   };
 
@@ -65,64 +84,61 @@ function Modal() {
 
   return (
     <>
-      <button className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
+      <Button className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
         회원가입
-      </button>
+      </Button>
       {isModalOpen2 && (
-        <div className="Modal-Container">
-          <div className="Modal-Container-Modal2">
+        <ModalContainer className="Modal-Container">
+          <ModalContainerModal2 className="Modal-Container-Modal2">
             <form className="Sign-Up">
-              <span className="Email-Label">이메일</span>
-              <input
+              <Label className="Email-Label">이메일</Label>
+              <Input
                 className="Email-Input"
                 type="text"
                 value={email}
                 onChange={emailChangeHandler}
               />
-              <button onClick={verifyEmailHandler}>이메일 확인</button>
+              <Button onClick={verifyEmailHandler}>이메일 확인</Button>
               <br />
-              <span className="Password-Label">비밀번호</span>
-              <input
+              <Label className="Password-Label">비밀번호</Label>
+              <Input
                 className="Password-Input"
                 type="password"
                 value={password}
                 onChange={passwordChangeHandler}
               />
               <br />
-              <span className="Verify-Password-Label">비밀번호 확인</span>
-              <input
+              <Label className="Verify-Password-Label">비밀번호 확인</Label>
+              <Input
                 className="Verify-Password-Input"
                 type="password"
                 value={verifypassword}
                 onChange={verifypasswordChangeHandler}
               />
               <br />
-              <span className="NickName-Label">닉네임</span>
-              <input
+              <Label className="NickName-Label">닉네임</Label>
+              <Input
                 className="NickName-Input"
                 type="text"
                 value={nickname}
                 onChange={nicknameChangeHandler}
               />
-              <button
+              <Button
                 className="Verify-NicknameBtn"
                 onClick={verifyNickNameHandelr}
               >
                 닉네임 확인
-              </button>
+              </Button>
               <br />
               <br />
-              <button className="CancelBtn" onClick={CancelBtnHandler}>
-                취소하기
-              </button>
-              <button className="SubmitBtn" onClick={SubmitBtnHandler}>
-                가입하기
-              </button>
+              <CancelBtn onClick={CancelBtnHandler}>취소하기</CancelBtn>
+              <SubmitBtn onClick={SubmitBtnHandler}>가입하기</SubmitBtn>
             </form>
-          </div>
-        </div>
+          </ModalContainerModal2>
+        </ModalContainer>
       )}
     </>
   );
 }
+
 export default Modal;
