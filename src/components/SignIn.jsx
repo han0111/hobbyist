@@ -1,6 +1,8 @@
 import React from "react";
 import { styled } from "styled-components";
 import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 const OpenBtn = styled.button`
   width: 150px;
@@ -22,7 +24,7 @@ const BcDiv = styled.div`
   z-index: 10;
   width: 100%;
   height: 100%;
-  display: ${(props) => (props.isOpen2 ? "block" : "none")};
+  display: ${(props) => (props.isOpen ? "block" : "none")};
 `;
 
 const StDiv = styled.div`
@@ -77,13 +79,38 @@ const StLoginBtn = styled.button`
   margin-bottom: 10px;
 `;
 
-const gitBtn = styled.button`
-  width: 200px;
-  height: 50px;
-`;
-
-function Modal() {
+function SignIn() {
   const [isOpen, setIsOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const onChange = (event) => {
+    const {
+      target: { name, value },
+    } = event;
+    if (name === "email") {
+      setEmail(value);
+    }
+    if (name === "password") {
+      setPassword(value);
+    }
+  };
+
+  const logIn = async (event) => {
+    event.preventDefault();
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("user with signIn", userCredential.user);
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log("error with signIn", errorCode, errorMessage);
+    }
+  };
 
   const modalHandler = () => {
     setIsOpen(!isOpen);
@@ -91,17 +118,31 @@ function Modal() {
   return (
     <>
       <div>
-        <BcDiv isOpen2={isOpen} onClick={modalHandler}>
+        <BcDiv isOpen={isOpen} onClick={modalHandler}>
           <StDiv onClick={(e) => e.stopPropagation()}>
             <StForm>
               <StH2>LOGIN</StH2>
               <p>
-                <StInput type="text" placeholder="아이디를 입력하세요." />
+                <StInput
+                  type="email"
+                  value={email}
+                  name="email"
+                  onChange={onChange}
+                  reaquired
+                  placeholder="아이디를 입력하세요."
+                />
               </p>
               <p>
-                <StInput type="password" placeholder="패스워드를 입력하세요." />
+                <StInput
+                  type="password"
+                  value={password}
+                  name="password"
+                  onChange={onChange}
+                  required
+                  placeholder="패스워드를 입력하세요."
+                />
               </p>
-              <StLoginBtn>로그인</StLoginBtn>
+              <StLoginBtn onClick={logIn}>로그인</StLoginBtn>
               <br />
               <button
                 style={{
@@ -140,4 +181,4 @@ function Modal() {
   );
 }
 
-export default Modal;
+export default SignIn;

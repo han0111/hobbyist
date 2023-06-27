@@ -1,10 +1,14 @@
 import "./App.css";
-import Modal from "./components/Modal";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
+import { app } from "./firebase";
+import { auth } from "./firebase";
 
 function App() {
   return (
     <div>
-      <Modal />
+      <SignIn />
+      <SignUp />
     </div>
   );
 }
