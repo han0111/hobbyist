@@ -9,9 +9,10 @@ import {
   ModalContainerModal2,
   CancelBtn,
   SubmitBtn,
+  TopButton,
 } from "./styledcomponents/Styled";
 
-function Modal() {
+function SignUp() {
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -76,9 +77,9 @@ function Modal() {
 
   return (
     <>
-      <Button className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
+      <TopButton className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
         회원가입
-      </Button>
+      </TopButton>
       {isModalOpen2 && (
         <ModalContainer className="Modal-Container">
           <ModalContainerModal2 className="Modal-Container-Modal2">
@@ -121,4 +122,4 @@ function Modal() {
   );
 }
 
-export default Modal;
+export default SignUp;
