@@ -37,7 +37,6 @@ const SideBtn = styled.button`
   width: 100px;
   height: 40px;
   margin: 10px auto 5px auto;
-  /* box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); */
   &:hover {
     transform: scale(1.2);
   }

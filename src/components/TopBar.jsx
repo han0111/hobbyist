@@ -15,17 +15,16 @@ const Header = styled.header`
   background-color: white;
   font-weight: bold;
   display: flex;
-  /* justify-content: space-between; */
   align-items: center;
 
   box-shadow: 1px 1px 5px gray;
 `;
-const A = styled.div`
+const LogoInput = styled.div`
   display: flex;
   flex-direction: row;
 `;
 
-const Title = styled.h1`
+const Logo = styled.h1`
   font-size: 50px;
   color: #5e5ee8;
   margin-left: 20px;
@@ -53,6 +52,14 @@ const Input = styled.input`
 const BtnContainer = styled.div`
   margin-left: 50%;
   display: flex;
+
+  @media screen and (max-width: 1500px) {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-left: 30%;
+    margin-right: auto;
+    margin-top: 10px;
+  }
 `;
 const TopButton = styled.button`
   font-size: 20px;
@@ -63,19 +70,25 @@ const TopButton = styled.button`
   &:hover {
     transform: scale(1.2);
   }
+
+  @media screen and (max-width: 1500px) {
+    margin-top: 5px;
+    width: 100%;
+    max-width: 150px;
+  }
 `;
 
 function TopBar() {
   return (
     <>
       <Header>
-        <A>
-          <Title>Hobbyist</Title>
+       <LogoInput>
+          <Logo>Hobbyist</Logo>
           <Form>
             <FaSistrix size="20" color="gray"></FaSistrix>
             <Input type="text" placeholder="검색 가능합니다."></Input>
           </Form>
-        </A>
+        </LogoInput>
         <BtnContainer>
           <TopButton>번역이미지 KR</TopButton>
           <SignIn />
