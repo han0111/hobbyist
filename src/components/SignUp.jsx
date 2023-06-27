@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { auth } from "../firebase";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 import {
@@ -10,14 +9,14 @@ import {
   ModalContainerModal2,
   CancelBtn,
   SubmitBtn,
+  TopButton,
 } from "./styledcomponents/Styled";
 
-function Modal() {
+function SignUp() {
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [verifypassword, setVerifyPassword] = useState("");
-  const [nickname, setNickName] = useState("");
 
   const auth = getAuth();
 
@@ -38,7 +37,6 @@ function Modal() {
     setEmail("");
     setPassword("");
     setVerifyPassword("");
-    setNickName("");
   };
 
   const SubmitBtnHandler = async (event) => {
@@ -46,8 +44,7 @@ function Modal() {
     if (
       email.trim() === "" ||
       password.trim() === "" ||
-      verifypassword.trim() === "" ||
-      nickname.trim() === ""
+      verifypassword.trim() === ""
     ) {
       alert("양식을 전부 입력해 주세요!");
       return;
@@ -58,15 +55,14 @@ function Modal() {
         email,
         password
       );
-      // 가입 성공 시의 동작을 구현하세요.
+      alert("가입에 성공했습니다!");
       console.log("가입 성공", userCredential.user);
       setIsModalOpen2(false); // 모달 닫기
       setEmail("");
       setPassword("");
       setVerifyPassword("");
-      setNickName("");
     } catch (error) {
-      // 가입 실패 시의 동작을 구현하세요.
+      alert("가입에 실패했습니다!");
       console.log("가입 실패", error.code, error.message);
     }
   };
@@ -75,23 +71,15 @@ function Modal() {
     setVerifyPassword(event.target.value);
   };
 
-  const nicknameChangeHandler = (event) => {
-    setNickName(event.target.value);
-  };
-
   const verifyEmailHandler = (event) => {
-    event.preventDefault();
-  };
-
-  const verifyNickNameHandelr = (event) => {
     event.preventDefault();
   };
 
   return (
     <>
-      <Button className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
+      <TopButton className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
         회원가입
-      </Button>
+      </TopButton>
       {isModalOpen2 && (
         <ModalContainer className="Modal-Container">
           <ModalContainerModal2 className="Modal-Container-Modal2">
@@ -121,19 +109,7 @@ function Modal() {
                 onChange={verifypasswordChangeHandler}
               />
               <br />
-              <Label className="NickName-Label">닉네임</Label>
-              <Input
-                className="NickName-Input"
-                type="text"
-                value={nickname}
-                onChange={nicknameChangeHandler}
-              />
-              <Button
-                className="Verify-NicknameBtn"
-                onClick={verifyNickNameHandelr}
-              >
-                닉네임 확인
-              </Button>
+
               <br />
               <br />
               <CancelBtn onClick={CancelBtnHandler}>취소하기</CancelBtn>
@@ -146,4 +122,4 @@ function Modal() {
   );
 }
 
-export default Modal;
+export default SignUp;

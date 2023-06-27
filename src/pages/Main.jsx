@@ -1,8 +1,14 @@
 import React from "react";
-import Modal from "../components/Modal";
+import TopBar from "../components/TopBar";
+import SideBar from "../components/SideBar";
 
 function App() {
-  return <Modal />;
+  return (
+    <>
+      <TopBar />
+      <SideBar />
+    </>
+  );
 }
 
 export default App;

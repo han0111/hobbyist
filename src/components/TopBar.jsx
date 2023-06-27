@@ -1,6 +1,8 @@
 import React from "react";
 import { FaSistrix } from "react-icons/fa";
-import { styled } from "styled-components";
+import styled from "styled-components";
+import SignUp from "./SignUp";
+import SignIn from "./SignIn";
 
 const Header = styled.header`
   position: fixed;
@@ -46,6 +48,7 @@ const Input = styled.input`
   height: 30px;
   padding-left: 10px;
 `;
+
 const BtnContainer = styled.div`
   margin-left: 50%;
   display: flex;
@@ -77,25 +80,23 @@ const TopButton = styled.button`
 
 function TopBar() {
   return (
-    <Header>
-      <LogoInput>
-        <Logo>Hobbyist</Logo>
-        <Form>
-          <FaSistrix size="20" color="gray"></FaSistrix>
-          <Input type="text" placeholder="검색 가능합니다."></Input>
-        </Form>
-      </LogoInput>
-
-      <BtnContainer>
-        <TopButton>번역이미지 KR</TopButton>
-        <TopButton>로그인</TopButton>
-        <TopButton>회원가입</TopButton>
-      </BtnContainer>
-    </Header>
+    <>
+      <Header>
+       <LogoInput>
+          <Logo>Hobbyist</Logo>
+          <Form>
+            <FaSistrix size="20" color="gray"></FaSistrix>
+            <Input type="text" placeholder="검색 가능합니다."></Input>
+          </Form>
+        </LogoInput>
+        <BtnContainer>
+          <TopButton>번역이미지 KR</TopButton>
+          <SignIn />
+          <SignUp />
+        </BtnContainer>
+      </Header>
+    </>
   );
 }
 
 export default TopBar;
-
-// #5e5ee8;
-// #6969ed;
