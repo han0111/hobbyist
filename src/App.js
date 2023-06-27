@@ -1,16 +1,7 @@
-
-// import "./App.css";
-// import TopBar from "./components/TopBar";
-// import SideBar from "./components/SideBar";
-
-// function App() {
-//   return (
-//     <>
-//       <TopBar></TopBar>
-//       <SideBar></SideBar>
-//     </>
-//   );
+import { app } from "./service/firebase";
+import { auth } from "./service/firebase";
 import Router from "./shared/Router";
+
 function App() {
   return <Router />;
 }
