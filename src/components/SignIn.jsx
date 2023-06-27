@@ -2,7 +2,7 @@ import React from "react";
 import { styled } from "styled-components";
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "../service/firebase";
 
 const OpenBtn = styled.button`
   width: 150px;
