@@ -76,6 +76,8 @@ const TopButton = styled.button`
     width: 100%;
     max-width: 200px;
   }
+
+  height: 30px;
 `;
 
 function TopBar() {
