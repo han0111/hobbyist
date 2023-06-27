@@ -18,6 +18,17 @@ export const Button = styled.button`
   margin-left: ${({ marginLeft }) => marginLeft || 0};
 `;
 
+export const TopButton = styled.button`
+  font-size: 20px;
+  width: 120px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  &:hover {
+    transform: scale(1.2);
+  }
+`;
+
 export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
@@ -31,7 +42,7 @@ export const ModalContainer = styled.div`
 `;
 
 export const ModalContainerModal2 = styled.div`
-  width: 500px; /* Increase the width to your desired value */
+  width: 500px;
   background-color: white;
   padding: 20px;
   border-radius: 4px;
