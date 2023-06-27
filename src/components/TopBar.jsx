@@ -1,5 +1,5 @@
 import React from "react";
-import { FaSistrix } from "react-icons/fa";
+import { FaSistrix, FaGlobe } from "react-icons/fa";
 import { styled } from "styled-components";
 
 const Header = styled.header`
@@ -71,7 +71,7 @@ const TopButton = styled.button`
   @media screen and (max-width: 1500px) {
     margin-top: 5px;
     width: 100%;
-    max-width: 150px;
+    max-width: 200px;
   }
 `;
 
@@ -87,7 +87,10 @@ function TopBar() {
       </LogoInput>
 
       <BtnContainer>
-        <TopButton>번역이미지 KR</TopButton>
+        <TopButton>
+          <FaGlobe style={{ marginRight: "5px" }} />
+          KR
+        </TopButton>
         <TopButton>로그인</TopButton>
         <TopButton>회원가입</TopButton>
       </BtnContainer>
