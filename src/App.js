@@ -1,12 +1,9 @@
-import logo from "./logo.svg";
-import "./App.css";
+import { app } from "./service/firebase";
+import { auth } from "./service/firebase";
+import Router from "./shared/Router";
 
 function App() {
-  return (
-    <div className="App">
-      <h1>PR test</h1>
-    </div>
-  );
+  return <Router />;
 }
 
 export default App;

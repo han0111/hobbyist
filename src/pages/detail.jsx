@@ -1,19 +1,6 @@
 import React from "react";
 import { styled } from "styled-components";
-
-const Header = styled.header`
-  background-color: #fbf0e4;
-
-  display: flex;
-  flex-direction: row;
-
-  padding-left: 20px;
-  padding-right: 20px;
-
-  justify-content: space-between;
-
-  box-shadow: 1px 1px 5px gray;
-`;
+import TopBar from "../components/TopBar";
 
 const DetailLayout = styled.div`
   background-color: #f5f6f5;
@@ -139,9 +126,7 @@ const CommentLike = styled.button`
 function Detail() {
   return (
     <DetailLayout>
-      <Header>
-        <h1>Hobbyist</h1>
-      </Header>
+      <TopBar />
       <DetailContainer>
         <div>
           <ContentHeader>
@@ -177,3 +162,12 @@ function Detail() {
 }
 
 export default Detail;
+
+// 좋아요 버튼
+// isActive ? 채워진 하트 : 빈하트
+
+// 좋아요 수
+// 데이터 불러오기 > count+1 > 데이터 베이스 > 데이터 불러오기
+
+// 북마크
+// isBooked ? 채워진 북마크 : 빈 북마크
