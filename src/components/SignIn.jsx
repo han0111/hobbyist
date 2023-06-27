@@ -88,7 +88,7 @@ function SignIn() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState(null);
+  const [, setUserData] = useState(null);
 
   const onChange = (event) => {
     const {
