@@ -3,6 +3,11 @@ import { styled } from "styled-components";
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../service/firebase";
+import { signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+import { signOut } from "firebase/auth";
+import github from "../img/github.png";
+import google from "../img/google.png";
 
 const OpenBtn = styled.button`
   width: 150px;
@@ -20,6 +25,7 @@ const OpenBtn = styled.button`
 const BcDiv = styled.div`
   position: fixed;
   top: 0;
+  left: 0;
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 10;
   width: 100%;
@@ -83,6 +89,7 @@ function SignIn() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userData, setUserData] = useState(null);
 
   const onChange = (event) => {
     const {
@@ -96,7 +103,31 @@ function SignIn() {
     }
   };
 
-  const logIn = async (event) => {
+  function signInByGoogle() {
+    const provider = new GoogleAuthProvider(); // provider 구글 설정
+    signInWithPopup(auth, provider) // 팝업창 띄워서 로그인
+      .then((data) => {
+        setUserData(data.user); // user data 설정
+        console.log(data); // console에 UserCredentialImpl 출력
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  function signInByGithub() {
+    const provider = new GithubAuthProvider(); // provider 깃헙 설정
+    signInWithPopup(auth, provider) // 팝업창 띄워서 로그인
+      .then((data) => {
+        setUserData(data.user); // user data 설정
+        console.log(data); // console에 UserCredentialImpl 출력
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  const signInByEmail = async (event) => {
     event.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -108,8 +139,16 @@ function SignIn() {
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
+      alert("아이디와 비밀번호를 확인해주세요.");
       console.log("error with signIn", errorCode, errorMessage);
     }
+    setEmail("");
+    setPassword("");
+  };
+
+  const logOut = async (e) => {
+    e.preventDefault();
+    await signOut(auth);
   };
 
   const modalHandler = () => {
@@ -142,7 +181,7 @@ function SignIn() {
                   placeholder="패스워드를 입력하세요."
                 />
               </p>
-              <StLoginBtn onClick={logIn}>로그인</StLoginBtn>
+              <StLoginBtn onClick={signInByEmail}>로그인</StLoginBtn>
               <br />
               <button
                 style={{
@@ -150,11 +189,20 @@ function SignIn() {
                   height: "25px",
                   marginTop: "10px",
                   borderStyle: "none",
-                  border: "1px solid gray",
-                  backgroundColor: "white",
+                  backgroundColor: "black",
+                  color: "white",
+                  borderRadius: "3px",
+                  lineHeight: "20px",
+                  cursor: "pointer",
                 }}
+                onClick={signInByGithub}
               >
-                gitHub 계정으로 로그인
+                <img
+                  src={github}
+                  alt="깃허브로고"
+                  style={{ width: "20px", float: "left" }}
+                />
+                github 계정으로 로그인
               </button>
               <br />
               <button
@@ -162,20 +210,30 @@ function SignIn() {
                   width: "250px",
                   height: "25px",
                   marginTop: "10px",
-                  borderStyle: "none",
                   border: "1px solid gray",
                   backgroundColor: "white",
+                  color: "black",
+                  lineHeight: "20px",
+                  borderRadius: "3px",
+                  cursor: "pointer",
                 }}
+                onClick={signInByGoogle}
               >
+                <img
+                  src={google}
+                  alt="구글로고"
+                  style={{ width: "20px", float: "left" }}
+                />
                 구글 계정으로 로그인
               </button>
               <p>아직 회원이 아니세요?</p>
+              <button onClick={logOut}>로그아웃</button>
             </StForm>
 
             <Stbtn onClick={modalHandler}>x</Stbtn>
           </StDiv>
         </BcDiv>
-        <OpenBtn onClick={modalHandler}>open modal</OpenBtn>
+        <OpenBtn onClick={modalHandler}>로그인</OpenBtn>
       </div>
     </>
   );

@@ -1,19 +1,22 @@
 import React from "react";
 import { FaSistrix } from "react-icons/fa";
 import { styled } from "styled-components";
+import SignIn from "./SignIn";
 const Header = styled.header`
+  width: 100%;
+  margin: 0 auto;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
 
-  height: 75px;
+  height: 50px;
   padding: 1rem;
   background-color: white;
   font-weight: bold;
   display: flex;
   /* justify-content: space-between; */
-  align-items: center;
+  justify-content: space-between;
 
   box-shadow: 1px 1px 5px gray;
 `;
@@ -23,7 +26,7 @@ const A = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 50px;
+  font-size: 35px;
   color: #5e5ee8;
   margin-left: 20px;
   margin-right: 20px;
@@ -53,13 +56,15 @@ const BtnContainer = styled.div`
   display: flex;
 `;
 const TopButton = styled.button`
-  font-size: 20px;
+  font-size: 15px;
   width: 120px;
   border: none;
   background-color: transparent;
+  float: left;
+  padding-right: 25px;
   cursor: pointer;
   &:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
   }
 `;
 
@@ -74,7 +79,8 @@ function TopBar() {
         </Form>
       </A>
       <BtnContainer>
-        <TopButton>번역이미지 KR</TopButton>
+        <SignIn />
+        <TopButton>EN</TopButton>
         <TopButton>로그인</TopButton>
         <TopButton>회원가입</TopButton>
       </BtnContainer>

@@ -4,7 +4,8 @@ import { styled } from "styled-components";
 const Sidebar = styled.div`
   margin-top: 180px;
   margin-left: 3%;
-  width: 15%;
+  width: 200px;
+  height: 70px;
   border: none;
   border-radius: 20px;
 
@@ -19,7 +20,7 @@ const Sidebar = styled.div`
 const Sidebar2 = styled.div`
   margin-top: 2%;
   margin-left: 3%;
-  width: 15%;
+  width: 200px;
   border: none;
   border-radius: 20px;
 
