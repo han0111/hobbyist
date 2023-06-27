@@ -44,13 +44,3 @@ export const ModalContainerModal2 = styled.div`
 export const CancelBtn = styled(Button)``;
 
 export const SubmitBtn = styled(Button)``;
-
-// export const Styled = {
-//   Label,
-//   Input,
-//   Button,
-//   ModalContainer,
-//   ModalContainerModal2,
-//   CancelBtn,
-//   SubmitBtn,
-// };
