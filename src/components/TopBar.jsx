@@ -83,6 +83,3 @@ function TopBar() {
 }
 
 export default TopBar;
-
-// #5e5ee8;
-// #6969ed;
