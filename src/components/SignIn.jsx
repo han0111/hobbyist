@@ -5,15 +5,14 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../service/firebase";
 
 const OpenBtn = styled.button`
-  width: 150px;
-  height: 40px;
-  background-color: #dbdfaa;
-  border-radius: 10px;
-  border-style: none;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin-top: 10px;
+  font-size: 20px;
+  width: 120px;
+  border: none;
+  background-color: transparent;
   cursor: pointer;
   &:hover {
-    border: 1.5px solid gray;
+    transform: scale(1.2);
   }
 `;
 
@@ -175,7 +174,7 @@ function SignIn() {
             <Stbtn onClick={modalHandler}>x</Stbtn>
           </StDiv>
         </BcDiv>
-        <OpenBtn onClick={modalHandler}>open modal</OpenBtn>
+        <OpenBtn onClick={modalHandler}>로그인</OpenBtn>
       </div>
     </>
   );
