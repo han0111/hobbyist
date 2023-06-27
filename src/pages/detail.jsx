@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import TopBar from "../components/TopBar";
+import { collection, getDocs, query, updateDoc, doc } from "firebase/firestore";
+import { db } from "../service/firebase";
 
 const DetailContainer = styled.div`
   margin-top: 100px;
@@ -72,25 +74,54 @@ const Likecount = styled.div`
 const LikeButton = styled.button`
   border: 0;
   background-color: transparent;
+
+  /* ${(props) =>
+    props.isLike
+      ? `
+      background-image: url("https://img.icons8.com/?size=1x&id=16424&format=png");
+
+    `
+      : `
+    
+      background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
+    `}; */
+
   background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
-  /* https://img.icons8.com/?size=1x&id=16424&format=png */
+  /* background-image: url("https://img.icons8.com/?size=1x&id=16424&format=png"); */
   font-size: 50px;
 
   width: 50px;
   height: 50px;
+
+  transition: opacity 0.3s ease;
+
+  cursor: pointer;
 `;
 
 const BookButton = styled.button`
   border: 0;
   background-color: transparent;
+
+  /* ${(props) =>
+    props.isBooked
+      ? `
+      background-image: url("https://img.icons8.com/?size=1x&id=26083&format=png");  
+    `
+      : `
+    
+    background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png");
+    `}; */
+
   background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png");
-  /* https://img.icons8.com/?size=1x&id=26083&format=png */
+  /* background-image: url("https://img.icons8.com/?size=1x&id=26083&format=png") */
   font-size: 25px;
 
   height: 50px;
   width: 50px;
 
   margin-left: 20px;
+
+  cursor: pointer;
 `;
 
 const ShareButton = styled.button`
@@ -147,6 +178,46 @@ const CommentLike = styled.button`
 `;
 
 function Detail() {
+  const [contents, setContents] = useState([]);
+
+  //데이터 가져오기
+  useEffect(() => {
+    const fetchData = async () => {
+      // collection 이름이 todos인 collection의 모든 document를 가져옵니다.
+      const q = query(collection(db, "contents"));
+      const querySnapshot = await getDocs(q);
+
+      const initialContents = [];
+
+      // document의 id와 데이터를 initialTodos에 저장합니다.
+      // doc.id의 경우 따로 지정하지 않는 한 자동으로 생성되는 id입니다.
+      // doc.data()를 실행하면 해당 document의 데이터를 가져올 수 있습니다.
+      querySnapshot.forEach((doc) => {
+        initialContents.push({ id: doc.id, ...doc.data() });
+      });
+
+      setContents(initialContents);
+    };
+
+    fetchData();
+  }, []);
+  console.log(contents);
+
+  const [content] = contents.filter((content) => content.id === "content");
+  console.log(content);
+
+  // Like update
+  const updateLike = async (event) => {
+    const contentRef = doc(db, "contents", "content");
+    await updateDoc(contentRef, { isLike: !content.isLike });
+  };
+
+  // 북마크 update
+  const updateBooked = async (event) => {
+    const contentRef = doc(db, "contents", "content");
+    await updateDoc(contentRef, { isBooked: !content.isBooked });
+  };
+
   return (
     <>
       <TopBar />
@@ -159,10 +230,16 @@ function Detail() {
           <ContentImage></ContentImage>
           <ContentFunc>
             <LikeContainer>
-              <LikeButton></LikeButton>
-              <Likecount>1000</Likecount>
+              <LikeButton
+                onClick={updateLike}
+                isLike={content.isLike}
+              ></LikeButton>
+              <Likecount>{content.likeCount}</Likecount>
             </LikeContainer>
-            <BookButton></BookButton>
+            <BookButton
+              onClick={updateBooked}
+              isBooked={content.isBooked}
+            ></BookButton>
             <ShareButton>공유하기</ShareButton>
           </ContentFunc>
           <ContentBody>나 여기 다녀왔어!</ContentBody>
@@ -181,8 +258,6 @@ function Detail() {
   );
 }
 
-export default Detail;
-
 // 좋아요 버튼
 // isActive ? 채워진 하트 : 빈하트
 
@@ -191,3 +266,5 @@ export default Detail;
 
 // 북마크
 // isBooked ? 채워진 북마크 : 빈 북마크
+
+export default Detail;
