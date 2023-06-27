@@ -180,6 +180,7 @@ const CommentLike = styled.button`
 function Detail() {
   const [contents, setContents] = useState([]);
 
+  // 왜 안돼?
   //데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
