@@ -10,7 +10,14 @@ import github from "../img/github.png";
 import google from "../img/google.png";
 
 const OpenBtn = styled.button`
-  margin-top: 10px;
+  @media screen and (max-width: 1500px) {
+    margin-top: 10px;
+    max-width: 200px;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-right: 30px;
+  }
+  margin-top: 4px;
   font-size: 20px;
   width: 120px;
   border: none;
