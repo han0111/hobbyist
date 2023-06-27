@@ -11,11 +11,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { addComment } from "../modules/comments";
 import { Firestore } from "firebase/firestore";
 
-
 const Main = styled.main`
   padding: 20px;
   background: #eee;
   width: 600px;
+  margin-top: 150px;
+  margin-left: 100px;
 `;
 
 const MainInner = styled.div`
