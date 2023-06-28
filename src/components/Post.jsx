@@ -1,9 +1,10 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, where, query } from "firebase/firestore";
 import { db } from "../service/firebase";
 import uuid from "react-uuid";
+import { getAuth } from "firebase/auth";
 
 import { styled } from "styled-components";
 
@@ -60,13 +61,18 @@ function Post() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
+    try {
       const querySnapshot = await getDocs(collection(db, "posts"));
       querySnapshot.forEach((doc) => {
         console.log(`${doc.id} => ${doc.data()}`);
       });
-    };
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -80,17 +86,53 @@ function Post() {
     setOpen(!open);
   };
 
+  //닉네임 가져오는 함수
+  const getNickname = async (uid) => {
+    console.log(uid);
+    try {
+      const q = query(collection(db, "users"), where("uid", "==", uid));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData.nickname;
+      } else {
+        throw new Error("User not found");
+      }
+    } catch (error) {
+      console.error("Error getting nickname:", error);
+      throw error;
+    }
+  };
+
   // db에 값 저장
   const handlePostSubmit = async (event) => {
     event.preventDefault();
     setOpen(false);
-    const newPost = {
-      CID: uuid(),
-      title: title,
-      body: body,
-      createdAt: new Date(),
-    };
+
+    // Get the current user's UID
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    const uid = currentUser ? currentUser.uid : null;
+
+    if (!uid) {
+      console.error("User UID not found");
+      return;
+    }
+
     try {
+      // Retrieve the nickname based on the UID
+      const nickname = await getNickname(uid);
+
+      const newPost = {
+        CID: uuid(),
+        title: title,
+        body: body,
+        createdAt: new Date(),
+        uid: uid,
+        nickname: nickname, // Include the nickname in the new post object
+      };
+
       const docRef = await addDoc(collection(db, "posts"), newPost);
       console.log("Post added with ID: ", docRef.id);
       setTitle("");
@@ -100,6 +142,7 @@ function Post() {
     }
     window.location.reload();
   };
+
   return (
     <>
       <BcDiv open={open} onClick={postModalHandler}>

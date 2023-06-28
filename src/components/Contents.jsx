@@ -94,6 +94,7 @@ function Contents() {
   const [editedComment, setEditedComment] = useState("");
   const [posts, setPosts] = useState([]);
 
+  //현재 로그인 된 아이디 알아오는 함수
   const getCurrentUserUid = () => {
     const auth = getAuth();
     const currentUser = auth.currentUser;
@@ -106,7 +107,7 @@ function Contents() {
     }
   };
 
-  // getNickname 함수 수정
+  // getNickname 함수
   const getNickname = async (uid) => {
     console.log(uid);
     try {
@@ -231,36 +232,76 @@ function Contents() {
       console.error("댓글 삭제 오류:", error);
     }
   };
-  // post 저장 부분 불러옴
-  useEffect(() => {
-    const fetchData = async () => {
+
+  const PostUpdateBtn = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "posts"), where("CID", "==", CID))
+      );
+
+      querySnapshot.forEach(async (doc) => {
+        await updateDoc(doc.ref, {
+          comment: editedComment,
+        });
+      });
+
+      setEditCommentId("");
+      setEditedComment("");
+      fetchComments();
+    } catch (error) {
+      console.error("댓글 수정 오류:", error);
+    }
+  };
+
+  // DB에서 저장된 포스트를 불러오는 함수
+  const fetchPosts = async () => {
+    try {
       const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
 
-      const initialPosts = [];
+      const fetchedPosts = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-      querySnapshot.forEach((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data(),
-        };
-        initialPosts.push(data);
-      });
+      setPosts(fetchedPosts);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
 
-      setPosts(initialPosts);
-    };
-
-    fetchData();
+  // 포스트 저장 부분 불러옴
+  useEffect(() => {
+    fetchPosts();
   }, []);
+
+  //DB에서 해당하는 CID값을 가진 댓글을 삭제하는 함수
+  const PostDeleteBtn = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "posts"), where("CID", "==", CID))
+      );
+      const deletePost = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+
+      await Promise.all(deletePost);
+      fetchPosts();
+    } catch (error) {
+      console.error("포스트 삭제 오류:", error);
+    }
+  };
 
   return (
     <>
       {posts.map((post) => (
         <Main key={post.CID}>
           <MainInner>
+            <div className="Button-Container" style={{ textAlign: "right" }}>
+              <button onClick={() => PostUpdateBtn(post.CID)}>수정</button>
+              <button onClick={() => PostDeleteBtn(post.CID)}>삭제</button>
+            </div>
             <MainUser>
               <UserImg src="images/user_img.png" alt=""></UserImg>
-              <User>{post.id}</User>
+              <User>{post.nickname}</User>
             </MainUser>
             <ContentsBox>
               <h2>{post.title}</h2>
@@ -272,6 +313,7 @@ function Contents() {
                 alt=""
               ></img>
               <span>{post.body}</span>
+
               {comments.map((item) => {
                 return (
                   <div key={item.CID}>
