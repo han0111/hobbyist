@@ -46,6 +46,14 @@ function Post() {
     setIsOpen(!isOpen);
   };
 
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value);
+  };
+
+  const handleBodyChange = (event) => {
+    setBody(event.target.value);
+  };
+
   return (
     <>
       <BcDiv isOpen={isOpen} onClick={postModalHandler}>
@@ -55,13 +63,13 @@ function Post() {
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={handleTitleChange}
               placeholder="제목을 입력해주세요."
             />
             <input
               type="text"
               value={body}
-              onClick={(e) => setBody(e.target.value)}
+              onChange={handleBodyChange}
               placeholder="내용을 입력해주세요."
             />
             <button>등록</button>
