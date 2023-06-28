@@ -80,7 +80,6 @@ function SignUp() {
         uid: uid,
         email: email,
         nickname: nickname,
-        // 다른 회원 정보 필드들을 추가할 수 있습니다
       });
 
       console.log("가입에 성공했습니다", userCredential);
