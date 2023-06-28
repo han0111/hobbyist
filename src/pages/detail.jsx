@@ -11,7 +11,6 @@ const DetailContainer = styled.div`
 `;
 const ContentHeader = styled.div`
   display: flex;
-  /* flex-position: row; */
   flex-direction: row;
   align-items: center;
   margin-bottom: 20px;
@@ -50,11 +49,13 @@ const LikeContainer = styled.div`
   align-items: center;
   margin-bottom: 10px;
 `;
+
 const Likecount = styled.div`
   font-size: 25px;
   font-weight: bold;
   padding-top: 10px;
 `;
+
 const LikeButton = styled.button`
   border: 0;
   background-color: transparent;
@@ -155,7 +156,7 @@ const TextArea = styled.textarea`
 `;
 
 function Detail() {
-  const [contents, setContents] = useState([]);
+  const [, setContents] = useState([]);
   const [content, setContent] = useState([]);
 
   const fetchData = async () => {
