@@ -10,12 +10,12 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   // 우정님 firebase API 키
-  //   apiKey: "AIzaSyBfNHo0wuQcZrrVWX8iUFdwpMwnqWNb-q0",
-  //   authDomain: "fir-test-a8fe2.firebaseapp.com",
-  //   projectId: "fir-test-a8fe2",
-  //   storageBucket: "fir-test-a8fe2.appspot.com",
-  //   messagingSenderId: "982481039500",
-  //   appId: "1:982481039500:web:ef48c3e8ee16180e920ba9",
+  // apiKey: "AIzaSyBfNHo0wuQcZrrVWX8iUFdwpMwnqWNb-q0",
+  // authDomain: "fir-test-a8fe2.firebaseapp.com",
+  // projectId: "fir-test-a8fe2",
+  // storageBucket: "fir-test-a8fe2.appspot.com",
+  // messagingSenderId: "982481039500",
+  // appId: "1:982481039500:web:ef48c3e8ee16180e920ba9",
 
   // 유길
   // apiKey: "AIzaSyBnrVwhE0qoZNmTX27dEQv-FTTgneilzFU",
@@ -25,7 +25,7 @@ const firebaseConfig = {
   // messagingSenderId: "123583272414",
   // appId: "1:123583272414:web:1e9f2352ff3c5d8762794f",
 
-  // 윤건
+  // // 윤건
   apiKey: "AIzaSyAEW8wQZNGpwDkjVRA9ygcJwNcxMnLKvTE",
   authDomain: "fir-test-7fd35.firebaseapp.com",
   projectId: "fir-test-7fd35",
