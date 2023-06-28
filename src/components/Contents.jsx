@@ -91,6 +91,7 @@ function Contents() {
   const [comments, setComments] = useState([]);
   const [editCommentId, setEditCommentId] = useState("");
   const [editedComment, setEditedComment] = useState("");
+  const [posts, setPosts] = useState([]);
 
   // DB에서 저장된 값 불러오는 부분과 재렌더링
   const fetchComments = async () => {
@@ -190,98 +191,126 @@ function Contents() {
     }
   };
 
-  return (
-    <Main>
-      <MainInner>
-        <MainUser>
-          <UserImg src="images/user_img.png" alt=""></UserImg>
-          <User>UserName</User>
-        </MainUser>
-        <ContentsBox>
-          <img
-            style={{
-              width: "100%",
-            }}
-            src="images/test_img.png"
-            alt=""
-          ></img>
-          {comments.map((item) => {
-            return (
-              <div key={item.CID}>
-                {editCommentId === item.CID ? (
-                  <div>
-                    <input
-                      type="text"
-                      value={editedComment}
-                      onChange={(event) => {
-                        setEditedComment(event.target.value);
-                      }}
-                    />
-                    <button onClick={() => handleCommentEdit(item.CID)}>
-                      완료
-                    </button>
-                  </div>
-                ) : (
-                  <p
-                    style={{
-                      padding: "16px 0px 0px 0px",
-                    }}
-                  >
-                    {item.comment}
-                    <button onClick={() => setEditCommentId(item.CID)}>
-                      수정
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleCommentDelete(item.CID);
-                      }}
-                    >
-                      삭제
-                    </button>
-                  </p>
-                )}
-              </div>
-            );
-          })}
+  // post 저장 부분 불러옴
+  useEffect(() => {
+    const fetchData = async () => {
+      const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
 
-          <FunctionUl>
-            <li>
-              <IconSpan>
-                <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
-              </IconSpan>
-              {likeCount}
-            </li>
-            <li>
-              <IconSpan>
-                <FontAwesomeIcon icon={faCommentDots} />
-              </IconSpan>
-              댓글작성
-            </li>
-            <li>
-              <IconSpan>
-                <FontAwesomeIcon icon={faBookmark} />
-              </IconSpan>
-              북마크
-            </li>
-            <li>
-              <IconSpan>
-                <FontAwesomeIcon icon={faShareFromSquare} />
-              </IconSpan>
-              공유하기
-            </li>
-          </FunctionUl>
-          <CommentForm onSubmit={handleCommentSubmit}>
-            <CommentInput
-              value={comment}
-              onChange={(event) => {
-                setComment(event.target.value);
-              }}
-            />
-            <CommentButton>쓰기</CommentButton>
-          </CommentForm>
-        </ContentsBox>
-      </MainInner>
-    </Main>
+      const initialPosts = [];
+
+      querySnapshot.forEach((doc) => {
+        const data = {
+          id: doc.id,
+          ...doc.data(),
+        };
+        initialPosts.push(data);
+      });
+
+      setPosts(initialPosts);
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <>
+      {posts.map((post) => (
+        <Main key={post.CID}>
+          <MainInner>
+            <MainUser>
+              <UserImg src="images/user_img.png" alt=""></UserImg>
+              <User>{post.id}</User>
+            </MainUser>
+            <ContentsBox>
+              <h2>{post.title}</h2>
+              <img
+                style={{
+                  width: "100%",
+                }}
+                src="images/test_img.png"
+                alt=""
+              ></img>
+              <span>{post.body}</span>
+              {comments.map((item) => {
+                return (
+                  <div key={item.CID}>
+                    {editCommentId === item.CID ? (
+                      <div>
+                        <input
+                          type="text"
+                          value={editedComment}
+                          onChange={(event) => {
+                            setEditedComment(event.target.value);
+                          }}
+                        />
+                        <button onClick={() => handleCommentEdit(item.CID)}>
+                          완료
+                        </button>
+                      </div>
+                    ) : (
+                      <p
+                        style={{
+                          padding: "16px 0px 0px 0px",
+                        }}
+                      >
+                        {item.comment}
+                        <button onClick={() => setEditCommentId(item.CID)}>
+                          수정
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleCommentDelete(item.CID);
+                          }}
+                        >
+                          삭제
+                        </button>
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+
+              <FunctionUl>
+                <li>
+                  <IconSpan>
+                    <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
+                  </IconSpan>
+                  {likeCount}
+                </li>
+                <li>
+                  <IconSpan>
+                    <FontAwesomeIcon icon={faCommentDots} />
+                  </IconSpan>
+                  댓글작성
+                </li>
+                <li>
+                  <IconSpan>
+                    <FontAwesomeIcon icon={faBookmark} />
+                  </IconSpan>
+                  북마크
+                </li>
+                <li>
+                  <IconSpan>
+                    <FontAwesomeIcon icon={faShareFromSquare} />
+                  </IconSpan>
+                  공유하기
+                </li>
+              </FunctionUl>
+              <CommentForm onSubmit={handleCommentSubmit}>
+                <CommentInput
+                  value={comment}
+                  onChange={(event) => {
+                    setComment(event.target.value);
+                  }}
+                />
+                <CommentButton>쓰기</CommentButton>
+              </CommentForm>
+            </ContentsBox>
+          </MainInner>
+        </Main>
+      ))}
+    </>
   );
 }
 
