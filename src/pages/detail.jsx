@@ -158,20 +158,21 @@ function Detail() {
   const [contents, setContents] = useState([]);
   const [content, setContent] = useState([]);
 
+  const fetchData = async () => {
+    const q = query(collection(db, "contents"));
+    const querySnapshot = await getDocs(q);
+    const initialContents = [];
+    querySnapshot.forEach((doc) => {
+      initialContents.push({ id: doc.id, ...doc.data() });
+    });
+    setContents(initialContents);
+
+    const contentData = initialContents.find((item) => item.id === "content");
+    setContent(contentData);
+  };
+
   // 데이터 가져오기
   useEffect(() => {
-    const fetchData = async () => {
-      const q = query(collection(db, "contents"));
-      const querySnapshot = await getDocs(q);
-      const initialContents = [];
-      querySnapshot.forEach((doc) => {
-        initialContents.push({ id: doc.id, ...doc.data() });
-      });
-      setContents(initialContents);
-
-      const contentData = initialContents.find((item) => item.id === "content");
-      setContent(contentData);
-    };
     fetchData();
   }, []);
 
@@ -185,22 +186,20 @@ function Detail() {
         isLike: false,
         likeCount: content.likeCount - 1,
       });
-      setContent((prevContent) => ({
-        ...prevContent,
-        isLike: !prevContent.isLike,
-        likeCount: prevContent.likeCount - 1,
-      }));
+
+      fetchData();
     } else {
       // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
       await updateDoc(contentRef, {
         isLike: true,
         likeCount: content.likeCount + 1,
       });
-      setContent((prevContent) => ({
-        ...prevContent,
-        isLike: !prevContent.isLike,
-        likeCount: prevContent.likeCount + 1,
-      }));
+      // setContent((prevContent) => ({
+      //   ...prevContent,
+      //   isLike: !prevContent.isLike,
+      //   likeCount: prevContent.likeCount + 1,
+      // }));
+      fetchData();
     }
   };
 
