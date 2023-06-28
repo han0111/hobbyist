@@ -17,7 +17,7 @@ const OpenBtn = styled.button`
     align-items: flex-start;
     margin-right: 30px;
   }
-  margin-top: 4px;
+  margin-top: 2px;
   font-size: 20px;
   width: 120px;
   border: none;

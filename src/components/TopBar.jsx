@@ -61,6 +61,7 @@ const BtnContainer = styled.div`
     margin-top: 10px;
   }
 `;
+
 const TopButton = styled.button`
   font-size: 20px;
   width: 120px;
