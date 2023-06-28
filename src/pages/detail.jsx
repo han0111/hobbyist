@@ -65,12 +65,11 @@ const LikeContainer = styled.div`
   margin-bottom: 10px;
 `;
 
-const Likecount = styled.div`
-  font-size: 25px;
-  font-weight: bold;
-
-  padding-top: 10px;
-`;
+// const Likecount = styled.div`
+//   font-size: 25px;
+//   font-weight: bold;
+//   padding-top: 10px;
+// `;
 
 const LikeButton = styled.button`
   border: 0;

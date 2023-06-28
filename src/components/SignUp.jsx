@@ -6,7 +6,6 @@ import {
 } from "firebase/auth";
 
 import {
-  Label,
   Input,
   Button,
   ModalContainer,
@@ -120,7 +119,6 @@ function SignUp() {
           <ModalContainerModal2 className="Modal-Container-Modal2">
             <form className="Sign-Up" style={{ textAlign: "center" }}>
               <StH2>Sign Up</StH2>
-              <Label className="Email-Label"></Label>
               <Input
                 className="Email-Input"
                 type="text"
@@ -128,8 +126,7 @@ function SignUp() {
                 onChange={emailChangeHandler}
                 placeholder="아이디 (이메일 주소)"
               />
-              {/* <Button onClick={verifyEmailHandler}>중복확인</Button> */}
-              {/* <Label className="Password-Label"></Label> */}
+              <Button onClick={verifyEmailHandler}>중복확인</Button>
               <p>
                 <Input
                   className="Password-Input"
@@ -139,7 +136,7 @@ function SignUp() {
                   placeholder="비밀번호"
                 />
               </p>
-              {/* <Label className="Verify-Password-Label"></Label> */}
+
               <p>
                 <Input
                   className="Verify-Password-Input"

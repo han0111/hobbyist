@@ -143,14 +143,13 @@ function Contents() {
     }
   };
 
+  //DB에서 값 삭제하는 함수
   const handleCommentDelete = async (CID) => {
     try {
       await deleteDoc(doc(db, "Comments", CID));
-      setComments((prevComments) =>
-        prevComments.filter((item) => item.CID !== CID)
-      );
+      console.log("Comment deleted with ID:", CID);
     } catch (error) {
-      console.error("Error deleting comment: ", error);
+      console.error("Error deleting comment:", error);
     }
   };
 
@@ -193,7 +192,7 @@ function Contents() {
           ></img>
           {comments.map((item) => {
             return (
-              <div key={item.id}>
+              <div key={item.CID}>
                 {editCommentId === item.CID ? (
                   <div>
                     <input
