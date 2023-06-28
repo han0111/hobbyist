@@ -224,7 +224,6 @@ function Detail() {
 
     copyUrlRef.current.select();
     document.execCommand("copy");
-    e.target.focus();
 
     alert("링크가 복사되었습니다.");
   };
