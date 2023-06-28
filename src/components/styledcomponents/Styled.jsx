@@ -25,7 +25,8 @@ export const Input = styled.input`
 `;
 
 export const Button = styled.button`
-  margin-left: ${({ marginLeft }) => marginLeft || 0};
+  top: 0;
+  right: 0;
 `;
 
 export const TopButton = styled.button`
