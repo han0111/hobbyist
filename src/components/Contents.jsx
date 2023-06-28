@@ -87,10 +87,22 @@ const CommentButton = styled.button`
 `;
 function Contents() {
   const [comment, setComment] = useState();
+  // const [user, setUser] = useState(null);
+  const [user, setUser] = useState({ nickname: "익명", email: "" });
   const [likeCount, setLikeCount] = useState(false);
   const [comments, setComments] = useState([]);
   const [editCommentId, setEditCommentId] = useState("");
   const [editedComment, setEditedComment] = useState("");
+
+  //로그인 시 호출되는 함수
+  // const handleLogin = (nickname, email) => {
+  //   setUser({ nickname, email });
+  // };
+
+  // 로그아웃 시 호출되는 함수
+  const handleLogout = () => {
+    setUser(null);
+  };
 
   // DB에서 저장된 값 불러오는 부분과 재렌더링
   const fetchComments = async () => {
@@ -137,10 +149,20 @@ function Contents() {
   //입력시 DB에 저장하는 함수
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
+
+    if (!user) {
+      alert("로그인 한 사용자만 댓글을 남길 수 있습니다!");
+      return;
+    }
+
+    const { nickname, email } = user;
+
     const newComment = {
       CID: uuid(),
       comment: comment,
       createdAt: new Date(),
+      nickname: nickname,
+      email: email,
     };
 
     try {
@@ -152,6 +174,7 @@ function Contents() {
       console.error("Error adding comment: ", error);
     }
   };
+
   //DB에서 해당하는 CID값을 가진 댓글을 수정하는 함수
   const handleCommentEdit = async (CID) => {
     try {
@@ -179,11 +202,9 @@ function Contents() {
       const querySnapshot = await getDocs(
         query(collection(db, "Comments"), where("CID", "==", CID))
       );
+      const deletecomment = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
 
-      const deletePromises = querySnapshot.docs.map((doc) =>
-        deleteDoc(doc.ref)
-      );
-      await Promise.all(deletePromises);
+      await Promise.all(deletecomment);
       fetchComments();
     } catch (error) {
       console.error("댓글 삭제 오류:", error);
@@ -227,7 +248,11 @@ function Contents() {
                       padding: "16px 0px 0px 0px",
                     }}
                   >
+                    <span style={{ marginLeft: "8px" }}>{item.nickname} </span>
+                    <span />
+                    <span />
                     {item.comment}
+
                     <button onClick={() => setEditCommentId(item.CID)}>
                       수정
                     </button>
