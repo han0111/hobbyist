@@ -255,98 +255,51 @@ function Contents() {
     fetchData();
   }, []);
 
-  return (
-    <>
-// 우정님이 수정하신 
-//       <div style={{ width: "650px" }}>
-//         {posts.map((post) => (
-//           <Main key={post.CID}>
-//             <MainInner>
-//               <MainUser>
-//                 <UserImg src="images/user_img.png" alt=""></UserImg>
-//                 <User>{auth.currentUser.uid}</User>
-//               </MainUser>
-//               <ContentsBox>
-//                 <h2>{post.title}</h2>
-//                 <img
-//                   style={{
-//                     width: "100%",
-//                   }}
-//                   src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
-//                   alt=""
-//                 ></img>
-//                 <span>{post.body}</span>
-//                 {comments.map((item) => {
-//                   return (
-//                     <div key={item.CID}>
-//                       {editCommentId === item.CID ? (
-//                         <div>
-//                           <input
-//                             type="text"
-//                             value={editedComment}
-//                             onChange={(event) => {
-//                               setEditedComment(event.target.value);
-//                             }}
-//                           />
-//                           <button onClick={() => handleCommentEdit(item.CID)}>
-//                             완료
-//                           </button>
-//                         </div>
-//                       ) : (
-//                         <p
-//                           style={{
-//                             padding: "16px 0px 0px 0px",
-      {posts.map((post) => (
-        <Main key={post.CID}>
-          <MainInner>
-            <MainUser>
-              <UserImg src="images/user_img.png" alt=""></UserImg>
-              <User>{post.id}</User>
-            </MainUser>
-            <ContentsBox>
-              <h2>{post.title}</h2>
-              <img
-                style={{
-                  width: "100%",
-                }}
-                src="images/test_img.png"
-                alt=""
-              ></img>
-              <span>{post.body}</span>
-              {comments.map((item) => {
-                return (
-                  <div key={item.CID}>
-                    {editCommentId === item.CID ? (
-                      <div>
-                        <input
-                          type="text"
-                          value={editedComment}
-                          onChange={(event) => {
-                            setEditedComment(event.target.value);
-                          }}
-                        />
-                        <button onClick={() => handleCommentEdit(item.CID)}>
-                          완료
-                        </button>
-                      </div>
-                    ) : (
-                      <p
-                        style={{
-                          padding: "16px 0px 0px 0px",
-                        }}
-                      >
-                        {item.nickname}
-                        &nbsp;
-                        <span>{item.comment}</span>
-                        <button onClick={() => setEditCommentId(item.CID)}>
-                          수정
-                        </button>
-                        <button
-                          onClick={() => {
-                            handleCommentDelete(item.CID);
+  <>
+    <div style={{ width: "650px" }}>
+      {posts.map((post) => {
+        return (
+          <Main key={post.CID}>
+            <MainInner>
+              <MainUser>
+                <UserImg src="images/user_img.png" alt="" />
+                <User>{auth.currentUser.uid}</User>
+              </MainUser>
+              <ContentsBox>
+                <h2>{post.title}</h2>
+                <img
+                  style={{
+                    width: "100%",
+                  }}
+                  src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
+                  alt=""
+                />
+                <span>{post.body}</span>
+                {comments.map((item) => {
+                  return (
+                    <div key={item.CID}>
+                      {editCommentId === item.CID ? (
+                        <div>
+                          <input
+                            type="text"
+                            value={editedComment}
+                            onChange={(event) => {
+                              setEditedComment(event.target.value);
+                            }}
+                          />
+                          <button onClick={() => handleCommentEdit(item.CID)}>
+                            완료
+                          </button>
+                        </div>
+                      ) : (
+                        <p
+                          style={{
+                            padding: "16px 0px 0px 0px",
                           }}
                         >
-                          {item.comment}
+                          {item.nickname}
+                          &nbsp;
+                          <span>{item.comment}</span>
                           <button onClick={() => setEditCommentId(item.CID)}>
                             수정
                           </button>
@@ -362,7 +315,6 @@ function Contents() {
                     </div>
                   );
                 })}
-
                 <FunctionUl>
                   <li>
                     <IconSpan>
@@ -401,10 +353,9 @@ function Contents() {
               </ContentsBox>
             </MainInner>
           </Main>
-        ))}
-      </div>
-    </>
-  );
+        );
+      })}
+    </div>
+  </>;
 }
-
 export default Contents;
