@@ -20,6 +20,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
 const Main = styled.main`
   padding: 20px;
@@ -95,6 +96,37 @@ function Contents() {
   const [editedComment, setEditedComment] = useState("");
   const [posts, setPosts] = useState([]);
 
+  const getCurrentUserUid = () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    console.log("현재 로그인 된 아이디", currentUser);
+    if (currentUser) {
+      return currentUser.uid;
+    } else {
+      console.log("로그인된 사용자가 없습니다!");
+      return null;
+    }
+  };
+
+  // getNickname 함수 수정
+  const getNickname = async (uid) => {
+    console.log(uid);
+    try {
+      const q = query(collection(db, "users"), where("uid", "==", uid));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData.nickname;
+      } else {
+        throw new Error("User not found");
+      }
+    } catch (error) {
+      console.error("Error getting nickname:", error);
+      throw error;
+    }
+  };
+
   // DB에서 저장된 값 불러오는 부분과 재렌더링
   const fetchComments = async () => {
     try {
@@ -140,21 +172,32 @@ function Contents() {
   //입력시 DB에 저장하는 함수
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
-    const newComment = {
-      CID: uuid(),
-      comment: comment,
-      createdAt: new Date(),
-    };
+
+    // 닉네임 가져오기
+    const uid = getCurrentUserUid();
+    if (!uid) {
+      console.error("User UID not found");
+      return;
+    }
 
     try {
-      const docRef = await addDoc(collection(db, "Comments"), newComment);
-      console.log("Comment added with ID: ", docRef.id);
-      setComment("");
-      fetchComments();
+      const fetchedNickname = await getNickname(uid);
+
+      const newComment = {
+        CID: uuid(),
+        comment: comment,
+        createdAt: new Date(),
+        nickname: fetchedNickname,
+      };
+
+      await addDoc(collection(db, "Comments"), newComment);
+      setComment(""); // 댓글 작성 후 입력 필드 비우기
+      fetchComments(); // 댓글 목록 다시 불러오기
     } catch (error) {
       console.error("Error adding comment: ", error);
     }
   };
+
   //DB에서 해당하는 CID값을 가진 댓글을 수정하는 함수
   const handleCommentEdit = async (CID) => {
     try {
@@ -182,17 +225,14 @@ function Contents() {
       const querySnapshot = await getDocs(
         query(collection(db, "Comments"), where("CID", "==", CID))
       );
+      const deletecomment = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
 
-      const deletePromises = querySnapshot.docs.map((doc) =>
-        deleteDoc(doc.ref)
-      );
-      await Promise.all(deletePromises);
+      await Promise.all(deletecomment);
       fetchComments();
     } catch (error) {
       console.error("댓글 삭제 오류:", error);
     }
   };
-
   // post 저장 부분 불러옴
   useEffect(() => {
     const fetchData = async () => {
@@ -217,44 +257,93 @@ function Contents() {
 
   return (
     <>
-      <div style={{ width: "650px" }}>
-        {posts.map((post) => (
-          <Main key={post.CID}>
-            <MainInner>
-              <MainUser>
-                <UserImg src="images/user_img.png" alt=""></UserImg>
-                <User>{auth.currentUser.uid}</User>
-              </MainUser>
-              <ContentsBox>
-                <h2>{post.title}</h2>
-                <img
-                  style={{
-                    width: "100%",
-                  }}
-                  src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
-                  alt=""
-                ></img>
-                <span>{post.body}</span>
-                {comments.map((item) => {
-                  return (
-                    <div key={item.CID}>
-                      {editCommentId === item.CID ? (
-                        <div>
-                          <input
-                            type="text"
-                            value={editedComment}
-                            onChange={(event) => {
-                              setEditedComment(event.target.value);
-                            }}
-                          />
-                          <button onClick={() => handleCommentEdit(item.CID)}>
-                            완료
-                          </button>
-                        </div>
-                      ) : (
-                        <p
-                          style={{
-                            padding: "16px 0px 0px 0px",
+// 우정님이 수정하신 
+//       <div style={{ width: "650px" }}>
+//         {posts.map((post) => (
+//           <Main key={post.CID}>
+//             <MainInner>
+//               <MainUser>
+//                 <UserImg src="images/user_img.png" alt=""></UserImg>
+//                 <User>{auth.currentUser.uid}</User>
+//               </MainUser>
+//               <ContentsBox>
+//                 <h2>{post.title}</h2>
+//                 <img
+//                   style={{
+//                     width: "100%",
+//                   }}
+//                   src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
+//                   alt=""
+//                 ></img>
+//                 <span>{post.body}</span>
+//                 {comments.map((item) => {
+//                   return (
+//                     <div key={item.CID}>
+//                       {editCommentId === item.CID ? (
+//                         <div>
+//                           <input
+//                             type="text"
+//                             value={editedComment}
+//                             onChange={(event) => {
+//                               setEditedComment(event.target.value);
+//                             }}
+//                           />
+//                           <button onClick={() => handleCommentEdit(item.CID)}>
+//                             완료
+//                           </button>
+//                         </div>
+//                       ) : (
+//                         <p
+//                           style={{
+//                             padding: "16px 0px 0px 0px",
+      {posts.map((post) => (
+        <Main key={post.CID}>
+          <MainInner>
+            <MainUser>
+              <UserImg src="images/user_img.png" alt=""></UserImg>
+              <User>{post.id}</User>
+            </MainUser>
+            <ContentsBox>
+              <h2>{post.title}</h2>
+              <img
+                style={{
+                  width: "100%",
+                }}
+                src="images/test_img.png"
+                alt=""
+              ></img>
+              <span>{post.body}</span>
+              {comments.map((item) => {
+                return (
+                  <div key={item.CID}>
+                    {editCommentId === item.CID ? (
+                      <div>
+                        <input
+                          type="text"
+                          value={editedComment}
+                          onChange={(event) => {
+                            setEditedComment(event.target.value);
+                          }}
+                        />
+                        <button onClick={() => handleCommentEdit(item.CID)}>
+                          완료
+                        </button>
+                      </div>
+                    ) : (
+                      <p
+                        style={{
+                          padding: "16px 0px 0px 0px",
+                        }}
+                      >
+                        {item.nickname}
+                        &nbsp;
+                        <span>{item.comment}</span>
+                        <button onClick={() => setEditCommentId(item.CID)}>
+                          수정
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleCommentDelete(item.CID);
                           }}
                         >
                           {item.comment}
