@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import uuid from "react-uuid";
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,10 +8,18 @@ import {
   faCommentDots,
   faShareFromSquare,
 } from "@fortawesome/free-regular-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { addComment } from "../modules/comments";
-import { Firestore } from "firebase/firestore";
-
+import {
+  Firestore,
+  collection,
+  getDocs,
+  query,
+  addDoc,
+  orderBy,
+  deleteDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../service/firebase";
 const Main = styled.main`
   padding: 20px;
   background: #eee;
@@ -79,48 +88,107 @@ const CommentButton = styled.button`
 function Contents() {
   const [comment, setComment] = useState();
   const [likeCount, setLikeCount] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [editCommentId, setEditCommentId] = useState("");
+  const [editedComment, setEditedComment] = useState("");
 
-  // useEffect(() => {
-  //   const fetchLikeCount = async () => {
-  //     try {
-  //       const snapshot = await Firestore.collection("").doc("").get();
-  //       if (snapshot.exists) {
-  //         const data = snapshot.data();
-  //         setLikeCount(data.likeCount);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching like count:", error);
-  //     }
-  //   };
-  //   fetchLikeCount();
-  // }, []);
+  // DB에서 저장된 값 불러오는 부분과 재렌더링
+  const fetchComments = async () => {
+    try {
+      const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
 
-  // const handleLike = async () => {
-  //   try {
-  //     const snapshot = await Firestore.collection("").doc("").get();
-  //     let currentCount = 0;
-  //     if (snapshot.exists) {
-  //       const data = snapshot.data();
-  //       currentCount = data.likeCount || 0;
-  //     }
-  //     await Firestore
-  //       .collection("")
-  //       .doc("")
-  //       .update({
-  //         likeCount: currentCount + 1,
-  //       });
+      const fetchedComments = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-  //     setLikeCount(currentCount + 1);
-  //   } catch (error) {
-  //     console.error("Error updating like count:", error);
-  //   }
-  // };
+      setComments(fetchedComments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
 
-  const disPatch = useDispatch();
+  useEffect(() => {
+    fetchComments();
+  }, []);
 
-  const comments = useSelector((state) => {
-    return state.comments;
-  });
+  //Like 함수 부분 빼놨습니다!
+  const handleLike = async () => {
+    try {
+      const snapshot = await Firestore.collection("").doc("").get();
+      let currentCount = 0;
+      if (snapshot.exists) {
+        const data = snapshot.data();
+        currentCount = data.likeCount || 0;
+      }
+      await Firestore.collection("")
+        .doc("")
+        .update({
+          likeCount: currentCount + 1,
+        });
+
+      setLikeCount(currentCount + 1);
+    } catch (error) {
+      console.error("Error updating like count:", error);
+    }
+  };
+
+  //입력시 DB에 저장하는 함수
+  const handleCommentSubmit = async (event) => {
+    event.preventDefault();
+    const newComment = {
+      CID: uuid(),
+      comment: comment,
+      createdAt: new Date(),
+    };
+
+    try {
+      const docRef = await addDoc(collection(db, "Comments"), newComment);
+      console.log("Comment added with ID: ", docRef.id);
+      setComment("");
+      fetchComments();
+    } catch (error) {
+      console.error("Error adding comment: ", error);
+    }
+  };
+  //DB에서 해당하는 CID값을 가진 댓글을 수정하는 함수
+  const handleCommentEdit = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "Comments"), where("CID", "==", CID))
+      );
+
+      querySnapshot.forEach(async (doc) => {
+        await updateDoc(doc.ref, {
+          comment: editedComment,
+        });
+      });
+
+      setEditCommentId("");
+      setEditedComment("");
+      fetchComments();
+    } catch (error) {
+      console.error("댓글 수정 오류:", error);
+    }
+  };
+
+  //DB에서 해당하는 CID값을 가진 댓글을 삭제하는 함수
+  const handleCommentDelete = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "Comments"), where("CID", "==", CID))
+      );
+
+      const deletePromises = querySnapshot.docs.map((doc) =>
+        deleteDoc(doc.ref)
+      );
+      await Promise.all(deletePromises);
+      fetchComments();
+    } catch (error) {
+      console.error("댓글 삭제 오류:", error);
+    }
+  };
 
   return (
     <Main>
@@ -139,20 +207,47 @@ function Contents() {
           ></img>
           {comments.map((item) => {
             return (
-              <p
-                style={{
-                  padding: "16px 0px 0px 0px",
-                }}
-              >
-                {item.comment}
-              </p>
+              <div key={item.CID}>
+                {editCommentId === item.CID ? (
+                  <div>
+                    <input
+                      type="text"
+                      value={editedComment}
+                      onChange={(event) => {
+                        setEditedComment(event.target.value);
+                      }}
+                    />
+                    <button onClick={() => handleCommentEdit(item.CID)}>
+                      완료
+                    </button>
+                  </div>
+                ) : (
+                  <p
+                    style={{
+                      padding: "16px 0px 0px 0px",
+                    }}
+                  >
+                    {item.comment}
+                    <button onClick={() => setEditCommentId(item.CID)}>
+                      수정
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleCommentDelete(item.CID);
+                      }}
+                    >
+                      삭제
+                    </button>
+                  </p>
+                )}
+              </div>
             );
           })}
 
           <FunctionUl>
             <li>
               <IconSpan>
-                <FontAwesomeIcon icon={faHeart} onClick={() => {}} />
+                <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
               </IconSpan>
               {likeCount}
             </li>
@@ -175,23 +270,13 @@ function Contents() {
               공유하기
             </li>
           </FunctionUl>
-          <CommentForm
-            onSubmit={(event) => {
-              event.preventDefault();
-              const newComment = {
-                id: 5,
-                comment: comment,
-              };
-              disPatch(addComment(newComment));
-              setComment("");
-            }}
-          >
+          <CommentForm onSubmit={handleCommentSubmit}>
             <CommentInput
               value={comment}
               onChange={(event) => {
                 setComment(event.target.value);
               }}
-            ></CommentInput>
+            />
             <CommentButton>쓰기</CommentButton>
           </CommentForm>
         </ContentsBox>
