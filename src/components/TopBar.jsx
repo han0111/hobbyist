@@ -82,7 +82,7 @@ function TopBar() {
   return (
     <>
       <Header>
-       <LogoInput>
+        <LogoInput>
           <Logo>Hobbyist</Logo>
           <Form>
             <FaSistrix size="20" color="gray"></FaSistrix>
