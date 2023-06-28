@@ -69,7 +69,9 @@ function SignUp() {
 
       //가입 성공 시 alert 메세지 디스플레이 및 입력 필드 초기화와 모달창 닫기
       alert("가입에 성공했습니다!");
+
       console.log("가입에 성공했습니다", userCredential);
+
       setIsModalOpen2(false);
       setEmail("");
       setPassword("");

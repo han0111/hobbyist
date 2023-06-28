@@ -1,8 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import { styled } from "styled-components";
-// import { useDispatch } from "react-redux";
-// import uuid from "react-uuid";
 
 const BcDiv = styled.div`
   position: fixed;
@@ -12,7 +10,7 @@ const BcDiv = styled.div`
   z-index: 10;
   width: 100%;
   height: 100%;
-  display: ${(props) => (props.isOpen ? "block" : "none")};
+  display: ${(props) => (props.open ? "block" : "none")};
 `;
 
 const StDiv = styled.div`
@@ -38,17 +36,17 @@ const Stbtn = styled.button`
 `;
 
 function Post() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
   const postModalHandler = () => {
-    setIsOpen(!isOpen);
+    setOpen(!open);
   };
 
   return (
     <>
-      <BcDiv isOpen={isOpen} onClick={postModalHandler}>
+      <BcDiv open={open} onClick={postModalHandler}>
         <StDiv onClick={(e) => e.stopPropagation()}>
           <h1>글 작성하기</h1>
           <form>
@@ -61,7 +59,7 @@ function Post() {
             <input
               type="text"
               value={body}
-              onClick={(e) => setBody(e.target.value)}
+              onChange={(e) => setBody(e.target.value)}
               placeholder="내용을 입력해주세요."
             />
             <button>등록</button>

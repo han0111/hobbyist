@@ -23,29 +23,20 @@ const firebaseConfig = {
   // appId: "1:982481039500:web:ef48c3e8ee16180e920ba9",
 
   // 유길
-  // apiKey: "AIzaSyBnrVwhE0qoZNmTX27dEQv-FTTgneilzFU",
-  // authDomain: "reight-ce36c.firebaseapp.com",
-  // projectId: "reight-ce36c",
-  // storageBucket: "reight-ce36c.appspot.com",
-  // messagingSenderId: "123583272414",
-  // appId: "1:123583272414:web:1e9f2352ff3c5d8762794f",
-
-  // 윤건
-  // apiKey: "AIzaSyAEW8wQZNGpwDkjVRA9ygcJwNcxMnLKvTE",
-  // authDomain: "fir-test-7fd35.firebaseapp.com",
-  // projectId: "fir-test-7fd35",
-  // storageBucket: "fir-test-7fd35.appspot.com",
-  // messagingSenderId: "1026947458072",
-  // appId: "1:1026947458072:web:467659b3a6190617724f6d",
-
-  //유길2
   apiKey: "AIzaSyBMVH9MLz1rBnI7aapwImQtA5Rw-WM21k0",
   authDomain: "testproject-ed7cc.firebaseapp.com",
   projectId: "testproject-ed7cc",
   storageBucket: "testproject-ed7cc.appspot.com",
   messagingSenderId: "883829817146",
   appId: "1:883829817146:web:a5591680b556d1b0025a03",
-  measurementId: "G-TGC21KQ44R",
+
+  // // 윤건
+  //   apiKey: "AIzaSyBYtriPYjeOSg4WIEWBqyutqxu9oJTNzvI",
+  //   authDomain: "hobbyist-40edb.firebaseapp.com",
+  //   projectId: "hobbyist-40edb",
+  //   storageBucket: "hobbyist-40edb.appspot.com",
+  //   messagingSenderId: "415353098643",
+  //   appId: "1:415353098643:web:6ec6c18d0251493579d866",
 };
 
 export const signInWithGoogle = () => {
