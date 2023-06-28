@@ -26,12 +26,12 @@ const firebaseConfig = {
   // appId: "1:123583272414:web:1e9f2352ff3c5d8762794f",
 
   // // 윤건
-  apiKey: "AIzaSyAEW8wQZNGpwDkjVRA9ygcJwNcxMnLKvTE",
-  authDomain: "fir-test-7fd35.firebaseapp.com",
-  projectId: "fir-test-7fd35",
-  storageBucket: "fir-test-7fd35.appspot.com",
-  messagingSenderId: "1026947458072",
-  appId: "1:1026947458072:web:467659b3a6190617724f6d",
+  apiKey: "AIzaSyBYtriPYjeOSg4WIEWBqyutqxu9oJTNzvI",
+  authDomain: "hobbyist-40edb.firebaseapp.com",
+  projectId: "hobbyist-40edb",
+  storageBucket: "hobbyist-40edb.appspot.com",
+  messagingSenderId: "415353098643",
+  appId: "1:415353098643:web:6ec6c18d0251493579d866",
 };
 
 // Initialize Firebase
