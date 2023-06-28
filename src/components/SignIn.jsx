@@ -12,7 +12,14 @@ import github from "../img/github.png";
 import google from "../img/google.png";
 
 const OpenBtn = styled.button`
-  margin-top: 10px;
+  @media screen and (max-width: 1500px) {
+    margin-top: 10px;
+    max-width: 200px;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-right: 30px;
+  }
+  margin-top: 4px;
   font-size: 20px;
   width: 120px;
   border: none;
@@ -96,12 +103,13 @@ function SignIn() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState(null);
+  const [, setUserData] = useState(null);
   const [login, setLogin] = useState(localStorage.getItem("login") || "로그인");
 
   useEffect(() => {
     localStorage.setItem("login", login);
   }, [login]);
+
 
   const onChange = (event) => {
     const {

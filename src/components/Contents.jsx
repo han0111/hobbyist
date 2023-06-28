@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import uuid from "react-uuid";
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,10 +8,14 @@ import {
   faCommentDots,
   faShareFromSquare,
 } from "@fortawesome/free-regular-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { addComment } from "../modules/comments";
-import { Firestore } from "firebase/firestore";
-
+import {
+  Firestore,
+  collection,
+  getDocs,
+  query,
+  addDoc,
+} from "firebase/firestore";
+import { db } from "../service/firebase";
 const Main = styled.main`
   padding: 20px;
   background: #eee;
@@ -79,48 +84,64 @@ const CommentButton = styled.button`
 function Contents() {
   const [comment, setComment] = useState();
   const [likeCount, setLikeCount] = useState(false);
+  const [comments, setComments] = useState([]);
 
-  // useEffect(() => {
-  //   const fetchLikeCount = async () => {
-  //     try {
-  //       const snapshot = await Firestore.collection("").doc("").get();
-  //       if (snapshot.exists) {
-  //         const data = snapshot.data();
-  //         setLikeCount(data.likeCount);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching like count:", error);
-  //     }
-  //   };
-  //   fetchLikeCount();
-  // }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      const q = query(collection(db, "Comments"));
+      const querySnapshot = await getDocs(q);
 
-  // const handleLike = async () => {
-  //   try {
-  //     const snapshot = await Firestore.collection("").doc("").get();
-  //     let currentCount = 0;
-  //     if (snapshot.exists) {
-  //       const data = snapshot.data();
-  //       currentCount = data.likeCount || 0;
-  //     }
-  //     await Firestore
-  //       .collection("")
-  //       .doc("")
-  //       .update({
-  //         likeCount: currentCount + 1,
-  //       });
+      const fetchedComments = [];
 
-  //     setLikeCount(currentCount + 1);
-  //   } catch (error) {
-  //     console.error("Error updating like count:", error);
-  //   }
-  // };
+      querySnapshot.forEach((doc) => {
+        const data = {
+          id: doc.id,
+          ...doc.data(),
+        };
+        fetchedComments.push(data);
+      });
 
-  const disPatch = useDispatch();
+      setComments(fetchedComments);
+    };
 
-  const comments = useSelector((state) => {
-    return state.comments;
-  });
+    fetchData();
+  }, []);
+
+  const handleLike = async () => {
+    try {
+      const snapshot = await Firestore.collection("").doc("").get();
+      let currentCount = 0;
+      if (snapshot.exists) {
+        const data = snapshot.data();
+        currentCount = data.likeCount || 0;
+      }
+      await Firestore.collection("")
+        .doc("")
+        .update({
+          likeCount: currentCount + 1,
+        });
+
+      setLikeCount(currentCount + 1);
+    } catch (error) {
+      console.error("Error updating like count:", error);
+    }
+  };
+
+  const handleCommentSubmit = async (event) => {
+    event.preventDefault();
+    const newComment = {
+      CID: uuid(),
+      comment: comment,
+    };
+
+    try {
+      const docRef = await addDoc(collection(db, "Comments"), newComment);
+      console.log("Comment added with ID: ", docRef.id);
+      setComment("");
+    } catch (error) {
+      console.error("Error adding comment: ", error);
+    }
+  };
 
   return (
     <Main>
@@ -140,6 +161,7 @@ function Contents() {
           {comments.map((item) => {
             return (
               <p
+                key={item.id}
                 style={{
                   padding: "16px 0px 0px 0px",
                 }}
@@ -152,7 +174,7 @@ function Contents() {
           <FunctionUl>
             <li>
               <IconSpan>
-                <FontAwesomeIcon icon={faHeart} onClick={() => {}} />
+                <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
               </IconSpan>
               {likeCount}
             </li>
@@ -175,23 +197,13 @@ function Contents() {
               공유하기
             </li>
           </FunctionUl>
-          <CommentForm
-            onSubmit={(event) => {
-              event.preventDefault();
-              const newComment = {
-                id: 5,
-                comment: comment,
-              };
-              disPatch(addComment(newComment));
-              setComment("");
-            }}
-          >
+          <CommentForm onSubmit={handleCommentSubmit}>
             <CommentInput
               value={comment}
               onChange={(event) => {
                 setComment(event.target.value);
               }}
-            ></CommentInput>
+            />
             <CommentButton>쓰기</CommentButton>
           </CommentForm>
         </ContentsBox>
