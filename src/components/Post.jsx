@@ -1,7 +1,20 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+
+import FileUpload from "./FileUpload";
+import {
+  Firestore,
+  collection,
+  getDocs,
+  query,
+  addDoc,
+  orderBy,
+  deleteDoc,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+
 import { db } from "../service/firebase";
 import uuid from "react-uuid";
 
@@ -25,7 +38,7 @@ const TitleInput = styled.input`
 
 const BodyInput = styled.input`
   width: 400px;
-  height: 300px;
+  height: 200px;
 `;
 
 const StDiv = styled.div`
@@ -98,7 +111,6 @@ function Post() {
     } catch (error) {
       console.error("Error adding post: ", error);
     }
-    window.location.reload();
   };
   return (
     <>
@@ -122,6 +134,9 @@ function Post() {
                 placeholder="내용을 입력해주세요."
               />
             </p>
+            <p>
+              <FileUpload />
+            </p>
             <button onClick={handlePostSubmit}>등록</button>
           </form>
           <Stbtn onClick={postModalHandler}>x</Stbtn>
@@ -131,7 +146,8 @@ function Post() {
         style={{
           width: "200px",
           height: "50px",
-          marginTop: "300px",
+          marginTop: "100px",
+          position: "fixed",
         }}
         onClick={postModalHandler}
       >
