@@ -1,17 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import {
-  Firestore,
-  collection,
-  getDocs,
-  query,
-  addDoc,
-  orderBy,
-  deleteDoc,
-  updateDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../service/firebase";
 import uuid from "react-uuid";
 

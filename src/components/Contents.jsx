@@ -18,6 +18,8 @@ import {
   deleteDoc,
   updateDoc,
   where,
+  getDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "../service/firebase";
 const Main = styled.main`
@@ -87,22 +89,38 @@ const CommentButton = styled.button`
 `;
 function Contents() {
   const [comment, setComment] = useState();
-  // const [user, setUser] = useState(null);
-  const [user, setUser] = useState({ nickname: "익명", email: "" });
+  const [user] = useState(null);
+  // const [user, setUser] = useState({ nickname: "익명", email: "" });
   const [likeCount, setLikeCount] = useState(false);
   const [comments, setComments] = useState([]);
   const [editCommentId, setEditCommentId] = useState("");
   const [editedComment, setEditedComment] = useState("");
   const [posts, setPosts] = useState([]);
 
-  //로그인 시 호출되는 함수
-  // const handleLogin = (nickname, email) => {
-  //   setUser({ nickname, email });
-  // };
+  //닉네임을 가져오는 함수
+  const getNickname = async (uid) => {
+    try {
+      if (!uid) {
+        console.log("uid값을 찾을 수 없습니다!");
+        return "익명";
+      }
 
-  // 로그아웃 시 호출되는 함수
-  const handleLogout = () => {
-    setUser(null);
+      const docRef = doc(db, "users", uid);
+      console.log(docRef);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.nickname) {
+          return data.nickname;
+        } else {
+          return "익명";
+        }
+      } else {
+        throw new Error("사용자를 찾을 수 없습니다.");
+      }
+    } catch (error) {
+      console.error("Error getting nickname:", error);
+    }
   };
 
   // DB에서 저장된 값 불러오는 부분과 재렌더링
@@ -151,19 +169,15 @@ function Contents() {
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
 
-    if (!user) {
-      alert("로그인 한 사용자만 댓글을 남길 수 있습니다!");
-      return;
-    }
-
-    const { nickname, email } = user;
+    // 닉네임 가져오기
+    const uid = user ? user.uid : null;
+    const fetchedNickname = await getNickname(uid);
 
     const newComment = {
       CID: uuid(),
       comment: comment,
       createdAt: new Date(),
-      nickname: nickname,
-      email: email,
+      nickname: fetchedNickname,
     };
 
     try {
@@ -235,7 +249,7 @@ function Contents() {
 
   return (
     <>
-      {/* {posts.map((post) => (
+      {posts.map((post) => (
         <Main key={post.CID}>
           <MainInner>
             <MainUser>
@@ -274,6 +288,7 @@ function Contents() {
                           padding: "16px 0px 0px 0px",
                         }}
                       >
+                        {item.nickname}
                         {item.comment}
                         <button onClick={() => setEditCommentId(item.CID)}>
                           수정
@@ -289,106 +304,47 @@ function Contents() {
                     )}
                   </div>
                 );
-              })} */}
-      return (
-      <Main>
-        <MainInner>
-          <MainUser>
-            <UserImg src="images/user_img.png" alt=""></UserImg>
-            <User>UserName</User>
-          </MainUser>
-          <ContentsBox>
-            <img
-              style={{
-                width: "100%",
-              }}
-              src="images/test_img.png"
-              alt=""
-            ></img>
-            {comments.map((item) => {
-              return (
-                <div key={item.CID}>
-                  {editCommentId === item.CID ? (
-                    <div>
-                      <input
-                        type="text"
-                        value={editedComment}
-                        onChange={(event) => {
-                          setEditedComment(event.target.value);
-                        }}
-                      />
-                      <button onClick={() => handleCommentEdit(item.CID)}>
-                        완료
-                      </button>
-                    </div>
-                  ) : (
-                    <p
-                      style={{
-                        padding: "16px 0px 0px 0px",
-                      }}
-                    >
-                      <span style={{ marginLeft: "8px" }}>
-                        {item.nickname}{" "}
-                      </span>
-                      <span />
-                      <span />
-                      {item.comment}
+              })}
 
-                      <button onClick={() => setEditCommentId(item.CID)}>
-                        수정
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleCommentDelete(item.CID);
-                        }}
-                      >
-                        삭제
-                      </button>
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-
-            <FunctionUl>
-              <li>
-                <IconSpan>
-                  <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
-                </IconSpan>
-                {likeCount}
-              </li>
-              <li>
-                <IconSpan>
-                  <FontAwesomeIcon icon={faCommentDots} />
-                </IconSpan>
-                댓글작성
-              </li>
-              <li>
-                <IconSpan>
-                  <FontAwesomeIcon icon={faBookmark} />
-                </IconSpan>
-                북마크
-              </li>
-              <li>
-                <IconSpan>
-                  <FontAwesomeIcon icon={faShareFromSquare} />
-                </IconSpan>
-                공유하기
-              </li>
-            </FunctionUl>
-            <CommentForm onSubmit={handleCommentSubmit}>
-              <CommentInput
-                value={comment}
-                onChange={(event) => {
-                  setComment(event.target.value);
-                }}
-              />
-              <CommentButton>쓰기</CommentButton>
-            </CommentForm>
-          </ContentsBox>
-        </MainInner>
-      </Main>
-      ))
+              <FunctionUl>
+                <li>
+                  <IconSpan>
+                    <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
+                  </IconSpan>
+                  {likeCount}
+                </li>
+                <li>
+                  <IconSpan>
+                    <FontAwesomeIcon icon={faCommentDots} />
+                  </IconSpan>
+                  댓글작성
+                </li>
+                <li>
+                  <IconSpan>
+                    <FontAwesomeIcon icon={faBookmark} />
+                  </IconSpan>
+                  북마크
+                </li>
+                <li>
+                  <IconSpan>
+                    <FontAwesomeIcon icon={faShareFromSquare} />
+                  </IconSpan>
+                  공유하기
+                </li>
+              </FunctionUl>
+              <CommentForm onSubmit={handleCommentSubmit}>
+                <CommentInput
+                  value={comment}
+                  onChange={(event) => {
+                    setComment(event.target.value);
+                  }}
+                />
+                <CommentButton>쓰기</CommentButton>
+              </CommentForm>
+            </ContentsBox>
+          </MainInner>
+        </Main>
+      ))}
     </>
   );
 }
