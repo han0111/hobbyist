@@ -154,11 +154,30 @@ function Detail() {
   // Like update
   const updateLike = async (event) => {
     const contentRef = doc(db, "contents", "content");
-    await updateDoc(contentRef, { isLike: !content.isLike });
-    setContent((prevContent) => ({
-      ...prevContent,
-      isLike: !prevContent.isLike,
-    }));
+
+    if (content.isLike) {
+      // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
+      await updateDoc(contentRef, {
+        isLike: false,
+        likeCount: content.likeCount - 1,
+      });
+      setContent((prevContent) => ({
+        ...prevContent,
+        isLike: !prevContent.isLike,
+        likeCount: prevContent.likeCount - 1,
+      }));
+    } else {
+      // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
+      await updateDoc(contentRef, {
+        isLike: true,
+        likeCount: content.likeCount + 1,
+      });
+      setContent((prevContent) => ({
+        ...prevContent,
+        isLike: !prevContent.isLike,
+        likeCount: prevContent.likeCount + 1,
+      }));
+    }
   };
 
   // 북마크 update
