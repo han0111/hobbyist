@@ -195,11 +195,7 @@ function Detail() {
         isLike: true,
         likeCount: content.likeCount + 1,
       });
-      // setContent((prevContent) => ({
-      //   ...prevContent,
-      //   isLike: !prevContent.isLike,
-      //   likeCount: prevContent.likeCount + 1,
-      // }));
+
       fetchData();
     }
   };
