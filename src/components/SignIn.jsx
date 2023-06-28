@@ -196,7 +196,7 @@ function SignIn() {
                   value={email}
                   name="email"
                   onChange={onChange}
-                  reaquired
+                  required
                   placeholder="아이디를 입력하세요."
                 />
               </p>
