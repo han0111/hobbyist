@@ -14,6 +14,10 @@ import {
   getDocs,
   query,
   addDoc,
+  orderBy,
+  deleteDoc,
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "../service/firebase";
 const Main = styled.main`
@@ -85,28 +89,10 @@ function Contents() {
   const [comment, setComment] = useState();
   const [likeCount, setLikeCount] = useState(false);
   const [comments, setComments] = useState([]);
+  const [editCommentId, setEditCommentId] = useState("");
+  const [editedComment, setEditedComment] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const q = query(collection(db, "Comments"));
-      const querySnapshot = await getDocs(q);
-
-      const fetchedComments = [];
-
-      querySnapshot.forEach((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data(),
-        };
-        fetchedComments.push(data);
-      });
-
-      setComments(fetchedComments);
-    };
-
-    fetchData();
-  }, []);
-
+  //Like 함수 부분 빼놨습니다!
   const handleLike = async () => {
     try {
       const snapshot = await Firestore.collection("").doc("").get();
@@ -127,11 +113,13 @@ function Contents() {
     }
   };
 
+  //입력시 DB에 저장하는 함수
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
     const newComment = {
       CID: uuid(),
       comment: comment,
+      createdAt: new Date(),
     };
 
     try {
@@ -142,6 +130,51 @@ function Contents() {
       console.error("Error adding comment: ", error);
     }
   };
+
+  const handleCommentEdit = async (cid) => {
+    try {
+      await updateDoc(doc(db, "Comments", cid), {
+        comment: editedComment,
+      });
+      setEditCommentId("");
+      setEditedComment("");
+    } catch (error) {
+      console.error("Error updating comment: ", error);
+    }
+  };
+
+  const handleCommentDelete = async (CID) => {
+    try {
+      await deleteDoc(doc(db, "Comments", CID));
+      setComments((prevComments) =>
+        prevComments.filter((item) => item.CID !== CID)
+      );
+    } catch (error) {
+      console.error("Error deleting comment: ", error);
+    }
+  };
+
+  //DB에서 저장된 값 불러오는 부분
+  useEffect(() => {
+    const fetchData = async () => {
+      const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+
+      const fetchedComments = [];
+
+      querySnapshot.forEach((doc) => {
+        const data = {
+          id: doc.id,
+          ...doc.data(),
+        };
+        fetchedComments.push(data);
+      });
+
+      setComments(fetchedComments);
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Main>
@@ -160,14 +193,40 @@ function Contents() {
           ></img>
           {comments.map((item) => {
             return (
-              <p
-                key={item.id}
-                style={{
-                  padding: "16px 0px 0px 0px",
-                }}
-              >
-                {item.comment}
-              </p>
+              <div key={item.id}>
+                {editCommentId === item.CID ? (
+                  <div>
+                    <input
+                      type="text"
+                      value={editedComment}
+                      onChange={(event) => {
+                        setEditedComment(event.target.value);
+                      }}
+                    />
+                    <button onClick={() => handleCommentEdit(item.CID)}>
+                      완료
+                    </button>
+                  </div>
+                ) : (
+                  <p
+                    style={{
+                      padding: "16px 0px 0px 0px",
+                    }}
+                  >
+                    {item.comment}
+                    <button onClick={() => setEditCommentId(item.CID)}>
+                      수정
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleCommentDelete(item.CID);
+                      }}
+                    >
+                      삭제
+                    </button>
+                  </p>
+                )}
+              </div>
             );
           })}
 

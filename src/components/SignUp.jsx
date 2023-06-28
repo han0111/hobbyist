@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
+} from "firebase/auth";
 
 import {
   Label,
@@ -39,6 +43,7 @@ function SignUp() {
     setVerifyPassword("");
   };
 
+  //회원가입 버튼 핸들러
   const SubmitBtnHandler = async (event) => {
     event.preventDefault();
     if (
@@ -49,21 +54,33 @@ function SignUp() {
       alert("양식을 전부 입력해 주세요!");
       return;
     }
+    if (password !== verifypassword) {
+      alert("비밀번호가 일치하지 않습니다!");
+      return;
+    }
+
     try {
+      //이메일 패스워드 받아서 회원가입 하는 코드
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
+
+      //가입 성공 시 alert 메세지 디스플레이 및 입력 필드 초기화와 모달창 닫기
       alert("가입에 성공했습니다!");
-      console.log("가입 성공", userCredential.user);
-      setIsModalOpen2(false); // 모달 닫기
+      console.log("가입에 성공했습니다", userCredential);
+      setIsModalOpen2(false);
       setEmail("");
       setPassword("");
       setVerifyPassword("");
     } catch (error) {
-      alert("가입에 실패했습니다!");
-      console.log("가입 실패", error.code, error.message);
+      if (error.code === "auth/email-already-in-use") {
+        alert("이미 존재하는 이메일입니다.");
+      } else {
+        alert("가입에 실패했습니다!");
+        console.log("가입 실패", error.code, error.message);
+      }
     }
   };
 
@@ -71,8 +88,25 @@ function SignUp() {
     setVerifyPassword(event.target.value);
   };
 
-  const verifyEmailHandler = (event) => {
+  const verifyEmailHandler = async (event) => {
     event.preventDefault();
+    if (email.trim() === "") {
+      alert("이메일을 입력해 주세요!");
+      return;
+    }
+    try {
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+      if (methods.length > 0) {
+        // 이미 존재하는 이메일
+        alert("이미 존재하는 이메일입니다.");
+      } else {
+        // 사용 가능한 이메일
+        alert("사용할 수 있는 이메일입니다!");
+      }
+    } catch (error) {
+      alert("이메일 확인에 실패했습니다!");
+      console.log("이메일 확인 실패", error.code, error.message);
+    }
   };
 
   return (
