@@ -1,8 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import { styled } from "styled-components";
-import { useDispatch } from "react-redux";
-import uuid from "react-uuid";
+// import { useDispatch } from "react-redux";
+// import uuid from "react-uuid";
 
 const BcDiv = styled.div`
   position: fixed;

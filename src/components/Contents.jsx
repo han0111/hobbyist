@@ -17,7 +17,7 @@ import {
   orderBy,
   deleteDoc,
   updateDoc,
-  doc,
+  where,
 } from "firebase/firestore";
 import { db } from "../service/firebase";
 const Main = styled.main`
@@ -92,6 +92,27 @@ function Contents() {
   const [editCommentId, setEditCommentId] = useState("");
   const [editedComment, setEditedComment] = useState("");
 
+  // DB에서 저장된 값 불러오는 부분과 재렌더링
+  const fetchComments = async () => {
+    try {
+      const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+
+      const fetchedComments = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setComments(fetchedComments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchComments();
+  }, []);
+
   //Like 함수 부분 빼놨습니다!
   const handleLike = async () => {
     try {
@@ -126,54 +147,48 @@ function Contents() {
       const docRef = await addDoc(collection(db, "Comments"), newComment);
       console.log("Comment added with ID: ", docRef.id);
       setComment("");
+      fetchComments();
     } catch (error) {
       console.error("Error adding comment: ", error);
     }
   };
-
-  const handleCommentEdit = async (cid) => {
+  //DB에서 해당하는 CID값을 가진 댓글을 수정하는 함수
+  const handleCommentEdit = async (CID) => {
     try {
-      await updateDoc(doc(db, "Comments", cid), {
-        comment: editedComment,
+      const querySnapshot = await getDocs(
+        query(collection(db, "Comments"), where("CID", "==", CID))
+      );
+
+      querySnapshot.forEach(async (doc) => {
+        await updateDoc(doc.ref, {
+          comment: editedComment,
+        });
       });
+
       setEditCommentId("");
       setEditedComment("");
+      fetchComments();
     } catch (error) {
-      console.error("Error updating comment: ", error);
+      console.error("댓글 수정 오류:", error);
     }
   };
 
-  //DB에서 값 삭제하는 함수
+  //DB에서 해당하는 CID값을 가진 댓글을 삭제하는 함수
   const handleCommentDelete = async (CID) => {
     try {
-      await deleteDoc(doc(db, "Comments", CID));
-      console.log("Comment deleted with ID:", CID);
+      const querySnapshot = await getDocs(
+        query(collection(db, "Comments"), where("CID", "==", CID))
+      );
+
+      const deletePromises = querySnapshot.docs.map((doc) =>
+        deleteDoc(doc.ref)
+      );
+      await Promise.all(deletePromises);
+      fetchComments();
     } catch (error) {
-      console.error("Error deleting comment:", error);
+      console.error("댓글 삭제 오류:", error);
     }
   };
-
-  //DB에서 저장된 값 불러오는 부분
-  useEffect(() => {
-    const fetchData = async () => {
-      const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
-
-      const fetchedComments = [];
-
-      querySnapshot.forEach((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data(),
-        };
-        fetchedComments.push(data);
-      });
-
-      setComments(fetchedComments);
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <Main>

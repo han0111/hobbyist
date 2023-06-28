@@ -132,7 +132,7 @@ const CommentLike = styled.button`
   margin-left: auto;
 `;
 function Detail() {
-  const [contents, setContents] = useState([]);
+  const [, setContents] = useState([]);
   const [content, setContent] = useState([]);
 
   // 데이터 가져오기
@@ -206,7 +206,7 @@ function Detail() {
                 onClick={updateLike}
                 islike={content.isLike}
               ></LikeButton>
-              {/* <Likecount>{content.likeCount}</Likecount> */}
+              <Likecount>{content.likeCount}</Likecount>
             </LikeContainer>
             <BookButton
               onClick={updateBooked}
