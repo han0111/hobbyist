@@ -159,20 +159,21 @@ function Detail() {
   const [, setContents] = useState([]);
   const [content, setContent] = useState([]);
 
+  const fetchData = async () => {
+    const q = query(collection(db, "contents"));
+    const querySnapshot = await getDocs(q);
+    const initialContents = [];
+    querySnapshot.forEach((doc) => {
+      initialContents.push({ id: doc.id, ...doc.data() });
+    });
+    setContents(initialContents);
+
+    const contentData = initialContents.find((item) => item.id === "content");
+    setContent(contentData);
+  };
+
   // 데이터 가져오기
   useEffect(() => {
-    const fetchData = async () => {
-      const q = query(collection(db, "contents"));
-      const querySnapshot = await getDocs(q);
-      const initialContents = [];
-      querySnapshot.forEach((doc) => {
-        initialContents.push({ id: doc.id, ...doc.data() });
-      });
-      setContents(initialContents);
-
-      const contentData = initialContents.find((item) => item.id === "content");
-      setContent(contentData);
-    };
     fetchData();
   }, []);
 
@@ -186,22 +187,20 @@ function Detail() {
         isLike: false,
         likeCount: content.likeCount - 1,
       });
-      setContent((prevContent) => ({
-        ...prevContent,
-        isLike: !prevContent.isLike,
-        likeCount: prevContent.likeCount - 1,
-      }));
+
+      fetchData();
     } else {
       // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
       await updateDoc(contentRef, {
         isLike: true,
         likeCount: content.likeCount + 1,
       });
-      setContent((prevContent) => ({
-        ...prevContent,
-        isLike: !prevContent.isLike,
-        likeCount: prevContent.likeCount + 1,
-      }));
+      // setContent((prevContent) => ({
+      //   ...prevContent,
+      //   isLike: !prevContent.isLike,
+      //   likeCount: prevContent.likeCount + 1,
+      // }));
+      fetchData();
     }
   };
 
@@ -225,7 +224,6 @@ function Detail() {
 
     copyUrlRef.current.select();
     document.execCommand("copy");
-    e.target.focus();
 
     alert("링크가 복사되었습니다.");
   };

@@ -18,9 +18,8 @@ import {
   deleteDoc,
   updateDoc,
   where,
-  getDoc,
-  doc,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
 const Main = styled.main`
   padding: 20px;
@@ -89,37 +88,40 @@ const CommentButton = styled.button`
 `;
 function Contents() {
   const [comment, setComment] = useState();
-  const [user] = useState(null);
-  // const [user, setUser] = useState({ nickname: "익명", email: "" });
   const [likeCount, setLikeCount] = useState(false);
   const [comments, setComments] = useState([]);
   const [editCommentId, setEditCommentId] = useState("");
   const [editedComment, setEditedComment] = useState("");
   const [posts, setPosts] = useState([]);
 
-  //닉네임을 가져오는 함수
-  const getNickname = async (uid) => {
-    try {
-      if (!uid) {
-        console.log("uid값을 찾을 수 없습니다!");
-        return "익명";
-      }
+  const getCurrentUserUid = () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    console.log("현재 로그인 된 아이디", currentUser);
+    if (currentUser) {
+      return currentUser.uid;
+    } else {
+      console.log("로그인된 사용자가 없습니다!");
+      return null;
+    }
+  };
 
-      const docRef = doc(db, "users", uid);
-      console.log(docRef);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data.nickname) {
-          return data.nickname;
-        } else {
-          return "익명";
-        }
+  // getNickname 함수 수정
+  const getNickname = async (uid) => {
+    console.log(uid);
+    try {
+      const q = query(collection(db, "users"), where("uid", "==", uid));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData.nickname;
       } else {
-        throw new Error("사용자를 찾을 수 없습니다.");
+        throw new Error("User not found");
       }
     } catch (error) {
       console.error("Error getting nickname:", error);
+      throw error;
     }
   };
 
@@ -170,21 +172,25 @@ function Contents() {
     event.preventDefault();
 
     // 닉네임 가져오기
-    const uid = user ? user.uid : null;
-    const fetchedNickname = await getNickname(uid);
-
-    const newComment = {
-      CID: uuid(),
-      comment: comment,
-      createdAt: new Date(),
-      nickname: fetchedNickname,
-    };
+    const uid = getCurrentUserUid();
+    if (!uid) {
+      console.error("User UID not found");
+      return;
+    }
 
     try {
-      const docRef = await addDoc(collection(db, "Comments"), newComment);
-      console.log("Comment added with ID: ", docRef.id);
-      setComment("");
-      fetchComments();
+      const fetchedNickname = await getNickname(uid);
+
+      const newComment = {
+        CID: uuid(),
+        comment: comment,
+        createdAt: new Date(),
+        nickname: fetchedNickname,
+      };
+
+      await addDoc(collection(db, "Comments"), newComment);
+      setComment(""); // 댓글 작성 후 입력 필드 비우기
+      fetchComments(); // 댓글 목록 다시 불러오기
     } catch (error) {
       console.error("Error adding comment: ", error);
     }
@@ -289,7 +295,8 @@ function Contents() {
                         }}
                       >
                         {item.nickname}
-                        {item.comment}
+                        &nbsp;
+                        <span>{item.comment}</span>
                         <button onClick={() => setEditCommentId(item.CID)}>
                           수정
                         </button>
