@@ -6,6 +6,8 @@ import { auth } from "../service/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 import { signOut } from "firebase/auth";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import github from "../img/github.png";
 import google from "../img/google.png";
 
@@ -25,7 +27,7 @@ const BcDiv = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 10;
   width: 100%;
   height: 100%;
@@ -61,7 +63,7 @@ const StForm = styled.form`
 const StH2 = styled.h2`
   color: #5e5ee8;
   font-size: 28px;
-  padding-top: 10px;
+  padding-top: 20px;
 `;
 
 const StInput = styled.input`
@@ -85,10 +87,21 @@ const StLoginBtn = styled.button`
 `;
 
 function SignIn() {
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user); // 사용자 인증 정보가 변경될 때마다 해당 이벤트를 받아 처리합니다.
+    });
+  }, []);
+
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userData, setUserData] = useState(null);
+  const [login, setLogin] = useState(localStorage.getItem("login") || "로그인");
+
+  useEffect(() => {
+    localStorage.setItem("login", login);
+  }, [login]);
 
   const onChange = (event) => {
     const {
@@ -108,6 +121,8 @@ function SignIn() {
       .then((data) => {
         setUserData(data.user); // user data 설정
         console.log(data); // console에 UserCredentialImpl 출력
+        setIsOpen(false);
+        setLogin("로그아웃");
       })
       .catch((err) => {
         console.log(err);
@@ -120,7 +135,10 @@ function SignIn() {
       .then((data) => {
         setUserData(data.user); // user data 설정
         console.log(data); // console에 UserCredentialImpl 출력
+        setIsOpen(false);
+        setLogin("로그아웃");
       })
+
       .catch((err) => {
         console.log(err);
       });
@@ -135,6 +153,8 @@ function SignIn() {
         password
       );
       console.log("user with signIn", userCredential.user);
+      setIsOpen(false);
+      setLogin("로그아웃");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -148,15 +168,18 @@ function SignIn() {
   const logOut = async (e) => {
     e.preventDefault();
     await signOut(auth);
+    alert("로그아웃 되었습니다.");
+    setLogin("로그인");
   };
 
-  const modalHandler = () => {
+  const loginModalHandler = () => {
     setIsOpen(!isOpen);
   };
+
   return (
     <>
       <div>
-        <BcDiv isOpen={isOpen} onClick={modalHandler}>
+        <BcDiv isOpen={isOpen} onClick={loginModalHandler}>
           <StDiv onClick={(e) => e.stopPropagation()}>
             <StForm>
               <StH2>LOGIN</StH2>
@@ -225,14 +248,14 @@ function SignIn() {
                 />
                 구글 계정으로 로그인
               </button>
-              <p>아직 회원이 아니세요?</p>
-              <button onClick={logOut}>로그아웃</button>
             </StForm>
 
-            <Stbtn onClick={modalHandler}>x</Stbtn>
+            <Stbtn onClick={loginModalHandler}>x</Stbtn>
           </StDiv>
         </BcDiv>
-        <OpenBtn onClick={modalHandler}>로그인</OpenBtn>
+        <OpenBtn onClick={login === "로그인" ? loginModalHandler : logOut}>
+          {login}
+        </OpenBtn>
       </div>
     </>
   );

@@ -13,6 +13,7 @@
     "axios": "^1.4.0",
     "bootstrap": "5.2.3",
     "firebase": "^9.23.0",
+    "fortawesome": "^0.0.1-security",
     "i18next": "^23.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
