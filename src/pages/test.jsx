@@ -11,6 +11,7 @@ const DetailContainer = styled.div`
 `;
 const ContentHeader = styled.div`
   display: flex;
+  /* flex-position: row; */
   flex-direction: row;
   align-items: center;
   margin-bottom: 20px;
@@ -49,25 +50,23 @@ const LikeContainer = styled.div`
   align-items: center;
   margin-bottom: 10px;
 `;
-
 const Likecount = styled.div`
   font-size: 25px;
   font-weight: bold;
   padding-top: 10px;
 `;
-
 const LikeButton = styled.button`
   border: 0;
   background-color: transparent;
-  ${(props) =>
-    props.islike
+  /* ${(props) =>
+    props.isLike
       ? `
       background-image: url("https://img.icons8.com/?size=1x&id=16424&format=png");
     `
       : `
       background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
-    `};
-  /* background-image: url("https://img.icons8.com/?size=1x&id=581&format=png"); */
+    `}; */
+  background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
   /* background-image: url("https://img.icons8.com/?size=1x&id=16424&format=png"); */
   font-size: 50px;
   width: 50px;
@@ -78,16 +77,16 @@ const LikeButton = styled.button`
 const BookButton = styled.button`
   border: 0;
   background-color: transparent;
-  ${(props) =>
-    props.isbooked
+  /* ${(props) =>
+    props.isBooked
       ? `
       background-image: url("https://img.icons8.com/?size=1x&id=26083&format=png");
     `
       : `
     background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png");
-    `};
-  /* background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png"); */
-  /* background-image: url("https://img.icons8.com/?size=1x&id=26083&format=png"); */
+    `}; */
+  background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png");
+  /* background-image: url("https://img.icons8.com/?size=1x&id=26083&format=png") */
   font-size: 25px;
   height: 50px;
   width: 50px;
@@ -133,62 +132,36 @@ const CommentLike = styled.button`
 `;
 function Detail() {
   const [contents, setContents] = useState([]);
-  const [content, setContent] = useState([]);
-
+  // 왜 안돼?
   // 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
+      // collection 이름이 todos인 collection의 모든 document를 가져옵니다.
       const q = query(collection(db, "contents"));
       const querySnapshot = await getDocs(q);
       const initialContents = [];
+      // document의 id와 데이터를 initialTodos에 저장합니다.
+      // doc.id의 경우 따로 지정하지 않는 한 자동으로 생성되는 id입니다.
+      // doc.data()를 실행하면 해당 document의 데이터를 가져올 수 있습니다.
       querySnapshot.forEach((doc) => {
         initialContents.push({ id: doc.id, ...doc.data() });
       });
       setContents(initialContents);
-
-      const contentData = initialContents.find((item) => item.id === "content");
-      setContent(contentData);
     };
     fetchData();
   }, []);
-
+  console.log(contents);
+  const [content] = contents.filter((content) => content.id === "content");
+  console.log(content);
   // Like update
   const updateLike = async (event) => {
     const contentRef = doc(db, "contents", "content");
-
-    if (content.isLike) {
-      // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
-      await updateDoc(contentRef, {
-        isLike: false,
-        likeCount: content.likeCount - 1,
-      });
-      setContent((prevContent) => ({
-        ...prevContent,
-        isLike: !prevContent.isLike,
-        likeCount: prevContent.likeCount - 1,
-      }));
-    } else {
-      // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
-      await updateDoc(contentRef, {
-        isLike: true,
-        likeCount: content.likeCount + 1,
-      });
-      setContent((prevContent) => ({
-        ...prevContent,
-        isLike: !prevContent.isLike,
-        likeCount: prevContent.likeCount + 1,
-      }));
-    }
+    await updateDoc(contentRef, { isLike: !content.isLike });
   };
-
   // 북마크 update
   const updateBooked = async (event) => {
     const contentRef = doc(db, "contents", "content");
     await updateDoc(contentRef, { isBooked: !content.isBooked });
-    setContent((prevContent) => ({
-      ...prevContent,
-      isBooked: !prevContent.isBooked,
-    }));
   };
   return (
     <>
@@ -204,13 +177,13 @@ function Detail() {
             <LikeContainer>
               <LikeButton
                 onClick={updateLike}
-                islike={content.isLike}
+                // isLike={content.isLike}
               ></LikeButton>
               {/* <Likecount>{content.likeCount}</Likecount> */}
             </LikeContainer>
             <BookButton
               onClick={updateBooked}
-              isbooked={content.isBooked}
+              // isBooked={content.isBooked}
             ></BookButton>
             <ShareButton>공유하기</ShareButton>
           </ContentFunc>
