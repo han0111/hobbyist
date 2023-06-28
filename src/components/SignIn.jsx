@@ -36,7 +36,7 @@ const BcDiv = styled.div`
   z-index: 10;
   width: 100%;
   height: 100%;
-  display: ${({ isOpen }) => (isOpen ? "block" : "none")};
+  display: ${(props) => (props.open ? "block" : "none")};
 `;
 
 const StDiv = styled.div`
@@ -92,7 +92,7 @@ const StLoginBtn = styled.button`
 `;
 
 function SignIn() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [, setUserData] = useState(null);
@@ -158,12 +158,12 @@ function SignIn() {
   };
 
   const modalHandler = () => {
-    setIsOpen(!isOpen);
+    setOpen(!open);
   };
   return (
     <>
       <div>
-        <BcDiv isOpen={isOpen} onClick={modalHandler}>
+        <BcDiv open={open} onClick={modalHandler}>
           <StDiv onClick={(e) => e.stopPropagation()}>
             <StForm>
               <StH2>LOGIN</StH2>
