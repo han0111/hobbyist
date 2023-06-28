@@ -9,9 +9,11 @@ import {
   ModalContainerModal2,
   CancelBtn,
   SubmitBtn,
+  TopButton,
+  StH2,
 } from "./styledcomponents/Styled";
 
-function Modal() {
+function SignUp() {
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -76,42 +78,44 @@ function Modal() {
 
   return (
     <>
-      <Button className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
+      <TopButton className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
         회원가입
-      </Button>
+      </TopButton>
       {isModalOpen2 && (
         <ModalContainer className="Modal-Container">
           <ModalContainerModal2 className="Modal-Container-Modal2">
-            <form className="Sign-Up">
-              <Label className="Email-Label">이메일</Label>
+            <form className="Sign-Up" style={{ textAlign: "center" }}>
+              <StH2>Sign Up</StH2>
+              <Label className="Email-Label"></Label>
               <Input
                 className="Email-Input"
                 type="text"
                 value={email}
                 onChange={emailChangeHandler}
+                placeholder="아이디 (이메일 주소)"
               />
-              <Button onClick={verifyEmailHandler}>이메일 확인</Button>
-              <br />
-              <Label className="Password-Label">비밀번호</Label>
-              <Input
-                className="Password-Input"
-                type="password"
-                value={password}
-                onChange={passwordChangeHandler}
-              />
-              <br />
-              <Label className="Verify-Password-Label">비밀번호 확인</Label>
-              <Input
-                className="Verify-Password-Input"
-                type="password"
-                value={verifypassword}
-                onChange={verifypasswordChangeHandler}
-              />
-              <br />
-
-              <br />
-              <br />
-              <CancelBtn onClick={CancelBtnHandler}>취소하기</CancelBtn>
+              {/* <Button onClick={verifyEmailHandler}>중복확인</Button> */}
+              {/* <Label className="Password-Label"></Label> */}
+              <p>
+                <Input
+                  className="Password-Input"
+                  type="password"
+                  value={password}
+                  onChange={passwordChangeHandler}
+                  placeholder="비밀번호"
+                />
+              </p>
+              {/* <Label className="Verify-Password-Label"></Label> */}
+              <p>
+                <Input
+                  className="Verify-Password-Input"
+                  type="password"
+                  value={verifypassword}
+                  onChange={verifypasswordChangeHandler}
+                  placeholder="비밀번호 확인"
+                />
+              </p>
+              <CancelBtn onClick={CancelBtnHandler}>x</CancelBtn>
               <SubmitBtn onClick={SubmitBtnHandler}>가입하기</SubmitBtn>
             </form>
           </ModalContainerModal2>
@@ -121,4 +125,4 @@ function Modal() {
   );
 }
 
-export default Modal;
+export default SignUp;

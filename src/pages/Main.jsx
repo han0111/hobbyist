@@ -1,17 +1,23 @@
 import React from "react";
-import SignUp from "../components/SignUp";
 import TopBar from "../components/TopBar";
 import SideBar from "../components/SideBar";
-import SignIn from "../components/SignIn";
-
+import Contents from "../components/Contents";
 
 function App() {
   return (
     <>
-      <TopBar />
-      <SideBar />
-      <SignIn />
-      <SignUp />;
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+        }}
+      >
+        <div style={{ display: "flex" }}>
+          <TopBar />
+          <SideBar />
+          <Contents />
+        </div>
+      </div>
     </>
   );
 }

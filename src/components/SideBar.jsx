@@ -3,8 +3,8 @@ import { styled } from "styled-components";
 
 const Sidebar = styled.div`
   margin-top: 180px;
-  margin-left: 3%;
-  width: 15%;
+  margin-left: 0%;
+  width: 250px;
   border: none;
   border-radius: 20px;
 
@@ -18,8 +18,8 @@ const Sidebar = styled.div`
 
 const Sidebar2 = styled.div`
   margin-top: 2%;
-  margin-left: 3%;
-  width: 15%;
+  margin-left: 0%;
+  width: 250px;
   border: none;
   border-radius: 20px;
 
@@ -37,7 +37,6 @@ const SideBtn = styled.button`
   width: 100px;
   height: 40px;
   margin: 10px auto 5px auto;
-  /* box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); */
   &:hover {
     transform: scale(1.2);
   }
