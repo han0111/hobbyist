@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { auth } from "../service/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -40,7 +41,7 @@ const BcDiv = styled.div`
   z-index: 10;
   width: 100%;
   height: 100%;
-  display: ${(props) => (props.isOpen ? "block" : "none")};
+  display: ${(props) => (props.open ? "block" : "none")};
 `;
 
 const StDiv = styled.div`
@@ -96,7 +97,7 @@ const StLoginBtn = styled.button`
 `;
 
 function SignIn() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [, setUserData] = useState(null);
@@ -105,6 +106,12 @@ function SignIn() {
   useEffect(() => {
     localStorage.setItem("login", login);
   }, [login]);
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
+    });
+  }, []);
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       console.log("user", user);
@@ -181,13 +188,13 @@ function SignIn() {
   };
 
   const loginModalHandler = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(!open);
   };
 
   return (
     <>
       <div>
-        <BcDiv isOpen={isOpen} onClick={loginModalHandler}>
+        <BcDiv open={open} onClick={loginModalHandler}>
           <StDiv onClick={(e) => e.stopPropagation()}>
             <StForm>
               <StH2>LOGIN</StH2>

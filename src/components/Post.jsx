@@ -7,6 +7,7 @@ import { db } from "../service/firebase";
 import uuid from "react-uuid";
 import { getAuth } from "firebase/auth";
 import { styled } from "styled-components";
+import { auth } from "../service/firebase";
 
 const BcDiv = styled.div`
   position: fixed;
@@ -84,7 +85,7 @@ function Post() {
 
   // 글쓰기 모달창 열기
   const postModalHandler = () => {
-    setOpen(!open);
+    !auth.currentUser ? alert("로그인 후 사용해주세요.") : setOpen(!open);
   };
 
   //닉네임 가져오는 함수

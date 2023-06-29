@@ -67,14 +67,6 @@ const LikeContainer = styled.div`
 const LikeButton = styled.button`
   border: 0;
   background-color: transparent;
-  ${(props) =>
-    props.islike
-      ? `
-      background-image: url("https://img.icons8.com/?size=1x&id=16424&format=png");
-    `
-      : `
-      background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
-    `};
   font-size: 50px;
   width: 50px;
   height: 50px;
@@ -88,14 +80,6 @@ const LikeButton = styled.button`
 const BookButton = styled.button`
   border: 0;
   background-color: transparent;
-  ${(props) =>
-    props.isbooked
-      ? `
-      background-image: url("https://img.icons8.com/?size=1x&id=26083&format=png");
-    `
-      : `
-    background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png");
-    `};
   height: 50px;
   width: 50px;
   margin-left: 20px;
