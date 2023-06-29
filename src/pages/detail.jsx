@@ -67,8 +67,6 @@ const LikeButton = styled.button`
       : `
       background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
     `};
-  /* background-image: url("https://img.icons8.com/?size=1x&id=581&format=png"); */
-  /* background-image: url("https://img.icons8.com/?size=1x&id=16424&format=png"); */
   font-size: 50px;
   width: 50px;
   height: 50px;
@@ -90,8 +88,6 @@ const BookButton = styled.button`
       : `
     background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png");
     `};
-  /* background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png"); */
-  /* background-image: url("https://img.icons8.com/?size=1x&id=26083&format=png"); */
   height: 50px;
   width: 50px;
   margin-left: 20px;
@@ -138,7 +134,6 @@ const CommentLike = styled.button`
   border: 0;
   background-color: transparent;
   background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
-  /* https://img.icons8.com/?size=1x&id=16424&format=png */
   background-size: cover;
   font-size: 30px;
   width: 30px;
@@ -195,11 +190,6 @@ function Detail() {
         isLike: true,
         likeCount: content.likeCount + 1,
       });
-      // setContent((prevContent) => ({
-      //   ...prevContent,
-      //   isLike: !prevContent.isLike,
-      //   likeCount: prevContent.likeCount + 1,
-      // }));
       fetchData();
     }
   };
@@ -267,10 +257,5 @@ function Detail() {
     </>
   );
 }
-// 좋아요 버튼
-// isActive ? 채워진 하트 : 빈하트
-// 좋아요 수
-// 데이터 불러오기 > count+1 > 데이터 베이스 > 데이터 불러오기
-// 북마크
-// isBooked ? 채워진 북마크 : 빈 북마크
+
 export default Detail;
