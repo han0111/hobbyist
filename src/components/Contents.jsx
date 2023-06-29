@@ -23,6 +23,7 @@ import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../service/firebase";
+
 const Main = styled.main`
   padding: 20px;
   background: #eee;
@@ -238,25 +239,25 @@ function Contents() {
     }
   };
 
-  const PostUpdateBtn = async (CID) => {
-    try {
-      const querySnapshot = await getDocs(
-        query(collection(db, "posts"), where("CID", "==", CID))
-      );
+  // const PostUpdateBtn = async (CID) => {
+  //   try {
+  //     const querySnapshot = await getDocs(
+  //       query(collection(db, "posts"), where("CID", "==", CID))
+  //     );
 
-      querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {
-          comment: editedComment,
-        });
-      });
+  //     querySnapshot.forEach(async (doc) => {
+  //       await updateDoc(doc.ref, {
+  //         comment: editedComment,
+  //       });
+  //     });
 
-      setEditCommentId("");
-      setEditedComment("");
-      fetchComments();
-    } catch (error) {
-      console.error("댓글 수정 오류:", error);
-    }
-  };
+  //     setEditCommentId("");
+  //     setEditedComment("");
+  //     fetchComments();
+  //   } catch (error) {
+  //     console.error("댓글 수정 오류:", error);
+  //   }
+  // };
 
   // DB에서 저장된 포스트를 불러오는 함수
   const fetchPosts = async () => {
@@ -330,6 +331,7 @@ function Contents() {
                 >
                   <UserImg src="images/user_img.png" alt="" />
                   <User>{post.nickname}</User>
+                  <button onClick={() => PostDeleteBtn(post.CID)}>삭제</button>
                 </MainUser>
                 <ContentsBox
                   onClick={() => {
@@ -341,7 +343,7 @@ function Contents() {
                     style={{
                       width: "100%",
                     }}
-                    // src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
+                    src={post.downloadURL}
                     alt=""
                   />
                   <span>{post.body}</span>
