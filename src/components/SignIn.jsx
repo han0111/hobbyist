@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../service/firebase";
-import { signInWithPopup } from "firebase/auth";
-import { GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
-import { signOut } from "firebase/auth";
-import { useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signOut,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+
 import github from "../img/github.png";
 import google from "../img/google.png";
 
@@ -94,12 +95,6 @@ const StLoginBtn = styled.button`
 `;
 
 function SignIn() {
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      console.log("user", user); // 사용자 인증 정보가 변경될 때마다 해당 이벤트를 받아 처리합니다.
-    });
-  }, []);
-
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -196,7 +191,7 @@ function SignIn() {
                   value={email}
                   name="email"
                   onChange={onChange}
-                  reaquired
+                  required
                   placeholder="아이디를 입력하세요."
                 />
               </p>

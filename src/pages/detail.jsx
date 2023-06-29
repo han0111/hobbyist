@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 import TopBar from "../components/TopBar";
 import { collection, getDocs, query, updateDoc, doc } from "firebase/firestore";
@@ -72,8 +72,12 @@ const LikeButton = styled.button`
   font-size: 50px;
   width: 50px;
   height: 50px;
-  transition: opacity 0.3s ease;
   cursor: pointer;
+  transition: opacity 0.3s;
+
+  &:hover {
+    opacity: 0.5;
+  }
 `;
 const BookButton = styled.button`
   border: 0;
@@ -88,11 +92,15 @@ const BookButton = styled.button`
     `};
   /* background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png"); */
   /* background-image: url("https://img.icons8.com/?size=1x&id=26083&format=png"); */
-  font-size: 25px;
   height: 50px;
   width: 50px;
   margin-left: 20px;
   cursor: pointer;
+  transition: opacity 0.3s;
+
+  &:hover {
+    opacity: 0.5;
+  }
 `;
 const ShareButton = styled.button`
   border: 0;
@@ -101,6 +109,12 @@ const ShareButton = styled.button`
   height: 50px;
   font-size: 20px;
   font-weight: bold;
+
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.5;
+  }
 `;
 const ContentBody = styled.p`
   margin-bottom: 20px;
@@ -131,24 +145,35 @@ const CommentLike = styled.button`
   height: 30px;
   margin-left: auto;
 `;
+
+const TextArea = styled.textarea`
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+`;
+
 function Detail() {
   const [, setContents] = useState([]);
   const [content, setContent] = useState([]);
 
+  const fetchData = async () => {
+    const q = query(collection(db, "contents"));
+    const querySnapshot = await getDocs(q);
+    const initialContents = [];
+    querySnapshot.forEach((doc) => {
+      initialContents.push({ id: doc.id, ...doc.data() });
+    });
+    setContents(initialContents);
+
+    const contentData = initialContents.find((item) => item.id === "content");
+    setContent(contentData);
+  };
+
   // 데이터 가져오기
   useEffect(() => {
-    const fetchData = async () => {
-      const q = query(collection(db, "contents"));
-      const querySnapshot = await getDocs(q);
-      const initialContents = [];
-      querySnapshot.forEach((doc) => {
-        initialContents.push({ id: doc.id, ...doc.data() });
-      });
-      setContents(initialContents);
-
-      const contentData = initialContents.find((item) => item.id === "content");
-      setContent(contentData);
-    };
     fetchData();
   }, []);
 
@@ -162,22 +187,20 @@ function Detail() {
         isLike: false,
         likeCount: content.likeCount - 1,
       });
-      setContent((prevContent) => ({
-        ...prevContent,
-        isLike: !prevContent.isLike,
-        likeCount: prevContent.likeCount - 1,
-      }));
+
+      fetchData();
     } else {
       // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
       await updateDoc(contentRef, {
         isLike: true,
         likeCount: content.likeCount + 1,
       });
-      setContent((prevContent) => ({
-        ...prevContent,
-        isLike: !prevContent.isLike,
-        likeCount: prevContent.likeCount + 1,
-      }));
+      // setContent((prevContent) => ({
+      //   ...prevContent,
+      //   isLike: !prevContent.isLike,
+      //   likeCount: prevContent.likeCount + 1,
+      // }));
+      fetchData();
     }
   };
 
@@ -190,6 +213,21 @@ function Detail() {
       isBooked: !prevContent.isBooked,
     }));
   };
+
+  // url 복사
+  const copyUrlRef = useRef(null);
+
+  const copyUrl = (e) => {
+    if (!document.queryCommandSupported("copy")) {
+      return alert("복사 기능이 지원되지 않는 브라우저입니다.");
+    }
+
+    copyUrlRef.current.select();
+    document.execCommand("copy");
+
+    alert("링크가 복사되었습니다.");
+  };
+
   return (
     <>
       <TopBar />
@@ -212,7 +250,8 @@ function Detail() {
               onClick={updateBooked}
               isbooked={content.isBooked}
             ></BookButton>
-            <ShareButton>공유하기</ShareButton>
+            <TextArea ref={copyUrlRef} value={window.location.href}></TextArea>
+            <ShareButton onClick={copyUrl}>공유하기</ShareButton>
           </ContentFunc>
           <ContentBody>나 여기 다녀왔어!</ContentBody>
         </div>
