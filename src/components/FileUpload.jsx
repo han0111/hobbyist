@@ -21,7 +21,7 @@ function FileUpload({ setDownloadURL }) {
     const downloadURL = await getDownloadURL(imageRef);
     console.log("downloadURL", downloadURL);
 
-    savePost(downloadURL);
+    setDownloadURL(downloadURL);
   };
 
   const savePost = (downloadURL) => {

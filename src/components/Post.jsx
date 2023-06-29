@@ -137,7 +137,6 @@ function Post() {
       console.log("Post added with ID: ", docRef.id);
       setTitle("");
       setBody("");
-      setDownloadURL(null);
     } catch (error) {
       console.error("Error adding post: ", error);
     }
@@ -166,7 +165,7 @@ function Post() {
               />
             </p>
             <p>
-              <FileUpload setdownloadURL={setDownloadURL} />
+              <FileUpload setDownloadURL={setDownloadURL} />
             </p>
             <button onClick={handlePostSubmit}>등록</button>
           </form>
