@@ -88,6 +88,30 @@ function Post() {
     !auth.currentUser ? alert("로그인 후 사용해주세요.") : setOpen(!open);
   };
 
+  const generateRandomNickname = () => {
+    const adjectiveList = [
+      "행복한",
+      "용감한",
+      "사나운",
+      "최고의",
+      "똑똑한",
+      "섹시한",
+    ];
+    const nounList = [
+      "호날두",
+      "코린이",
+      "말미잘",
+      "외계인",
+      "개발자",
+      "오리",
+      "잠자리",
+    ];
+    const randomAdjective =
+      adjectiveList[Math.floor(Math.random() * adjectiveList.length)];
+    const randomNoun = nounList[Math.floor(Math.random() * nounList.length)];
+    return randomAdjective + randomNoun;
+  };
+
   //닉네임 가져오는 함수
   const getNickname = async (uid) => {
     console.log(uid);
@@ -99,7 +123,8 @@ function Post() {
         const userData = querySnapshot.docs[0].data();
         return userData.nickname;
       } else {
-        throw new Error("User not found");
+        const randomNickname = generateRandomNickname();
+        return randomNickname;
       }
     } catch (error) {
       console.error("Error getting nickname:", error);

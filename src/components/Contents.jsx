@@ -22,8 +22,6 @@ import {
 import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../service/firebase";
-
 const Main = styled.main`
   padding: 20px;
   background: #eee;
@@ -100,7 +98,7 @@ function Contents() {
   const [editedComment, setEditedComment] = useState("");
   const [posts, setPosts] = useState([]);
 
-  //현재 로그인 된 아이디 알아오는 함수
+  // 현재 로그인 된 아이디 알아오는 함수
   const getCurrentUserUid = () => {
     const auth = getAuth();
     const currentUser = auth.currentUser;
@@ -113,8 +111,21 @@ function Contents() {
     }
   };
 
+  // getCurrentUserEmail 함수
+  const getCurrentUserEmail = () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    console.log("현재 로그인 된 이메일", currentUser);
+    if (currentUser) {
+      return currentUser.email;
+    } else {
+      console.log("로그인된 사용자가 없습니다!");
+      return null;
+    }
+  };
+
   // getNickname 함수
-  const getNickname = async (uid) => {
+  const getNickname = async (uid, email) => {
     console.log(uid);
     try {
       const q = query(collection(db, "users"), where("uid", "==", uid));
@@ -122,7 +133,7 @@ function Contents() {
 
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0].data();
-        return userData.nickname;
+        return userData.nickname || email;
       } else {
         throw new Error("User not found");
       }
@@ -180,13 +191,14 @@ function Contents() {
 
     // 닉네임 가져오기
     const uid = getCurrentUserUid();
+    const email = getCurrentUserEmail();
     if (!uid) {
       console.error("User UID not found");
       return;
     }
 
     try {
-      const fetchedNickname = await getNickname(uid);
+      const fetchedNickname = await getNickname(uid, email);
 
       const newComment = {
         CID: uuid(),
