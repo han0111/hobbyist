@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { auth } from "../service/firebase";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -36,7 +35,7 @@ function SignUp() {
       console.log("user", user);
       return auth.currentUser ? setJoin("마이페이지") : null;
     });
-  }, []);
+  }, [auth]);
 
   const emailChangeHandler = (event) => {
     setEmail(event.target.value);
