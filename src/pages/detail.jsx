@@ -1,8 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 import TopBar from "../components/TopBar";
-import { collection, getDocs, query, updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  // updateDoc, doc
+} from "firebase/firestore";
 import { db } from "../service/firebase";
+
 const DetailContainer = styled.div`
   margin-top: 100px;
   background-color: #d9d9d9;
@@ -50,11 +58,11 @@ const LikeContainer = styled.div`
   margin-bottom: 10px;
 `;
 
-const Likecount = styled.div`
-  font-size: 25px;
-  font-weight: bold;
-  padding-top: 10px;
-`;
+// const Likecount = styled.div`
+//   font-size: 25px;
+//   font-weight: bold;
+//   padding-top: 10px;
+// `;
 
 const LikeButton = styled.button`
   border: 0;
@@ -151,58 +159,59 @@ const TextArea = styled.textarea`
 `;
 
 function Detail() {
-  const [, setContents] = useState([]);
-  const [content, setContent] = useState([]);
+  // const [, setContents] = useState([]);
+  // const [content, setContent] = useState([]);
+  const [posts, setPosts] = useState([]);
 
-  const fetchData = async () => {
-    const q = query(collection(db, "contents"));
-    const querySnapshot = await getDocs(q);
-    const initialContents = [];
-    querySnapshot.forEach((doc) => {
-      initialContents.push({ id: doc.id, ...doc.data() });
-    });
-    setContents(initialContents);
+  // const fetchData = async () => {
+  //   const q = query(collection(db, "contents"));
+  //   const querySnapshot = await getDocs(q);
+  //   const initialContents = [];
+  //   querySnapshot.forEach((doc) => {
+  //     initialContents.push({ id: doc.id, ...doc.data() });
+  //   });
+  //   setContents(initialContents);
 
-    const contentData = initialContents.find((item) => item.id === "content");
-    setContent(contentData);
-  };
+  //   const contentData = initialContents.find((item) => item.id === "content");
+  //   setContent(contentData);
+  // };
 
-  // 데이터 가져오기
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // // 데이터 가져오기
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   // Like update
-  const updateLike = async (event) => {
-    const contentRef = doc(db, "contents", "content");
+  // const updateLike = async (event) => {
+  //   const contentRef = doc(db, "contents", "content");
 
-    if (content.isLike) {
-      // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
-      await updateDoc(contentRef, {
-        isLike: false,
-        likeCount: content.likeCount - 1,
-      });
+  //   if (content.isLike) {
+  // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
+  // await updateDoc(contentRef, {
+  //   isLike: false,
+  //   likeCount: content.likeCount - 1,
+  // });
 
-      fetchData();
-    } else {
-      // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
-      await updateDoc(contentRef, {
-        isLike: true,
-        likeCount: content.likeCount + 1,
-      });
-      fetchData();
-    }
-  };
+  //     fetchData();
+  //   } else {
+  //     // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
+  //     await updateDoc(contentRef, {
+  //       isLike: true,
+  //       likeCount: content.likeCount + 1,
+  //     });
+  //     fetchData();
+  //   }
+  // };
 
   // 북마크 update
-  const updateBooked = async (event) => {
-    const contentRef = doc(db, "contents", "content");
-    await updateDoc(contentRef, { isBooked: !content.isBooked });
-    setContent((prevContent) => ({
-      ...prevContent,
-      isBooked: !prevContent.isBooked,
-    }));
-  };
+  // const updateBooked = async (event) => {
+  //   const contentRef = doc(db, "contents", "content");
+  //   await updateDoc(contentRef, { isBooked: !content.isBooked });
+  //   setContent((prevContent) => ({
+  //     ...prevContent,
+  //     isBooked: !prevContent.isBooked,
+  //   }));
+  // };
 
   // url 복사
   const copyUrlRef = useRef(null);
@@ -218,42 +227,87 @@ function Detail() {
     alert("링크가 복사되었습니다.");
   };
 
+  // DB에서 저장된 포스트를 불러오는 함수
+  const fetchPosts = async () => {
+    try {
+      const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      const fetchedPosts = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setPosts(fetchedPosts);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
+  // 포스트 저장 부분 불러옴
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+  //닉네임 가져오는 함수
+  const getNickname = async (uid) => {
+    console.log(uid);
+    try {
+      const q = query(collection(db, "posts"), where("uid", "==", uid));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData.nickname;
+      } else {
+        throw new Error("User not found");
+      }
+    } catch (error) {
+      console.error("Error getting nickname:", error);
+      throw error;
+    }
+  };
+
   return (
     <>
-      <TopBar />
-      <DetailContainer>
-        <div>
-          <ContentHeader>
-            <ProfileImage></ProfileImage>
-            <ProfileName>User</ProfileName>
-          </ContentHeader>
-          <ContentImage></ContentImage>
-          <ContentFunc>
-            <LikeContainer>
-              <LikeButton
-                onClick={updateLike}
-                islike={content.isLike}
-              ></LikeButton>
-              <Likecount>{content.likeCount}</Likecount>
-            </LikeContainer>
-            <BookButton
-              onClick={updateBooked}
-              isbooked={content.isBooked}
-            ></BookButton>
-            <TextArea ref={copyUrlRef} value={window.location.href}></TextArea>
-            <ShareButton onClick={copyUrl}>공유하기</ShareButton>
-          </ContentFunc>
-          <ContentBody>나 여기 다녀왔어!</ContentBody>
-        </div>
-        <CommentContainer>
-          <CommentTitle>댓글</CommentTitle>
-          <CommentBody>
-            <span>아이디</span>
-            <p>댓글</p>
-            <CommentLike></CommentLike>
-          </CommentBody>
-        </CommentContainer>
-      </DetailContainer>
+      {posts.map((post) => {
+        return (
+          <>
+            <TopBar />
+            <DetailContainer>
+              <div>
+                <ContentHeader>
+                  <ProfileImage></ProfileImage>
+                  <ProfileName>{getNickname(post.nickname)}</ProfileName>
+                </ContentHeader>
+                <ContentImage></ContentImage>
+                <ContentFunc>
+                  <LikeContainer>
+                    <LikeButton
+                    // onClick={updateLike}
+                    // islike={content.isLike}
+                    ></LikeButton>
+                    {/* <Likecount>{content.likeCount}</Likecount> */}
+                  </LikeContainer>
+                  <BookButton
+                  // onClick={updateBooked}
+                  // isbooked={content.isBooked}
+                  ></BookButton>
+                  <TextArea
+                    ref={copyUrlRef}
+                    value={window.location.href}
+                  ></TextArea>
+                  <ShareButton onClick={copyUrl}>공유하기</ShareButton>
+                </ContentFunc>
+                <ContentBody>나 여기 다녀왔어!</ContentBody>
+              </div>
+              <CommentContainer>
+                <CommentTitle>댓글</CommentTitle>
+                <CommentBody>
+                  <span>아이디</span>
+                  <p>댓글</p>
+                  <CommentLike></CommentLike>
+                </CommentBody>
+              </CommentContainer>
+            </DetailContainer>
+          </>
+        );
+      })}
     </>
   );
 }
