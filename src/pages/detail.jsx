@@ -5,9 +5,10 @@ import {
   collection,
   getDocs,
   query,
-  where,
+  // where,
   orderBy,
-  // updateDoc, doc
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "../service/firebase";
 
@@ -40,7 +41,7 @@ const ContentImage = styled.div`
   height: 600px;
   width: 100%;
   margin-bottom: 10px;
-  background-image: url("https://cdn.pixabay.com/photo/2015/09/02/12/30/hiker-918473_640.jpg");
+  background-image: ${(props) => `url(${props.backgroundImg})`};
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -58,11 +59,11 @@ const LikeContainer = styled.div`
   margin-bottom: 10px;
 `;
 
-// const Likecount = styled.div`
-//   font-size: 25px;
-//   font-weight: bold;
-//   padding-top: 10px;
-// `;
+const Likecount = styled.div`
+  font-size: 25px;
+  font-weight: bold;
+  padding-top: 10px;
+`;
 
 const LikeButton = styled.button`
   border: 0;
@@ -105,6 +106,7 @@ const ShareButton = styled.button`
   }
 `;
 const ContentTitle = styled.h2``;
+
 const ContentBody = styled.p`
   margin-bottom: 20px;
   height: 150px;
@@ -144,59 +146,59 @@ const TextArea = styled.textarea`
 `;
 
 function Detail() {
-  // const [, setContents] = useState([]);
-  // const [content, setContent] = useState([]);
+  const [, setContents] = useState([]);
+  const [content, setContent] = useState([]);
   const [posts, setPosts] = useState([]);
 
-  // const fetchData = async () => {
-  //   const q = query(collection(db, "contents"));
-  //   const querySnapshot = await getDocs(q);
-  //   const initialContents = [];
-  //   querySnapshot.forEach((doc) => {
-  //     initialContents.push({ id: doc.id, ...doc.data() });
-  //   });
-  //   setContents(initialContents);
+  const fetchData = async () => {
+    const q = query(collection(db, "contents"));
+    const querySnapshot = await getDocs(q);
+    const initialContents = [];
+    querySnapshot.forEach((doc) => {
+      initialContents.push({ id: doc.id, ...doc.data() });
+    });
+    setContents(initialContents);
 
-  //   const contentData = initialContents.find((item) => item.id === "content");
-  //   setContent(contentData);
-  // };
+    const contentData = initialContents.find((item) => item.id === "content");
+    setContent(contentData);
+  };
 
-  // // 데이터 가져오기
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+  // 데이터 가져오기
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   // Like update
-  // const updateLike = async (event) => {
-  //   const contentRef = doc(db, "contents", "content");
+  const updateLike = async (event) => {
+    const contentRef = doc(db, "contents", "content");
 
-  //   if (content.isLike) {
-  // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
-  // await updateDoc(contentRef, {
-  //   isLike: false,
-  //   likeCount: content.likeCount - 1,
-  // });
+    if (content.isLike) {
+      // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
+      await updateDoc(contentRef, {
+        isLike: false,
+        likeCount: content.likeCount - 1,
+      });
 
-  //     fetchData();
-  //   } else {
-  //     // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
-  //     await updateDoc(contentRef, {
-  //       isLike: true,
-  //       likeCount: content.likeCount + 1,
-  //     });
-  //     fetchData();
-  //   }
-  // };
+      fetchData();
+    } else {
+      // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
+      await updateDoc(contentRef, {
+        isLike: true,
+        likeCount: content.likeCount + 1,
+      });
+      fetchData();
+    }
+  };
 
   // 북마크 update
-  // const updateBooked = async (event) => {
-  //   const contentRef = doc(db, "contents", "content");
-  //   await updateDoc(contentRef, { isBooked: !content.isBooked });
-  //   setContent((prevContent) => ({
-  //     ...prevContent,
-  //     isBooked: !prevContent.isBooked,
-  //   }));
-  // };
+  const updateBooked = async (event) => {
+    const contentRef = doc(db, "contents", "content");
+    await updateDoc(contentRef, { isBooked: !content.isBooked });
+    setContent((prevContent) => ({
+      ...prevContent,
+      isBooked: !prevContent.isBooked,
+    }));
+  };
 
   // url 복사
   const copyUrlRef = useRef(null);
@@ -235,7 +237,7 @@ function Detail() {
     <>
       {posts.map((post) => {
         return (
-          <>
+          <div key={post.id}>
             <TopBar />
             <DetailContainer>
               <div>
@@ -243,22 +245,47 @@ function Detail() {
                   <ProfileImage></ProfileImage>
                   <ProfileName>{post.nickname}</ProfileName>
                 </ContentHeader>
-                <ContentImage></ContentImage>
+                <ContentImage backgroundImg={post.downloadURL}></ContentImage>
                 <ContentFunc>
                   <LikeContainer>
                     <LikeButton
-                    // onClick={updateLike}
-                    // islike={content.isLike}
-                    ></LikeButton>
-                    {/* <Likecount>{content.likeCount}</Likecount> */}
+                      onClick={updateLike}
+                      islike={content.isLike ? "true" : "false"}
+                    >
+                      {content.isLike ? (
+                        <img
+                          src="https://img.icons8.com/?size=1x&id=16424&format=png"
+                          alt="좋아요"
+                        />
+                      ) : (
+                        <img
+                          src="https://img.icons8.com/?size=1x&id=581&format=png"
+                          alt="좋아요 취소"
+                        />
+                      )}
+                    </LikeButton>
+                    <Likecount>{content.likeCount}</Likecount>
                   </LikeContainer>
                   <BookButton
-                  // onClick={updateBooked}
-                  // isbooked={content.isBooked}
-                  ></BookButton>
+                    onClick={updateBooked}
+                    isbooked={content.isBooked ? "true" : "false"}
+                  >
+                    {content.isBooked ? (
+                      <img
+                        src="https://img.icons8.com/?size=1x&id=26083&format=png"
+                        alt="북마크"
+                      />
+                    ) : (
+                      <img
+                        src="https://img.icons8.com/?size=1x&id=25157&format=png"
+                        alt="북마크 해제"
+                      />
+                    )}
+                  </BookButton>
                   <TextArea
                     ref={copyUrlRef}
                     value={window.location.href}
+                    readOnly
                   ></TextArea>
                   <ShareButton onClick={copyUrl}>공유하기</ShareButton>
                 </ContentFunc>
@@ -274,7 +301,7 @@ function Detail() {
                 </CommentBody>
               </CommentContainer>
             </DetailContainer>
-          </>
+          </div>
         );
       })}
     </>
@@ -282,3 +309,8 @@ function Detail() {
 }
 
 export default Detail;
+
+//사진크기조절
+// 백그라운드 커버말고 다른거? 모지란거 검은배경 비율지키기!
+
+//사이드바 카테고리

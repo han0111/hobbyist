@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { auth } from "../service/firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import {
   signInWithPopup,
   GoogleAuthProvider,
