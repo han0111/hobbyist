@@ -3,6 +3,7 @@ import TopBar from "../components/TopBar";
 import SideBar from "../components/SideBar";
 import Contents from "../components/Contents";
 import Post from "../components/Post";
+import FileUpload from "../components/FileUpload";
 
 function App() {
   return (
