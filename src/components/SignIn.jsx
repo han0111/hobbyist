@@ -7,6 +7,7 @@ import {
   GithubAuthProvider,
   signOut,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 import github from "../img/github.png";
@@ -104,6 +105,11 @@ function SignIn() {
   useEffect(() => {
     localStorage.setItem("login", login);
   }, [login]);
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
+    });
+  }, []);
 
   const onChange = (event) => {
     const {
