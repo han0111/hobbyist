@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import uuid from "react-uuid";
 import { styled } from "styled-components";
-import { auth } from "../service/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookmark,
@@ -22,12 +21,12 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
+import { auth } from "../service/firebase";
 const Main = styled.main`
   padding: 20px;
   background: #eee;
-  display: block;
   width: 600px;
-  margin-top: 100px;
+  margin-top: 150px;
   margin-left: 100px;
 `;
 
@@ -96,6 +95,7 @@ function Contents() {
   const [editedComment, setEditedComment] = useState("");
   const [posts, setPosts] = useState([]);
 
+  //현재 로그인 된 아이디 알아오는 함수
   const getCurrentUserUid = () => {
     const auth = getAuth();
     const currentUser = auth.currentUser;
@@ -108,7 +108,7 @@ function Contents() {
     }
   };
 
-  // getNickname 함수 수정
+  // getNickname 함수
   const getNickname = async (uid) => {
     console.log(uid);
     try {
@@ -233,129 +233,162 @@ function Contents() {
       console.error("댓글 삭제 오류:", error);
     }
   };
-  // post 저장 부분 불러옴
-  useEffect(() => {
-    const fetchData = async () => {
+
+  const PostUpdateBtn = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "posts"), where("CID", "==", CID))
+      );
+
+      querySnapshot.forEach(async (doc) => {
+        await updateDoc(doc.ref, {
+          comment: editedComment,
+        });
+      });
+
+      setEditCommentId("");
+      setEditedComment("");
+      fetchComments();
+    } catch (error) {
+      console.error("댓글 수정 오류:", error);
+    }
+  };
+
+  // DB에서 저장된 포스트를 불러오는 함수
+  const fetchPosts = async () => {
+    try {
       const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
 
-      const initialPosts = [];
+      const fetchedPosts = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-      querySnapshot.forEach((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data(),
-        };
-        initialPosts.push(data);
-      });
+      setPosts(fetchedPosts);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
 
-      setPosts(initialPosts);
-    };
-
-    fetchData();
+  useEffect(() => {
+    fetchPosts();
   }, []);
 
-  <>
-    <div style={{ width: "650px" }}>
-      {posts.map((post) => {
-        return (
-          <Main key={post.CID}>
-            <MainInner>
-              <MainUser>
-                <UserImg src="images/user_img.png" alt="" />
-                <User>{auth.currentUser.uid}</User>
-              </MainUser>
-              <ContentsBox>
-                <h2>{post.title}</h2>
-                <img
-                  style={{
-                    width: "100%",
-                  }}
-                  src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
-                  alt=""
-                />
-                <span>{post.body}</span>
-                {comments.map((item) => {
-                  return (
-                    <div key={item.CID}>
-                      {editCommentId === item.CID ? (
-                        <div>
-                          <input
-                            type="text"
-                            value={editedComment}
-                            onChange={(event) => {
-                              setEditedComment(event.target.value);
-                            }}
-                          />
-                          <button onClick={() => handleCommentEdit(item.CID)}>
-                            완료
-                          </button>
-                        </div>
-                      ) : (
-                        <p
-                          style={{
-                            padding: "16px 0px 0px 0px",
-                          }}
-                        >
-                          {item.nickname}
-                          &nbsp;
-                          <span>{item.comment}</span>
-                          <button onClick={() => setEditCommentId(item.CID)}>
-                            수정
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleCommentDelete(item.CID);
-                            }}
-                          >
-                            삭제
-                          </button>
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-                <FunctionUl>
-                  <li>
-                    <IconSpan>
-                      <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
-                    </IconSpan>
-                    {likeCount}
-                  </li>
-                  <li>
-                    <IconSpan>
-                      <FontAwesomeIcon icon={faCommentDots} />
-                    </IconSpan>
-                    댓글작성
-                  </li>
-                  <li>
-                    <IconSpan>
-                      <FontAwesomeIcon icon={faBookmark} />
-                    </IconSpan>
-                    북마크
-                  </li>
-                  <li>
-                    <IconSpan>
-                      <FontAwesomeIcon icon={faShareFromSquare} />
-                    </IconSpan>
-                    공유하기
-                  </li>
-                </FunctionUl>
-                <CommentForm onSubmit={handleCommentSubmit}>
-                  <CommentInput
-                    value={comment}
-                    onChange={(event) => {
-                      setComment(event.target.value);
+  //DB에서 해당하는 CID값을 가진 댓글을 삭제하는 함수
+  const PostDeleteBtn = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "posts"), where("CID", "==", CID))
+      );
+      const deletePost = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+
+      await Promise.all(deletePost);
+      fetchPosts();
+    } catch (error) {
+      console.error("포스트 삭제 오류:", error);
+    }
+  };
+
+  return (
+    <>
+      <div style={{ width: "650px" }}>
+        {posts.map((post) => {
+          return (
+            <Main key={post.CID}>
+              <MainInner>
+                <MainUser>
+                  <UserImg src="images/user_img.png" alt="" />
+                  <User>{auth.currentUser.uid}</User>
+                </MainUser>
+                <ContentsBox>
+                  <h2>{post.title}</h2>
+                  <img
+                    style={{
+                      width: "100%",
                     }}
+                    src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
+                    alt=""
                   />
-                  <CommentButton>쓰기</CommentButton>
-                </CommentForm>
-              </ContentsBox>
-            </MainInner>
-          </Main>
-        );
-      })}
-    </div>
-  </>;
+                  <span>{post.body}</span>
+                  {comments.map((item) => {
+                    return (
+                      <div key={item.CID}>
+                        {editCommentId === item.CID ? (
+                          <div>
+                            <input
+                              type="text"
+                              value={editedComment}
+                              onChange={(event) => {
+                                setEditedComment(event.target.value);
+                              }}
+                            />
+                            <button onClick={() => handleCommentEdit(item.CID)}>
+                              완료
+                            </button>
+                          </div>
+                        ) : (
+                          <p style={{ padding: "16px 0px 0px 0px" }}>
+                            {item.nickname}&nbsp;
+                            <span>{item.comment}</span>
+                            <button onClick={() => setEditCommentId(item.CID)}>
+                              수정
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleCommentDelete(item.CID);
+                              }}
+                            >
+                              삭제
+                            </button>
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                  <FunctionUl>
+                    <li>
+                      <IconSpan>
+                        <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
+                      </IconSpan>
+                      {likeCount}
+                    </li>
+                    <li>
+                      <IconSpan>
+                        <FontAwesomeIcon icon={faCommentDots} />
+                      </IconSpan>
+                      댓글작성
+                    </li>
+                    <li>
+                      <IconSpan>
+                        <FontAwesomeIcon icon={faBookmark} />
+                      </IconSpan>
+                      북마크
+                    </li>
+                    <li>
+                      <IconSpan>
+                        <FontAwesomeIcon icon={faShareFromSquare} />
+                      </IconSpan>
+                      공유하기
+                    </li>
+                  </FunctionUl>
+                  <CommentForm onSubmit={handleCommentSubmit}>
+                    <CommentInput
+                      value={comment}
+                      onChange={(event) => {
+                        setComment(event.target.value);
+                      }}
+                    />
+                    <CommentButton>쓰기</CommentButton>
+                  </CommentForm>
+                </ContentsBox>
+              </MainInner>
+            </Main>
+          );
+        })}
+      </div>
+    </>
+  );
 }
+
 export default Contents;
