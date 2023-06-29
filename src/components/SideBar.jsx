@@ -53,12 +53,11 @@ const SideCategory = styled.div`
 const SideSubBtn = styled.button`
   background-color: transparent;
   border: none;
-  width: 300px;
+  width: 150px;
   height: 40px;
 
   /* margin: 10px auto 5px 0px; */
   margin-bottom: ${(props) => (props.isSubmenuOpen ? "500px" : "20px")};
-
   &:hover {
     transform: scale(1.1);
   }
@@ -74,13 +73,20 @@ const DropdownMenu = styled.div`
   top: 100%;
   left: 0;
   margin-top: 5px;
+
+  background-color: blue;
 `;
 const SubmenuDiv = styled.div`
   display: ${(props) => (props.isSubmenuOpen ? "block" : "none")};
-  position: absolute;
+  /* position: absolute; 이거땜에 간격조절 안됐음 ㅠㅠ */
+`;
+const SecondmenuDiv = styled.div`
+  display: ${(props) => (props.isSecondOpen ? "block" : "none")};
 `;
 const SubmenuBtn = styled.button`
-  background-color: transparent;
+  background-color: green;
+
+  /* background-color: transparent; */
   border: none;
   width: 300px;
   height: 40px;
@@ -101,21 +107,27 @@ const SubmenuBtn = styled.button`
 function SideBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
+  const [isSecondOpen, setIsSecondOpen] = useState(false);
 
   const handleMouseEnter = () => {
     setIsDropdownOpen(true);
   };
   const handleMouseLeave = () => {
     setIsDropdownOpen(false);
-
-    setIsSubmenuOpen(false);
   };
-
-  const submenuDropdownEnter = () => {
+  //카테고리 내부 첫번째
+  const handleSubmenuDropdownEnter = () => {
     setIsSubmenuOpen(true);
   };
-  const submenuDropdownLeave = () => {
+  const handleSubmenuDropdownLeave = () => {
     setIsSubmenuOpen(false);
+  };
+  //카테고리 내부 두번째
+  const handleSecondEnter = () => {
+    setIsSecondOpen(true);
+  };
+  const handleSecondLeave = () => {
+    setIsSecondOpen(false);
   };
 
   return (
@@ -129,18 +141,27 @@ function SideBar() {
           🏷️ Category
           <DropdownMenu isOpen={isDropdownOpen}>
             <SideSubBtn
-              onMouseEnter={submenuDropdownEnter}
-              onMouseLeave={submenuDropdownLeave}
+              onMouseEnter={handleSubmenuDropdownEnter}
+              onMouseLeave={handleSubmenuDropdownLeave}
             >
               📈 경제
             </SideSubBtn>
-            {isSubmenuOpen && (
-              <SubmenuDiv isSubmenuOpen={isSubmenuOpen}>
-                <SubmenuBtn>주식.펀드</SubmenuBtn>
-                <SubmenuBtn>가상화폐</SubmenuBtn>
-              </SubmenuDiv>
-            )}
-            <SideSubBtn>🐶 애완동・식물</SideSubBtn>
+            {/* {isSubmenuOpen && ( */}
+            <SubmenuDiv isSubmenuOpen={isSubmenuOpen}>
+              <SubmenuBtn>주식.펀드</SubmenuBtn>
+              <SubmenuBtn>가상화폐</SubmenuBtn>
+            </SubmenuDiv>
+            {/* )} */}
+            <SideSubBtn
+              onMouseEnter={handleSecondEnter}
+              onMouseLeave={handleSecondLeave}
+            >
+              🐶 애완동・식물
+              <SecondmenuDiv isSecondOpen={isSecondOpen}>
+                <SubmenuBtn>꿀팁</SubmenuBtn>
+                <SubmenuBtn>쇼핑</SubmenuBtn>
+              </SecondmenuDiv>
+            </SideSubBtn>
             <SideSubBtn>🚙 여행</SideSubBtn>
             <SideSubBtn>🎧 음악</SideSubBtn>
             <br />
