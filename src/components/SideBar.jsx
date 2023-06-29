@@ -109,6 +109,30 @@ function SideBar() {
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
   const [isSecondOpen, setIsSecondOpen] = useState(false);
 
+  const [isSubOpen, setIsSubOpen] = useState({
+    first: false,
+    second: false,
+    third: false,
+    forth: false,
+  });
+
+  const handleSubOpen = () => {
+    setIsSubOpen({
+      first: true,
+      second: false,
+      third: false,
+      forth: false,
+    });
+  };
+  const handeSubClose = () => {
+    setIsSubOpen({
+      first: false,
+      second: false,
+      third: false,
+      forth: false,
+    });
+  };
+
   const handleMouseEnter = () => {
     setIsDropdownOpen(true);
   };
@@ -140,17 +164,21 @@ function SideBar() {
         <SideCategory>
           🏷️ Category
           <DropdownMenu isOpen={isDropdownOpen}>
-            <SideSubBtn
-              onMouseEnter={handleSubmenuDropdownEnter}
-              onMouseLeave={handleSubmenuDropdownLeave}
-            >
-              📈 경제
-            </SideSubBtn>
-            {/* {isSubmenuOpen && ( */}
-            <SubmenuDiv isSubmenuOpen={isSubmenuOpen}>
-              <SubmenuBtn>주식.펀드</SubmenuBtn>
-              <SubmenuBtn>가상화폐</SubmenuBtn>
-            </SubmenuDiv>
+            <div onMouseLeave={handeSubClose}>
+              <SideSubBtn
+                // onMouseEnter={handleSubmenuDropdownEnter}
+                // onMouseLeave={handleSubmenuDropdownLeave}
+                onMouseEnter={handleSubOpen}
+              >
+                📈 경제
+              </SideSubBtn>
+              {/* {isSubmenuOpen && ( */}
+              {/* <SubmenuDiv isSubmenuOpen={isSubmenuOpen}> */}
+              <SubmenuDiv isSubmenuOpen={isSubOpen.first}>
+                <SubmenuBtn>주식.펀드</SubmenuBtn>
+                <SubmenuBtn>가상화폐</SubmenuBtn>
+              </SubmenuDiv>
+            </div>
             {/* )} */}
             <SideSubBtn
               onMouseEnter={handleSecondEnter}
