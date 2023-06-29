@@ -271,6 +271,7 @@ function Contents() {
     }
   };
 
+  // 포스트 저장 부분 불러옴
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -299,7 +300,7 @@ function Contents() {
               <MainInner>
                 <MainUser>
                   <UserImg src="images/user_img.png" alt="" />
-                  <User>{auth.currentUser.uid}</User>
+                  <User>{post.nickname}</User>
                 </MainUser>
                 <ContentsBox>
                   <h2>{post.title}</h2>
