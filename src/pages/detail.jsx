@@ -1,8 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 import TopBar from "../components/TopBar";
-import { collection, getDocs, query, updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  updateDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../service/firebase";
+import { useParams } from "react-router-dom";
 const DetailContainer = styled.div`
   margin-top: 100px;
   background-color: #d9d9d9;
@@ -151,20 +159,22 @@ const TextArea = styled.textarea`
 `;
 
 function Detail() {
-  const [, setContents] = useState([]);
-  const [content, setContent] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [post, setPost] = useState([]);
 
   const fetchData = async () => {
-    const q = query(collection(db, "contents"));
+    const q = query(collection(db, "posts"));
     const querySnapshot = await getDocs(q);
-    const initialContents = [];
+    const initialPosts = [];
     querySnapshot.forEach((doc) => {
-      initialContents.push({ id: doc.id, ...doc.data() });
+      initialPosts.push({ id: doc.id, ...doc.data() });
     });
-    setContents(initialContents);
+    setPosts(initialPosts);
 
-    const contentData = initialContents.find((item) => item.id === "content");
-    setContent(contentData);
+    const postData = initialPosts.find(
+      (item) => item.id === "VACdciDoo5ncXGaQFqvK"
+    );
+    setPost(postData);
   };
 
   // 데이터 가져오기
@@ -172,37 +182,91 @@ function Detail() {
     fetchData();
   }, []);
 
-  // Like update
-  const updateLike = async (event) => {
-    const contentRef = doc(db, "contents", "content");
+  console.log(posts);
+  console.log(post);
 
-    if (content.isLike) {
-      // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
-      await updateDoc(contentRef, {
-        isLike: false,
-        likeCount: content.likeCount - 1,
-      });
+  //-----------------------------------------------------------------------
 
-      fetchData();
-    } else {
-      // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
-      await updateDoc(contentRef, {
-        isLike: true,
-        likeCount: content.likeCount + 1,
-      });
-      fetchData();
-    }
-  };
+  // likesByUser
+  // 사용자의 ID 가져오기
+  // const { userId } = useAuth(); // 사용하는 인증 라이브러리
+  // const { feedId } = useParams();
 
-  // 북마크 update
-  const updateBooked = async (event) => {
-    const contentRef = doc(db, "contents", "content");
-    await updateDoc(contentRef, { isBooked: !content.isBooked });
-    setContent((prevContent) => ({
-      ...prevContent,
-      isBooked: !prevContent.isBooked,
-    }));
-  };
+  // const updateLikes = async () => {
+  //   if (!userId) {
+  //     alert("로그인을 해주세요.");
+  //     return;
+  //   }
+
+  //   const postRef = doc(db, "posts", { feedId });
+
+  //   const postSnapshot = await getDoc(postRef);
+  //   const postData = postSnapshot.data();
+
+  //   if (!postData) {
+  //     alert("피드가 존재하지 않습니다.");
+  //     return;
+  //   }
+
+  //   const { likes, likeCount } = postData;
+
+  //   if (likes && likes[userId]) {
+  //     // 이미 해당 사용자가 좋아요를 누른 경우, 좋아요 취소 처리
+  //     delete likes[userId];
+  //     await updateDoc(postRef, {
+  //       likes: { ...likes },
+  //       likeCount: likeCount - 1,
+  //     });
+  //   } else {
+  //     // 해당 사용자가 좋아요를 누르지 않은 경우, 좋아요 처리
+  //     await updateDoc(postRef, {
+  //       likes: {
+  //         ...likes,
+  //         [userId]: true,
+  //       },
+  //       likeCount: likeCount + 1,
+  //     });
+  //   }
+
+  //   fetchData(); // 데이터 갱신
+  // };
+
+  // // 좋아요 업데이트 함수 호출
+  // updateLikes();
+
+  //-----------------------------------------------------------------------
+
+  // // Like update
+  // const updateLike = async (event) => {
+  //   const contentRef = doc(db, "contents", "content");
+
+  //   if (content.isLike) {
+  //     // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
+  //     await updateDoc(contentRef, {
+  //       isLike: false,
+  //       likeCount: content.likeCount - 1,
+  //     });
+
+  //     fetchData();
+  //   } else {
+  //     // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
+  //     await updateDoc(contentRef, {
+  //       isLike: true,
+  //       likeCount: content.likeCount + 1,
+  //     });
+  //     fetchData();
+  //   }
+  // };
+
+  // // 북마크 update
+  // const updateBooked = async (event) => {
+  //   const contentRef = doc(db, "contents", "content");
+  //   await updateDoc(contentRef, { isBooked: !content.isBooked });
+  //   setContent((prevContent) => ({
+  //     ...prevContent,
+  //     isBooked: !prevContent.isBooked,
+  //   }));
+  // };
 
   // url 복사
   const copyUrlRef = useRef(null);
@@ -231,14 +295,14 @@ function Detail() {
           <ContentFunc>
             <LikeContainer>
               <LikeButton
-                onClick={updateLike}
-                islike={content.isLike}
+              // onClick={updateLikes}
+              // islike={content.isLike}
               ></LikeButton>
-              <Likecount>{content.likeCount}</Likecount>
+              <Likecount></Likecount>
             </LikeContainer>
             <BookButton
-              onClick={updateBooked}
-              isbooked={content.isBooked}
+            // onClick={updateBooked}
+            // isbooked={content.isBooked}
             ></BookButton>
             <TextArea ref={copyUrlRef} value={window.location.href}></TextArea>
             <ShareButton onClick={copyUrl}>공유하기</ShareButton>

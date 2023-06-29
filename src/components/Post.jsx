@@ -131,6 +131,7 @@ function Post() {
         createdAt: new Date(),
         uid: uid,
         nickname: nickname, // Include the nickname in the new post object
+        likesByUser: { [uid]: false },
       };
 
       const docRef = await addDoc(collection(db, "posts"), newPost);
