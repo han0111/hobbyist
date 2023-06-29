@@ -120,6 +120,7 @@ const ShareButton = styled.button`
     opacity: 0.5;
   }
 `;
+const ContentTitle = styled.h2``;
 const ContentBody = styled.p`
   margin-bottom: 20px;
   height: 150px;
@@ -245,23 +246,6 @@ function Detail() {
   useEffect(() => {
     fetchPosts();
   }, []);
-  //닉네임 가져오는 함수
-  const getNickname = async (uid) => {
-    console.log(uid);
-    try {
-      const q = query(collection(db, "posts"), where("uid", "==", uid));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const userData = querySnapshot.docs[0].data();
-        return userData.nickname;
-      } else {
-        throw new Error("User not found");
-      }
-    } catch (error) {
-      console.error("Error getting nickname:", error);
-      throw error;
-    }
-  };
 
   return (
     <>
@@ -273,7 +257,7 @@ function Detail() {
               <div>
                 <ContentHeader>
                   <ProfileImage></ProfileImage>
-                  <ProfileName>{getNickname(post.nickname)}</ProfileName>
+                  <ProfileName>{post.nickname}</ProfileName>
                 </ContentHeader>
                 <ContentImage></ContentImage>
                 <ContentFunc>
@@ -294,7 +278,8 @@ function Detail() {
                   ></TextArea>
                   <ShareButton onClick={copyUrl}>공유하기</ShareButton>
                 </ContentFunc>
-                <ContentBody>나 여기 다녀왔어!</ContentBody>
+                <ContentTitle>{post.title}</ContentTitle>
+                <ContentBody>{post.body}</ContentBody>
               </div>
               <CommentContainer>
                 <CommentTitle>댓글</CommentTitle>
