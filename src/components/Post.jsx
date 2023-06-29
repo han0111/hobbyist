@@ -61,6 +61,7 @@ function Post() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [downloadURL, setDownloadURL] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -111,7 +112,6 @@ function Post() {
     event.preventDefault();
     setOpen(false);
 
-    // Get the current user's UID
     const auth = getAuth();
     const currentUser = auth.currentUser;
     const uid = currentUser ? currentUser.uid : null;
@@ -122,7 +122,6 @@ function Post() {
     }
 
     try {
-      // Retrieve the nickname based on the UID
       const nickname = await getNickname(uid);
 
       const newPost = {
@@ -131,7 +130,8 @@ function Post() {
         body: body,
         createdAt: new Date(),
         uid: uid,
-        nickname: nickname, // Include the nickname in the new post object
+        nickname: nickname,
+        downloadURL,
       };
 
       const docRef = await addDoc(collection(db, "posts"), newPost);
@@ -166,7 +166,7 @@ function Post() {
               />
             </p>
             <p>
-              <FileUpload />
+              <FileUpload setDownloadURL={setDownloadURL} />
             </p>
             <button onClick={handlePostSubmit}>등록</button>
           </form>
