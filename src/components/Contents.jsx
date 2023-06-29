@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import uuid from "react-uuid";
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,7 +21,9 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
+import { useNavigate } from "react-router-dom";
 import { auth } from "../service/firebase";
+
 const Main = styled.main`
   padding: 20px;
   background: #eee;
@@ -38,6 +40,7 @@ const MainUser = styled.div`
   align-items: center;
   gap: 10px;
   padding: 16px 0px;
+  cursor: pointer;
 `;
 const UserImg = styled.img`
   width: 48px;
@@ -51,6 +54,7 @@ const ContentsBox = styled.div`
   background: #fff;
   border-radius: 10px;
   padding: 20px;
+  cursor: pointer;
 `;
 const FunctionUl = styled.ul`
   display: flex;
@@ -62,6 +66,7 @@ const FunctionUl = styled.ul`
 const IconSpan = styled.span`
   margin-right: 6px;
   font-size: 17px;
+  cursor: pointer;
 `;
 const CommentForm = styled.form`
   position: relative;
@@ -234,25 +239,25 @@ function Contents() {
     }
   };
 
-  const PostUpdateBtn = async (CID) => {
-    try {
-      const querySnapshot = await getDocs(
-        query(collection(db, "posts"), where("CID", "==", CID))
-      );
+  // const PostUpdateBtn = async (CID) => {
+  //   try {
+  //     const querySnapshot = await getDocs(
+  //       query(collection(db, "posts"), where("CID", "==", CID))
+  //     );
 
-      querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {
-          comment: editedComment,
-        });
-      });
+  //     querySnapshot.forEach(async (doc) => {
+  //       await updateDoc(doc.ref, {
+  //         comment: editedComment,
+  //       });
+  //     });
 
-      setEditCommentId("");
-      setEditedComment("");
-      fetchComments();
-    } catch (error) {
-      console.error("댓글 수정 오류:", error);
-    }
-  };
+  //     setEditCommentId("");
+  //     setEditedComment("");
+  //     fetchComments();
+  //   } catch (error) {
+  //     console.error("댓글 수정 오류:", error);
+  //   }
+  // };
 
   // DB에서 저장된 포스트를 불러오는 함수
   const fetchPosts = async () => {
@@ -291,6 +296,27 @@ function Contents() {
     }
   };
 
+  // url 복사
+  const copyUrlRef = useRef(null);
+
+  const copyUrl = (e) => {
+    if (!document.queryCommandSupported("copy")) {
+      return alert("복사 기능이 지원되지 않는 브라우저입니다.");
+    }
+
+    const currentUrl = window.location.href; // 현재 페이지 URL 가져오기
+    const additionalPath = `detail/${e.target.value}`; // 추가할 경로
+
+    const newUrl = currentUrl + additionalPath; // 현재 URL에 추가 경로를 붙임
+    copyUrlRef.current.value = newUrl; // 복사할 URL을 참조하는 input 요소에 새로운 URL 설정
+
+    copyUrlRef.current.select();
+    document.execCommand("copy");
+
+    alert("링크가 복사되었습니다.");
+  };
+  const navigate = useNavigate();
+
   return (
     <>
       <div style={{ width: "650px" }}>
@@ -298,91 +324,100 @@ function Contents() {
           return (
             <Main key={post.CID}>
               <MainInner>
-                <MainUser>
+                <MainUser
+                  onClick={() => {
+                    navigate(`/mypage/${post.id}`);
+                  }}
+                >
                   <UserImg src="images/user_img.png" alt="" />
                   <User>{post.nickname}</User>
+                  <button onClick={() => PostDeleteBtn(post.CID)}>삭제</button>
                 </MainUser>
-                <ContentsBox>
+                <ContentsBox
+                  onClick={() => {
+                    navigate(`/detail/${post.id}`);
+                  }}
+                >
                   <h2>{post.title}</h2>
                   <img
                     style={{
                       width: "100%",
                     }}
-                    src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
+                    src={post.downloadURL}
                     alt=""
                   />
                   <span>{post.body}</span>
-                  {comments.map((item) => {
-                    return (
-                      <div key={item.CID}>
-                        {editCommentId === item.CID ? (
-                          <div>
-                            <input
-                              type="text"
-                              value={editedComment}
-                              onChange={(event) => {
-                                setEditedComment(event.target.value);
-                              }}
-                            />
-                            <button onClick={() => handleCommentEdit(item.CID)}>
-                              완료
-                            </button>
-                          </div>
-                        ) : (
-                          <p style={{ padding: "16px 0px 0px 0px" }}>
-                            {item.nickname}&nbsp;
-                            <span>{item.comment}</span>
-                            <button onClick={() => setEditCommentId(item.CID)}>
-                              수정
-                            </button>
-                            <button
-                              onClick={() => {
-                                handleCommentDelete(item.CID);
-                              }}
-                            >
-                              삭제
-                            </button>
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
-                  <FunctionUl>
-                    <li>
-                      <IconSpan>
-                        <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
-                      </IconSpan>
-                      {likeCount}
-                    </li>
-                    <li>
-                      <IconSpan>
-                        <FontAwesomeIcon icon={faCommentDots} />
-                      </IconSpan>
-                      댓글작성
-                    </li>
-                    <li>
-                      <IconSpan>
-                        <FontAwesomeIcon icon={faBookmark} />
-                      </IconSpan>
-                      북마크
-                    </li>
-                    <li>
-                      <IconSpan>
-                        <FontAwesomeIcon icon={faShareFromSquare} />
-                      </IconSpan>
-                      공유하기
-                    </li>
-                  </FunctionUl>
-                  <CommentForm onSubmit={handleCommentSubmit}>
-                    <CommentInput
-                      value={comment}
-                      onChange={(event) => {
-                        setComment(event.target.value);
-                      }}
-                    />
-                    <CommentButton>쓰기</CommentButton>
-                  </CommentForm>
                 </ContentsBox>
+                {comments.map((item) => {
+                  return (
+                    <div key={item.CID}>
+                      {editCommentId === item.CID ? (
+                        <div>
+                          <input
+                            type="text"
+                            value={editedComment}
+                            onChange={(event) => {
+                              setEditedComment(event.target.value);
+                            }}
+                          />
+                          <button onClick={() => handleCommentEdit(item.CID)}>
+                            완료
+                          </button>
+                        </div>
+                      ) : (
+                        <p style={{ padding: "16px 0px 0px 0px" }}>
+                          {item.nickname}&nbsp;
+                          <span>{item.comment}</span>
+                          <button onClick={() => setEditCommentId(item.CID)}>
+                            수정
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleCommentDelete(item.CID);
+                            }}
+                          >
+                            삭제
+                          </button>
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+                <FunctionUl>
+                  <li>
+                    <IconSpan>
+                      <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
+                    </IconSpan>
+                    {likeCount}
+                  </li>
+                  <li>
+                    <IconSpan>
+                      <FontAwesomeIcon icon={faCommentDots} />
+                    </IconSpan>
+                    댓글작성
+                  </li>
+                  <li>
+                    <IconSpan>
+                      <FontAwesomeIcon icon={faBookmark} />
+                    </IconSpan>
+                    북마크
+                  </li>
+                  <li>
+                    <IconSpan onClick={copyUrl} value={post.id}>
+                      <FontAwesomeIcon icon={faShareFromSquare} />
+                    </IconSpan>
+                    공유하기
+                  </li>
+                </FunctionUl>
+                <CommentForm onSubmit={handleCommentSubmit}>
+                  <CommentInput
+                    value={comment}
+                    onChange={(event) => {
+                      setComment(event.target.value);
+                    }}
+                  />
+                  <CommentButton>쓰기</CommentButton>
+                </CommentForm>
               </MainInner>
             </Main>
           );
