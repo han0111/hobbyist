@@ -1,12 +1,9 @@
-import { getDownloadURL, uploadBytes } from "firebase/storage";
-import { ref } from "firebase/storage";
+import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 // import { uploadBytes } from "firebase/storage";
-import { storage } from "../service/firebase";
-import React from "react";
-import { useState } from "react";
-import { auth } from "../service/firebase";
+import { storage, auth } from "../service/firebase";
+import React, { useState } from "react";
 
-function FileUpload() {
+function FileUpload({ setDownloadURL }) {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileSelect = (e) => {
@@ -23,6 +20,12 @@ function FileUpload() {
 
     const downloadURL = await getDownloadURL(imageRef);
     console.log("downloadURL", downloadURL);
+
+    savePost(downloadURL);
+  };
+
+  const savePost = (downloadURL) => {
+    setDownloadURL(downloadURL);
   };
 
   return (
