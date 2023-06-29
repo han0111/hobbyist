@@ -308,7 +308,7 @@ function Contents() {
                     style={{
                       width: "100%",
                     }}
-                    src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
+                    // src={`${auth.currentUser.uid}/image-removebg-preview(18).png`}
                     alt=""
                   />
                   <span>{post.body}</span>
