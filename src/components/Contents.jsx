@@ -91,6 +91,15 @@ const CommentButton = styled.button`
   background: #222;
   color: #fff;
 `;
+const TextArea = styled.textarea`
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+`;
+
 function Contents() {
   const [comment, setComment] = useState();
   const [likeCount, setLikeCount] = useState(false);
@@ -295,16 +304,15 @@ function Contents() {
     }
   };
 
-  // url 복사
+  // 공유하기 기능
   const copyUrlRef = useRef(null);
 
-  const copyUrl = (e) => {
+  const copyUrl = (postId) => {
     if (!document.queryCommandSupported("copy")) {
       return alert("복사 기능이 지원되지 않는 브라우저입니다.");
     }
-
     const currentUrl = window.location.href; // 현재 페이지 URL 가져오기
-    const additionalPath = `detail/${e.target.value}`; // 추가할 경로
+    const additionalPath = `detail/${postId}`; // 추가할 경로
 
     const newUrl = currentUrl + additionalPath; // 현재 URL에 추가 경로를 붙임
     copyUrlRef.current.value = newUrl; // 복사할 URL을 참조하는 input 요소에 새로운 URL 설정
@@ -325,7 +333,7 @@ function Contents() {
               <MainInner>
                 <MainUser
                   onClick={() => {
-                    navigate(`/mypage/${post.id}`);
+                    navigate(`/mypage/${post.uid}`);
                   }}
                 >
                   <UserImg src="images/user_img.png" alt="" />
@@ -401,7 +409,11 @@ function Contents() {
                     북마크
                   </li>
                   <li>
-                    <IconSpan onClick={copyUrl} value={post.id}>
+                    <TextArea
+                      ref={copyUrlRef}
+                      value={window.location.href}
+                    ></TextArea>
+                    <IconSpan onClick={() => copyUrl(post.id)}>
                       <FontAwesomeIcon icon={faShareFromSquare} />
                     </IconSpan>
                     공유하기
