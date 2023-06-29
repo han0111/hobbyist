@@ -4,6 +4,8 @@ import {
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
 } from "firebase/auth";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 
 import {
   Input,
@@ -24,8 +26,16 @@ function SignUp() {
   const [password, setPassword] = useState("");
   const [verifypassword, setVerifyPassword] = useState("");
   const [nickname, setNickName] = useState("");
+  const [join, setJoin] = useState("회원가입");
 
   const auth = getAuth();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
+      return auth.currentUser ? setJoin("마이페이지") : null;
+    });
+  }, [auth]);
 
   const emailChangeHandler = (event) => {
     setEmail(event.target.value);
@@ -131,7 +141,7 @@ function SignUp() {
   return (
     <>
       <TopButton className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
-        회원가입
+        {join}
       </TopButton>
       {isModalOpen2 && (
         <ModalContainer className="Modal-Container">
