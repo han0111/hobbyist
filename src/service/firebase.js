@@ -22,7 +22,7 @@ const firebaseConfig = {
   // messagingSenderId: "982481039500",
   // appId: "1:982481039500:web:ef48c3e8ee16180e920ba9",
 
-  // // 유길
+  // 유길
   apiKey: "AIzaSyBMVH9MLz1rBnI7aapwImQtA5Rw-WM21k0",
   authDomain: "testproject-ed7cc.firebaseapp.com",
   projectId: "testproject-ed7cc",
