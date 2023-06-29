@@ -84,11 +84,7 @@ function Post() {
 
   // 글쓰기 모달창 열기
   const postModalHandler = () => {
-    if (!auth.currentUser) {
-      alert("로그인 후 사용해주세요.");
-    } else {
-      setOpen(!open);
-    }
+    !auth.currentUser ? alert("로그인 후 사용해주세요.") : setOpen(!open);
   };
 
   //닉네임 가져오는 함수
