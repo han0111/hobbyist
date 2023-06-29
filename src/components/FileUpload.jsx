@@ -24,13 +24,12 @@ function FileUpload({ setDownloadURL }) {
     setDownloadURL(downloadURL);
   };
 
-  const savePost = (downloadURL) => {
-    setDownloadURL(downloadURL);
-  };
+  // const savePost = (downloadURL) => {
+  //   setDownloadURL(downloadURL);
+  // };
 
   return (
     <>
-      <h2>파일 업로드 컴포넌트</h2>
       <input type="file" onChange={handleFileSelect} />
       <button onClick={handleUpload}>Upload</button>
     </>
