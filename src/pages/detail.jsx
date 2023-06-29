@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../service/firebase";
 import { useParams } from "react-router-dom";
+import { getAuth } from "firebase/auth";
 const DetailContainer = styled.div`
   margin-top: 100px;
   background-color: #d9d9d9;
@@ -161,6 +162,7 @@ const TextArea = styled.textarea`
 function Detail() {
   const [posts, setPosts] = useState([]);
   const [post, setPost] = useState([]);
+  const { id } = useParams();
 
   const fetchData = async () => {
     const q = query(collection(db, "posts"));
@@ -171,9 +173,7 @@ function Detail() {
     });
     setPosts(initialPosts);
 
-    const postData = initialPosts.find(
-      (item) => item.id === "VACdciDoo5ncXGaQFqvK"
-    );
+    const postData = initialPosts.find((item) => item.id === id);
     setPost(postData);
   };
 
@@ -182,56 +182,63 @@ function Detail() {
     fetchData();
   }, []);
 
-  console.log(posts);
-  console.log(post);
+  // console.log(posts);
+  // console.log(id);
+  // console.log(post);
 
   //-----------------------------------------------------------------------
 
   // likesByUser
-  // 사용자의 ID 가져오기
-  // const { userId } = useAuth(); // 사용하는 인증 라이브러리
-  // const { feedId } = useParams();
+  const updateLikes = async () => {
+    //현재 로그인 된 아이디 알아오는 함수
+    const getCurrentUserUid = () => {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      console.log("현재 로그인 된 아이디", currentUser);
+      if (currentUser) {
+        return currentUser.uid;
+      } else {
+        console.log("로그인된 사용자가 없습니다!");
+        return null;
+      }
+    };
 
-  // const updateLikes = async () => {
-  //   if (!userId) {
-  //     alert("로그인을 해주세요.");
-  //     return;
-  //   }
+    getCurrentUserUid();
 
-  //   const postRef = doc(db, "posts", { feedId });
+    const postRef = doc(db, "posts", id);
 
-  //   const postSnapshot = await getDoc(postRef);
-  //   const postData = postSnapshot.data();
+    const postSnapshot = await getDoc(postRef);
+    const postData = postSnapshot.data();
 
-  //   if (!postData) {
-  //     alert("피드가 존재하지 않습니다.");
-  //     return;
-  //   }
+    if (!postData) {
+      alert("피드가 존재하지 않습니다.");
+      return;
+    }
 
-  //   const { likes, likeCount } = postData;
+    const { likes, likeCount } = postData;
 
-  //   if (likes && likes[userId]) {
-  //     // 이미 해당 사용자가 좋아요를 누른 경우, 좋아요 취소 처리
-  //     delete likes[userId];
-  //     await updateDoc(postRef, {
-  //       likes: { ...likes },
-  //       likeCount: likeCount - 1,
-  //     });
-  //   } else {
-  //     // 해당 사용자가 좋아요를 누르지 않은 경우, 좋아요 처리
-  //     await updateDoc(postRef, {
-  //       likes: {
-  //         ...likes,
-  //         [userId]: true,
-  //       },
-  //       likeCount: likeCount + 1,
-  //     });
-  //   }
+    if (likes && likes[id]) {
+      // 이미 해당 사용자가 좋아요를 누른 경우, 좋아요 취소 처리
+      delete likes[id];
+      await updateDoc(postRef, {
+        likes: { ...likes },
+        likeCount: likeCount - 1,
+      });
+    } else {
+      // 해당 사용자가 좋아요를 누르지 않은 경우, 좋아요 처리
+      await updateDoc(postRef, {
+        likes: {
+          ...likes,
+          [id]: true,
+        },
+        likeCount: likeCount + 1,
+      });
+    }
 
-  //   fetchData(); // 데이터 갱신
-  // };
+    fetchData(); // 데이터 갱신
+  };
 
-  // // 좋아요 업데이트 함수 호출
+  // 좋아요 업데이트 함수 호출
   // updateLikes();
 
   //-----------------------------------------------------------------------
