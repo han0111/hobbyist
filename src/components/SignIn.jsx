@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { auth } from "../service/firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import {
   signInWithPopup,
   GoogleAuthProvider,
   GithubAuthProvider,
   signOut,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 import { VerifyMessage } from "./styledcomponents/Styled";
@@ -108,6 +108,11 @@ function SignIn() {
   useEffect(() => {
     localStorage.setItem("login", login);
   }, [login]);
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
+    });
+  }, []);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

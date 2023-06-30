@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import uuid from "react-uuid";
 import TopBar from "../components/TopBar";
+import ButtonFunc from "../components/ButtonFunc";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   collection,
@@ -78,25 +79,7 @@ const ContentImage = styled.div`
   background-repeat: no-repeat;
   border-radius: 20px;
 `;
-const ContentFunc = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 10px;
-`;
 
-const ShareButton = styled.button`
-  border: 0;
-  background-color: transparent;
-  margin-left: auto;
-  height: 50px;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  &:hover {
-    opacity: 0.5;
-  }
-`;
 const ContentTitle = styled.h2``;
 
 const ContentBody = styled.p`
@@ -127,14 +110,6 @@ const CommentLike = styled.button`
   height: 30px;
   margin-left: auto;
 `;
-const TextArea = styled.textarea`
-  position: absolute;
-  width: 0px;
-  height: 0px;
-  bottom: 0;
-  right: 0;
-  opacity: 0;
-`;
 
 const CommentInput = styled.input`
   width: 100%;
@@ -162,9 +137,8 @@ const CommentForm = styled.form`
   right: 0;
   top: 0;
 `;
+
 function Detail() {
-  const [, setContents] = useState([]);
-  const [content, setContent] = useState([]);
   const [comments, setComments] = useState([]);
   const [editCommentId, setEditCommentId] = useState("");
   const [editedComment, setEditedComment] = useState("");
@@ -173,8 +147,8 @@ function Detail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [editedTitle, setEditedTitle] = useState("");
-  const [editedBody, setEditedBody] = useState("");
+  const [editedTitle] = useState("");
+  const [editedBody] = useState("");
 
   // 랜덤 닉네임 생성 함수
   const generateRandomNickname = () => {
@@ -248,34 +222,6 @@ function Detail() {
       console.error("Error getting nickname:", error);
       throw error;
     }
-  };
-
-  //데이터 가져오는 함수
-  const fetchData = async () => {
-    const q = query(collection(db, "contents"));
-    const querySnapshot = await getDocs(q);
-    const initialContents = [];
-    querySnapshot.forEach((doc) => {
-      initialContents.push({ id: doc.id, ...doc.data() });
-    });
-    setContents(initialContents);
-    const contentData = initialContents.find((item) => item.id === "content");
-    setContent(contentData);
-  };
-  // 데이터 가져오기
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // url 복사
-  const copyUrlRef = useRef(null);
-  const copyUrl = (e) => {
-    if (!document.queryCommandSupported("copy")) {
-      return alert("복사 기능이 지원되지 않는 브라우저입니다.");
-    }
-    copyUrlRef.current.select();
-    document.execCommand("copy");
-    alert("링크가 복사되었습니다.");
   };
 
   // DB에서 저장된 포스트를 불러오는 함수
@@ -446,14 +392,7 @@ function Detail() {
                     </ButtonGroup>
                   </ContentHeader>
                   <ContentImage backgroundimg={post.downloadURL}></ContentImage>
-                  <ContentFunc>
-                    <TextArea
-                      ref={copyUrlRef}
-                      value={window.location.href}
-                      readOnly
-                    ></TextArea>
-                    <ShareButton onClick={copyUrl}>공유하기</ShareButton>
-                  </ContentFunc>
+                  <ButtonFunc />
                   <ContentTitle>{post.title}</ContentTitle>
                   <ContentBody>{post.body}</ContentBody>
                 </div>
@@ -526,3 +465,8 @@ function Detail() {
   );
 }
 export default Detail;
+
+//사진크기조절
+// 백그라운드 커버말고 다른거? 모지란거 검은배경 비율지키기!
+
+//사이드바 카테고리

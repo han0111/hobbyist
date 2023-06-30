@@ -24,7 +24,6 @@ const Main = styled.main`
   margin-top: 150px;
   margin-left: 100px;
 `;
-
 const MainInner = styled.div`
   margin-bottom: 20px;
 `;
@@ -95,39 +94,34 @@ function Contents() {
     try {
       const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
-
       const fetchedComments = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-
       setComments(fetchedComments);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
   };
-
   useEffect(() => {
     fetchComments();
   }, []);
+
 
   // DB에서 저장된 포스트를 불러오는 함수
   const fetchPosts = async () => {
     try {
       const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
-
       const fetchedPosts = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-
       setPosts(fetchedPosts);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
   };
-
   // 포스트 저장 부분 불러옴
   useEffect(() => {
     fetchPosts();
@@ -219,5 +213,4 @@ function Contents() {
     </>
   );
 }
-
 export default Contents;
