@@ -1,5 +1,4 @@
 import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
-// import { uploadBytes } from "firebase/storage";
 import { storage, auth } from "../service/firebase";
 import React, { useState } from "react";
 
@@ -23,10 +22,6 @@ function FileUpload({ setDownloadURL }) {
 
     setDownloadURL(downloadURL);
   };
-
-  // const savePost = (downloadURL) => {
-  //   setDownloadURL(downloadURL);
-  // };
 
   return (
     <>
