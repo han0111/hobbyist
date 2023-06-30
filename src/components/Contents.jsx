@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import uuid from "react-uuid";
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,16 +12,10 @@ import {
   collection,
   getDocs,
   query,
-  addDoc,
   orderBy,
-  deleteDoc,
-  updateDoc,
-  where,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../service/firebase";
 
 const Main = styled.main`
   padding: 20px;
@@ -41,9 +34,11 @@ const MainUser = styled.div`
   padding: 16px 0px;
   cursor: pointer;
 `;
+
 const UserImg = styled.img`
   width: 48px;
 `;
+
 const User = styled.h3`
   font-size: 25px;
   font-weight: 600;
@@ -55,6 +50,7 @@ const ContentsBox = styled.div`
   padding: 20px;
   cursor: pointer;
 `;
+
 const FunctionUl = styled.ul`
   display: flex;
   justify-content: space-between;
@@ -62,16 +58,19 @@ const FunctionUl = styled.ul`
   margin: 20px 15px;
   list-style: none;
 `;
+
 const IconSpan = styled.span`
   margin-right: 6px;
   font-size: 17px;
   cursor: pointer;
 `;
+
 const CommentForm = styled.form`
   position: relative;
   right: 0;
   top: 0;
 `;
+
 const CommentInput = styled.input`
   width: 100%;
   padding: 9px 8px;
@@ -81,6 +80,7 @@ const CommentInput = styled.input`
   box-sizing: border-box;
   background: #eee;
 `;
+
 const CommentButton = styled.button`
   position: absolute;
   right: 0;
@@ -91,12 +91,20 @@ const CommentButton = styled.button`
   background: #222;
   color: #fff;
 `;
+
+const TextArea = styled.textarea`
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+`;
+
+
 function Contents() {
-  const [comment, setComment] = useState();
   const [likeCount, setLikeCount] = useState(false);
-  const [comments, setComments] = useState([]);
-  const [editCommentId, setEditCommentId] = useState("");
-  const [editedComment, setEditedComment] = useState("");
+  const [, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
   //현재 로그인 된 아이디 알아오는 함수
   const getCurrentUserUid = () => {
@@ -110,11 +118,14 @@ function Contents() {
       return null;
     }
   };
-  // getNickname 함수
+  //
   const getNickname = async (uid) => {
     console.log(uid);
+  const [, setUsers] = useState();
+
+  const fetchUsers = async () => {
     try {
-      const q = query(collection(db, "users"), where("uid", "==", uid));
+      const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0].data();
@@ -122,11 +133,23 @@ function Contents() {
       } else {
         throw new Error("User not found");
       }
+
+      const fetchedUsers = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setUsers(fetchedUsers);
+      console.log(fetchedUsers);
     } catch (error) {
-      console.error("Error getting nickname:", error);
-      throw error;
+      console.error("Error fetching comments:", error);
     }
   };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   // DB에서 저장된 값 불러오는 부분과 재렌더링
   const fetchComments = async () => {
     try {
@@ -141,9 +164,11 @@ function Contents() {
       console.error("Error fetching comments:", error);
     }
   };
+    
   useEffect(() => {
     fetchComments();
   }, []);
+    
   //Like 함수 부분 빼놨습니다!
   const handleLike = async () => {
     try {
@@ -163,6 +188,7 @@ function Contents() {
       console.error("Error updating like count:", error);
     }
   };
+
   //입력시 DB에 저장하는 함수
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
@@ -219,26 +245,6 @@ function Contents() {
     }
   };
 
-  // const PostUpdateBtn = async (CID) => {
-  //   try {
-  //     const querySnapshot = await getDocs(
-  //       query(collection(db, "posts"), where("CID", "==", CID))
-  //     );
-
-  //     querySnapshot.forEach(async (doc) => {
-  //       await updateDoc(doc.ref, {
-  //         comment: editedComment,
-  //       });
-  //     });
-
-  //     setEditCommentId("");
-  //     setEditedComment("");
-  //     fetchComments();
-  //   } catch (error) {
-  //     console.error("댓글 수정 오류:", error);
-  //   }
-  // };
-
   // DB에서 저장된 포스트를 불러오는 함수
   const fetchPosts = async () => {
     try {
@@ -257,6 +263,7 @@ function Contents() {
   useEffect(() => {
     fetchPosts();
   }, []);
+
   //DB에서 해당하는 CID값을 가진 댓글을 삭제하는 함수
   const PostDeleteBtn = async (CID) => {
     try {
@@ -271,16 +278,15 @@ function Contents() {
     }
   };
 
-  // url 복사
+  // 공유하기 기능
   const copyUrlRef = useRef(null);
 
-  const copyUrl = (e) => {
+  const copyUrl = (postId) => {
     if (!document.queryCommandSupported("copy")) {
       return alert("복사 기능이 지원되지 않는 브라우저입니다.");
     }
-
     const currentUrl = window.location.href; // 현재 페이지 URL 가져오기
-    const additionalPath = `detail/${e.target.value}`; // 추가할 경로
+    const additionalPath = `detail/${postId}`; // 추가할 경로
 
     const newUrl = currentUrl + additionalPath; // 현재 URL에 추가 경로를 붙임
     copyUrlRef.current.value = newUrl; // 복사할 URL을 참조하는 input 요소에 새로운 URL 설정
@@ -301,12 +307,11 @@ function Contents() {
               <MainInner>
                 <MainUser
                   onClick={() => {
-                    navigate(`/mypage/${post.id}`);
+                    navigate(`/mypage/${post.uid}`);
                   }}
                 >
                   <UserImg src="images/user_img.png" alt="" />
                   <User>{post.nickname}</User>
-                  <button onClick={() => PostDeleteBtn(post.CID)}>삭제</button>
                 </MainUser>
                 <ContentsBox
                   onClick={() => {
@@ -323,41 +328,7 @@ function Contents() {
                   />
                   <span>{post.body}</span>
                 </ContentsBox>
-                {comments.map((item) => {
-                  return (
-                    <div key={item.CID}>
-                      {editCommentId === item.CID ? (
-                        <div>
-                          <input
-                            type="text"
-                            value={editedComment}
-                            onChange={(event) => {
-                              setEditedComment(event.target.value);
-                            }}
-                          />
-                          <button onClick={() => handleCommentEdit(item.CID)}>
-                            완료
-                          </button>
-                        </div>
-                      ) : (
-                        <p style={{ padding: "16px 0px 0px 0px" }}>
-                          {item.nickname}&nbsp;
-                          <span>{item.comment}</span>
-                          <button onClick={() => setEditCommentId(item.CID)}>
-                            수정
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleCommentDelete(item.CID);
-                            }}
-                          >
-                            삭제
-                          </button>
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
+
                 <FunctionUl>
                   <li>
                     <IconSpan>
@@ -378,21 +349,16 @@ function Contents() {
                     북마크
                   </li>
                   <li>
-                    <IconSpan onClick={copyUrl} value={post.id}>
+                    <TextArea
+                      ref={copyUrlRef}
+                      value={window.location.href}
+                    ></TextArea>
+                    <IconSpan onClick={() => copyUrl(post.id)}>
                       <FontAwesomeIcon icon={faShareFromSquare} />
                     </IconSpan>
                     공유하기
                   </li>
                 </FunctionUl>
-                <CommentForm onSubmit={handleCommentSubmit}>
-                  <CommentInput
-                    value={comment}
-                    onChange={(event) => {
-                      setComment(event.target.value);
-                    }}
-                  />
-                  <CommentButton>쓰기</CommentButton>
-                </CommentForm>
               </MainInner>
             </Main>
           );

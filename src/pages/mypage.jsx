@@ -1,6 +1,7 @@
 import React from "react";
 import TopBar from "../components/TopBar";
 import { styled } from "styled-components";
+import Profile from "../components/Profile";
 
 const MypageLayout = styled.div`
   margin-top: 100px;
@@ -76,6 +77,7 @@ const IntroduceMent = styled.p`
 `;
 
 const MyContents = styled.div`
+  /* background-color: gray; */
   margin-left: 100px;
 
   width: 100%;
@@ -114,6 +116,7 @@ const ContentImg = styled.div`
 `;
 
 const ContentBody = styled.div`
+  /* background-color: beige; */
   margin-left: 30px;
   height: 90%;
   width: 30%;
@@ -148,21 +151,37 @@ function Mypage() {
     <div>
       <TopBar />
       <MypageLayout>
-        <ProfileContainer>
-          <MyImg></MyImg>
-          <NameContainer>
-            <MyName>User</MyName>
-            <EditBtn width="30px" height="30px"></EditBtn>
-          </NameContainer>
-          <IntroduceMe>
-            <IntroduceMent>간단한 소개글</IntroduceMent>
-            <EditBtn width="30px" height="30px"></EditBtn>
-          </IntroduceMe>
-        </ProfileContainer>
+        <Profile />
         <MyContents>
           <MyButton>내가 쓴 글</MyButton>
           <MyButton>북마크 한 글</MyButton>
-
+          <ListContainer>
+            <ContentImg></ContentImg>
+            <ContentBody>
+              <ContentTitle>제목</ContentTitle>
+              <ContentMent>작성글</ContentMent>
+            </ContentBody>
+            <EditBtn width="40px" height="40px"></EditBtn>
+            <DeleteBtn></DeleteBtn>
+          </ListContainer>
+          <ListContainer>
+            <ContentImg></ContentImg>
+            <ContentBody>
+              <ContentTitle>제목</ContentTitle>
+              <ContentMent>작성글</ContentMent>
+            </ContentBody>
+            <EditBtn width="40px" height="40px"></EditBtn>
+            <DeleteBtn></DeleteBtn>
+          </ListContainer>
+          <ListContainer>
+            <ContentImg></ContentImg>
+            <ContentBody>
+              <ContentTitle>제목</ContentTitle>
+              <ContentMent>작성글</ContentMent>
+            </ContentBody>
+            <EditBtn width="40px" height="40px"></EditBtn>
+            <DeleteBtn></DeleteBtn>
+          </ListContainer>
           <ListContainer>
             <ContentImg></ContentImg>
             <ContentBody>
