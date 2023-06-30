@@ -198,7 +198,6 @@ function Detail() {
       if (currentUser) {
         return currentUser.uid;
       } else {
-        console.log("로그인된 사용자가 없습니다!");
         return null;
       }
     };
@@ -217,22 +216,26 @@ function Detail() {
     const { likesByUser, likeCount } = postData;
     // console.log(postData);
 
-    if (likesByUser && likesByUser[uid]) {
-      // 이미 해당 사용자가 좋아요를 누른 경우, 좋아요 취소 처리
-      delete likesByUser[uid];
-      await updateDoc(postRef, {
-        likesByUser: { ...likesByUser },
-        likeCount: likeCount - 1,
-      });
+    if (getCurrentUserUid() !== null) {
+      if (likesByUser && likesByUser[uid]) {
+        // 이미 해당 사용자가 좋아요를 누른 경우, 좋아요 취소 처리
+        delete likesByUser[uid];
+        await updateDoc(postRef, {
+          likesByUser: { ...likesByUser },
+          likeCount: likeCount - 1,
+        });
+      } else {
+        // 해당 사용자가 좋아요를 누르지 않은 경우, 좋아요 처리
+        await updateDoc(postRef, {
+          likesByUser: {
+            ...likesByUser,
+            [uid]: true,
+          },
+          likeCount: likeCount + 1,
+        });
+      }
     } else {
-      // 해당 사용자가 좋아요를 누르지 않은 경우, 좋아요 처리
-      await updateDoc(postRef, {
-        likesByUser: {
-          ...likesByUser,
-          [uid]: true,
-        },
-        likeCount: likeCount + 1,
-      });
+      alert("로그인이 필요합니다.");
     }
 
     fetchData(); // 데이터 갱신
