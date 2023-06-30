@@ -150,6 +150,10 @@ const IntroduceMent = styled.p`
   font-size: 20px;
 `;
 
+const ProfileEditBtn = styled.button`
+  display: ${(props) =>
+    props.currentUserId === props.params ? "block" : "none"};
+`;
 function Profile() {
   const [users, setUsers] = useState([]);
   const [memo, setMemo] = useState("");
@@ -180,6 +184,7 @@ function Profile() {
       setUsers(thisUser);
       const thisMemo = fetchedUsers.find((user) => params === user.uid).memo;
       setMemo(thisMemo);
+      console.log(thisMemo);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
@@ -215,13 +220,22 @@ function Profile() {
     setOpen(!open);
   };
 
+  const currentUserId = auth.currentUser.uid;
+  console.log(currentUserId);
+
   return (
     <>
       <ProfileContainer>
         <MyDiv>
           <img src={image} style={{ width: "250px" }} />
         </MyDiv>
-        <button onClick={profileModalHandler}>수정</button>
+        <ProfileEditBtn
+          currentUserId={currentUserId}
+          params={params}
+          onClick={profileModalHandler}
+        >
+          수정
+        </ProfileEditBtn>
         <NameContainer>
           <MyName>{users}</MyName>
           <EditBtn

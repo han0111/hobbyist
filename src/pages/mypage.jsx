@@ -2,6 +2,7 @@ import React from "react";
 import TopBar from "../components/TopBar";
 import { styled } from "styled-components";
 import Profile from "../components/Profile";
+import MyPost from "../components/MyPost";
 
 const MypageLayout = styled.div`
   margin-top: 100px;
@@ -152,6 +153,7 @@ function Mypage() {
       <TopBar />
       <MypageLayout>
         <Profile />
+        <MyPost />
         <MyContents>
           <MyButton>내가 쓴 글</MyButton>
           <MyButton>북마크 한 글</MyButton>
@@ -192,6 +194,7 @@ function Mypage() {
             <DeleteBtn></DeleteBtn>
           </ListContainer>
         </MyContents>
+
       </MypageLayout>
     </div>
   );
