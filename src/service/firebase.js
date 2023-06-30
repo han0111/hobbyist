@@ -30,13 +30,13 @@ const firebaseConfig = {
   // messagingSenderId: "883829817146",
   // appId: "1:883829817146:web:a5591680b556d1b0025a03",
 
-  // 윤건
-  // apiKey: "AIzaSyBYtriPYjeOSg4WIEWBqyutqxu9oJTNzvI",
-  // authDomain: "hobbyist-40edb.firebaseapp.com",
-  // projectId: "hobbyist-40edb",
-  // storageBucket: "hobbyist-40edb.appspot.com",
-  // messagingSenderId: "415353098643",
-  // appId: "1:415353098643:web:6ec6c18d0251493579d866",
+  // // 윤건
+  apiKey: "AIzaSyBYtriPYjeOSg4WIEWBqyutqxu9oJTNzvI",
+  authDomain: "hobbyist-40edb.firebaseapp.com",
+  projectId: "hobbyist-40edb",
+  storageBucket: "hobbyist-40edb.appspot.com",
+  messagingSenderId: "415353098643",
+  appId: "1:415353098643:web:6ec6c18d0251493579d866",
 };
 
 export const signInWithGoogle = () => {

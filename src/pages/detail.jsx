@@ -174,6 +174,7 @@ function Detail() {
         isLike: true,
         likeCount: content.likeCount + 1,
       });
+
       fetchData();
     }
   };
