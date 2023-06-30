@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { auth } from "../service/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -8,6 +9,8 @@ import {
   signOut,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+
+import { VerifyMessage } from "./styledcomponents/Styled";
 
 import github from "../img/github.png";
 import google from "../img/google.png";
@@ -39,7 +42,7 @@ const BcDiv = styled.div`
   z-index: 10;
   width: 100%;
   height: 100%;
-  display: ${(props) => (props.isOpen ? "block" : "none")};
+  display: ${(props) => (props.open ? "block" : "none")};
 `;
 
 const StDiv = styled.div`
@@ -95,15 +98,28 @@ const StLoginBtn = styled.button`
 `;
 
 function SignIn() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [, setUserData] = useState(null);
-  const [login, setLogin] = useState(localStorage.getItem("login") || "로그인");
+//우정님이 하신 부분
+  const [login, setLogin] = useState("로그인");
+
+  //로컬로 하는부분
+//   const [login, setLogin] = useState(localStorage.getItem("login") || "로그인");
+  const [passwordverify, setPasswordVerify] = useState(false);
+
 
   useEffect(() => {
     localStorage.setItem("login", login);
   }, [login]);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
+      return !auth.currentUser ? setLogin("로그인") : setLogin("로그아웃");
+    });
+  }, [auth]);
 
   const onChange = (event) => {
     const {
@@ -114,6 +130,7 @@ function SignIn() {
     }
     if (name === "password") {
       setPassword(value);
+      setPasswordVerify(value.length < 8); //비밀번호 길이 검증
     }
   };
 
@@ -158,10 +175,14 @@ function SignIn() {
       setIsOpen(false);
       setLogin("로그아웃");
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      alert("아이디와 비밀번호를 확인해주세요.");
-      console.log("error with signIn", errorCode, errorMessage);
+      if (error.code === "auth/user-not-found") {
+        alert("존재하지 않는 이메일입니다.");
+      } else {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert("아이디와 비밀번호를 확인해주세요.");
+        console.log("error with signIn", errorCode, errorMessage);
+      }
     }
     setEmail("");
     setPassword("");
@@ -175,13 +196,16 @@ function SignIn() {
   };
 
   const loginModalHandler = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(!open);
+    setEmail("");
+    setPassword("");
+    setPasswordVerify(true);
   };
 
   return (
     <>
       <div>
-        <BcDiv isOpen={isOpen} onClick={loginModalHandler}>
+        <BcDiv open={open} onClick={loginModalHandler}>
           <StDiv onClick={(e) => e.stopPropagation()}>
             <StForm>
               <StH2>LOGIN</StH2>
@@ -205,7 +229,17 @@ function SignIn() {
                   placeholder="패스워드를 입력하세요."
                 />
               </p>
+              {passwordverify && (
+                <VerifyMessage invalid>
+                  비밀번호가 8자리 미만입니다.
+                </VerifyMessage>
+              )}
+              {!passwordverify && (
+                <VerifyMessage>8자리 이상입니다.</VerifyMessage>
+              )}
+              <p />
               <StLoginBtn onClick={signInByEmail}>로그인</StLoginBtn>
+
               <br />
               <button
                 style={{
