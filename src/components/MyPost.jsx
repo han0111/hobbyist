@@ -3,7 +3,6 @@ import { styled } from "styled-components";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
-
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
 import { db } from "../service/firebase";
