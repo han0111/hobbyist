@@ -68,14 +68,6 @@ const Likecount = styled.div`
 const LikeButton = styled.button`
   border: 0;
   background-color: transparent;
-  ${(props) =>
-    props.islike
-      ? `
-      background-image: url("https://img.icons8.com/?size=1x&id=16424&format=png");
-    `
-      : `
-      background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
-    `};
   font-size: 50px;
   width: 50px;
   height: 50px;
@@ -89,14 +81,6 @@ const LikeButton = styled.button`
 const BookButton = styled.button`
   border: 0;
   background-color: transparent;
-  ${(props) =>
-    props.isbooked
-      ? `
-      background-image: url("https://img.icons8.com/?size=1x&id=26083&format=png");
-    `
-      : `
-    background-image: url("https://img.icons8.com/?size=1x&id=25157&format=png");
-    `};
   height: 50px;
   width: 50px;
   margin-left: 20px;
@@ -160,7 +144,7 @@ const TextArea = styled.textarea`
 `;
 
 function Detail() {
-  const [posts, setPosts] = useState([]);
+  const [, setPosts] = useState([]);
   const [post, setPost] = useState([]);
   const { id } = useParams();
 
@@ -279,13 +263,40 @@ function Detail() {
           <ContentImage></ContentImage>
           <ContentFunc>
             <LikeContainer>
-              <LikeButton onClick={updateLikes}></LikeButton>
+              <LikeButton
+                onClick={updateLikes}
+                // islike={content.isLike ? "true" : "false"}
+              >
+                {/* {content.isLike ? (
+                  <img
+                    src="https://img.icons8.com/?size=1x&id=16424&format=png"
+                    alt="좋아요"
+                  />
+                ) : (
+                  <img
+                    src="https://img.icons8.com/?size=1x&id=581&format=png"
+                    alt="좋아요 취소"
+                  />
+                )} */}
+              </LikeButton>
               <Likecount>{post.likeCount}</Likecount>
             </LikeContainer>
             <BookButton
             // onClick={updateBooked}
-            // isbooked={content.isBooked}
-            ></BookButton>
+            // isbooked={content.isBooked ? "true" : "false"}
+            >
+              {/* {content.isBooked ? (
+                <img
+                  src="https://img.icons8.com/?size=1x&id=26083&format=png"
+                  alt="북마크"
+                />
+              ) : (
+                <img
+                  src="https://img.icons8.com/?size=1x&id=25157&format=png"
+                  alt="북마크 해제"
+                />
+              )} */}
+            </BookButton>
             <TextArea ref={copyUrlRef} value={window.location.href}></TextArea>
             <ShareButton onClick={copyUrl}>공유하기</ShareButton>
           </ContentFunc>
