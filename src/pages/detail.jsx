@@ -9,20 +9,31 @@ import {
   getDocs,
   query,
   addDoc,
-  orderBy,
-  doc,
   updateDoc,
+  orderBy,
   deleteDoc,
   where,
+  doc,
+  getDoc,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
+import { getAuth } from "firebase/auth";
+
+const Browser = styled.div`
+  aspect-ratio: 1/1;
+  width: 100%;
+`;
 
 const DetailContainer = styled.div`
   margin-top: 100px;
   background-color: #d9d9d9;
   padding: 30px;
   box-shadow: 0px 1px 5px gray;
+  width: 65%;
+  border-radius: 2%;
+  display: flex;
+  flex-direction: column;
+  margin: 10px 20% 10px 15%;
 `;
 const ContentHeader = styled.div`
   display: flex;
@@ -45,7 +56,7 @@ const ProfileName = styled.span`
 
 const ContentImage = styled.div`
   /* background-color: gray; */
-  height: 600px;
+  height: 400px;
   width: 100%;
   margin-bottom: 10px;
   background-image: ${(props) => `url(${props.backgroundimg})`};
@@ -184,6 +195,7 @@ const Button = styled.button`
 function Detail() {
   const [, setContents] = useState([]);
   const [content, setContent] = useState([]);
+
   const [comments, setComments] = useState([]);
   const [editCommentId, setEditCommentId] = useState("");
   const [editedComment, setEditedComment] = useState("");
@@ -191,7 +203,6 @@ function Detail() {
   const [comment, setComment] = useState("");
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [editedTitle, setEditedTitle] = useState("");
   const [editedBody, setEditedBody] = useState("");
 
@@ -267,65 +278,6 @@ function Detail() {
       console.error("Error getting nickname:", error);
       throw error;
     }
-  };
-
-  //데이터 가져오는 함수
-  const fetchData = async () => {
-    const q = query(collection(db, "contents"));
-    const querySnapshot = await getDocs(q);
-    const initialContents = [];
-    querySnapshot.forEach((doc) => {
-      initialContents.push({ id: doc.id, ...doc.data() });
-    });
-    setContents(initialContents);
-    const contentData = initialContents.find((item) => item.id === "content");
-    setContent(contentData);
-  };
-  // 데이터 가져오기
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // Like update
-  const updateLike = async (event) => {
-    const contentRef = doc(db, "contents", "content");
-    if (content.isLike) {
-      // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
-      await updateDoc(contentRef, {
-        isLike: false,
-        likeCount: content.likeCount - 1,
-      });
-      fetchData();
-    } else {
-      // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
-      await updateDoc(contentRef, {
-        isLike: true,
-        likeCount: content.likeCount + 1,
-      });
-
-      fetchData();
-    }
-  };
-
-  // 북마크 update
-  const updateBooked = async (event) => {
-    const contentRef = doc(db, "contents", "content");
-    await updateDoc(contentRef, { isBooked: !content.isBooked });
-    setContent((prevContent) => ({
-      ...prevContent,
-      isBooked: !prevContent.isBooked,
-    }));
-  };
-
-  // url 복사
-  const copyUrlRef = useRef(null);
-  const copyUrl = (e) => {
-    if (!document.queryCommandSupported("copy")) {
-      return alert("복사 기능이 지원되지 않는 브라우저입니다.");
-    }
-    copyUrlRef.current.select();
-    document.execCommand("copy");
-    alert("링크가 복사되었습니다.");
   };
 
   // DB에서 저장된 포스트를 불러오는 함수
@@ -561,3 +513,8 @@ function Detail() {
   );
 }
 export default Detail;
+
+//사진크기조절
+// 백그라운드 커버말고 다른거? 모지란거 검은배경 비율지키기!
+
+//사이드바 카테고리
