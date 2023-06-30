@@ -11,7 +11,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-
+import { auth } from "../service/firebase";
 import { db } from "../service/firebase";
 
 // 모달 디자인//

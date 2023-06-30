@@ -27,28 +27,28 @@ function SideBar2() {
     <>
       {allLists.map((allList) => {
         return (
-          <div className="전체">
+          <div className="전체" key={allList.id}>
             <div className="큰목차">
-              <div>{allList[0].list}</div>
+              <div>{allList.list}</div>
               <div className="작은목차">
-                <div>{allList[0].sublist[0]}</div>
-                <div>{allList[0].sublist[1]}</div>
+                <div>{allList.sublist[0]}</div>
+                <div>{allList.sublist[1]}</div>
               </div>
-              <div>{allList[1].list}</div>
+              <div>{allList.list}</div>
               <div className="작은목차">
-                <div>{allList[1].sublist[0]}</div>
-                <div>{allList[1].sublist[1]}</div>
+                <div>{allList.sublist[0]}</div>
+                <div>{allList.sublist[1]}</div>
               </div>
 
-              <div className="큰목차">{allList[2].list}</div>
+              <div className="큰목차">{allList.list}</div>
               <div className="작은목차">
-                <div>{allList[2].sublist[0]}</div>
-                <div>{allList[2].sublist[1]}</div>
+                <div>{allList.sublist[0]}</div>
+                <div>{allList.sublist[1]}</div>
               </div>
-              <div className="큰목차">{allList[3].list}</div>
+              <div className="큰목차">{allList.list}</div>
               <div className="작은목차">
-                <div>{allList[3].sublist[0]}</div>
-                <div>{allList[3].sublist[0]}</div>
+                <div>{allList.sublist[0]}</div>
+                <div>{allList.sublist[0]}</div>
               </div>
             </div>
           </div>

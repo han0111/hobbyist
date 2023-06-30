@@ -3,21 +3,21 @@ import { styled } from "styled-components";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import github from "../img/github.png";
-import { auth } from "../service/firebase";
+// import { useLocation } from "react-router-dom";
+// import github from "../img/github.png";
+// import { auth } from "../service/firebase";
 import {
-  Firestore,
+  // Firestore,
   collection,
   getDocs,
   query,
-  addDoc,
+  // addDoc,
   orderBy,
-  deleteDoc,
-  updateDoc,
-  where,
+  // deleteDoc,
+  // updateDoc,
+  // where,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+// import { ge tAuth } from "firebase/auth";
 import { db } from "../service/firebase";
 
 const EditBtn = styled.button`

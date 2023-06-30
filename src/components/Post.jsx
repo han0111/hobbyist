@@ -99,11 +99,6 @@ function Post() {
     fetchData();
   }, []);
 
-  // const posts = useSelector((state) => {
-  //   console.log(state.posts);
-  //   return state.posts;
-  // });
-
   // 글쓰기 모달창 열기
   const postModalHandler = () => {
     !auth.currentUser ? alert("로그인 후 사용해주세요.") : setOpen(!open);
