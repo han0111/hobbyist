@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import uuid from "react-uuid";
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,16 +12,10 @@ import {
   collection,
   getDocs,
   query,
-  addDoc,
   orderBy,
-  deleteDoc,
-  updateDoc,
-  where,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../service/firebase";
 
 const Main = styled.main`
   padding: 20px;
@@ -67,66 +60,34 @@ const IconSpan = styled.span`
   font-size: 17px;
   cursor: pointer;
 `;
-const CommentForm = styled.form`
-  position: relative;
-  right: 0;
-  top: 0;
-`;
-const CommentInput = styled.input`
-  width: 100%;
-  padding: 9px 8px;
-  border-radius: 5px;
-  border: none;
-  outline: none;
-  box-sizing: border-box;
-  background: #eee;
-`;
-const CommentButton = styled.button`
-  position: absolute;
-  right: 0;
-  top: 0;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 0px 5px 5px 0px;
-  background: #222;
-  color: #fff;
-`;
+
 function Contents() {
-  const [comment, setComment] = useState();
   const [likeCount, setLikeCount] = useState(false);
-  const [comments, setComments] = useState([]);
-  const [editCommentId, setEditCommentId] = useState("");
-  const [editedComment, setEditedComment] = useState("");
+  const [, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
-  //현재 로그인 된 아이디 알아오는 함수
-  const getCurrentUserUid = () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-    console.log("현재 로그인 된 아이디", currentUser);
-    if (currentUser) {
-      return currentUser.uid;
-    } else {
-      console.log("로그인된 사용자가 없습니다!");
-      return null;
-    }
-  };
-  // getNickname 함수
-  const getNickname = async (uid) => {
-    console.log(uid);
+  const [, setUsers] = useState();
+
+  const fetchUsers = async () => {
     try {
-      const q = query(collection(db, "users"), where("uid", "==", uid));
+      const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const userData = querySnapshot.docs[0].data();
-        return userData.nickname;
-      } else {
-        throw new Error("User not found");
-      }
+
+      const fetchedUsers = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setUsers(fetchedUsers);
+      console.log(fetchedUsers);
     } catch (error) {
-      console.error("Error getting nickname:", error);
-      throw error;
+      console.error("Error fetching comments:", error);
     }
   };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   // DB에서 저장된 값 불러오는 부분과 재렌더링
   const fetchComments = async () => {
     try {
@@ -163,81 +124,6 @@ function Contents() {
       console.error("Error updating like count:", error);
     }
   };
-  //입력시 DB에 저장하는 함수
-  const handleCommentSubmit = async (event) => {
-    event.preventDefault();
-    // 닉네임 가져오기
-    const uid = getCurrentUserUid();
-    if (!uid) {
-      console.error("User UID not found");
-      return;
-    }
-    try {
-      const fetchedNickname = await getNickname(uid);
-      const newComment = {
-        CID: uuid(),
-        comment: comment,
-        createdAt: new Date(),
-        nickname: fetchedNickname,
-      };
-      await addDoc(collection(db, "Comments"), newComment);
-      setComment(""); // 댓글 작성 후 입력 필드 비우기
-      fetchComments(); // 댓글 목록 다시 불러오기
-    } catch (error) {
-      console.error("Error adding comment: ", error);
-    }
-  };
-  //DB에서 해당하는 CID값을 가진 댓글을 수정하는 함수
-  const handleCommentEdit = async (CID) => {
-    try {
-      const querySnapshot = await getDocs(
-        query(collection(db, "Comments"), where("CID", "==", CID))
-      );
-      querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {
-          comment: editedComment,
-        });
-      });
-      setEditCommentId("");
-      setEditedComment("");
-      fetchComments();
-    } catch (error) {
-      console.error("댓글 수정 오류:", error);
-    }
-  };
-  //DB에서 해당하는 CID값을 가진 댓글을 삭제하는 함수
-  const handleCommentDelete = async (CID) => {
-    try {
-      const querySnapshot = await getDocs(
-        query(collection(db, "Comments"), where("CID", "==", CID))
-      );
-      const deletecomment = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
-      await Promise.all(deletecomment);
-      fetchComments();
-    } catch (error) {
-      console.error("댓글 삭제 오류:", error);
-    }
-  };
-
-  // const PostUpdateBtn = async (CID) => {
-  //   try {
-  //     const querySnapshot = await getDocs(
-  //       query(collection(db, "posts"), where("CID", "==", CID))
-  //     );
-
-  //     querySnapshot.forEach(async (doc) => {
-  //       await updateDoc(doc.ref, {
-  //         comment: editedComment,
-  //       });
-  //     });
-
-  //     setEditCommentId("");
-  //     setEditedComment("");
-  //     fetchComments();
-  //   } catch (error) {
-  //     console.error("댓글 수정 오류:", error);
-  //   }
-  // };
 
   // DB에서 저장된 포스트를 불러오는 함수
   const fetchPosts = async () => {
@@ -257,19 +143,6 @@ function Contents() {
   useEffect(() => {
     fetchPosts();
   }, []);
-  //DB에서 해당하는 CID값을 가진 댓글을 삭제하는 함수
-  const PostDeleteBtn = async (CID) => {
-    try {
-      const querySnapshot = await getDocs(
-        query(collection(db, "posts"), where("CID", "==", CID))
-      );
-      const deletePost = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
-      await Promise.all(deletePost);
-      fetchPosts();
-    } catch (error) {
-      console.error("포스트 삭제 오류:", error);
-    }
-  };
 
   // url 복사
   const copyUrlRef = useRef(null);
@@ -301,12 +174,11 @@ function Contents() {
               <MainInner>
                 <MainUser
                   onClick={() => {
-                    navigate(`/mypage/${post.id}`);
+                    navigate(`/mypage/${post.uid}`);
                   }}
                 >
                   <UserImg src="images/user_img.png" alt="" />
                   <User>{post.nickname}</User>
-                  <button onClick={() => PostDeleteBtn(post.CID)}>삭제</button>
                 </MainUser>
                 <ContentsBox
                   onClick={() => {
@@ -323,41 +195,7 @@ function Contents() {
                   />
                   <span>{post.body}</span>
                 </ContentsBox>
-                {comments.map((item) => {
-                  return (
-                    <div key={item.CID}>
-                      {editCommentId === item.CID ? (
-                        <div>
-                          <input
-                            type="text"
-                            value={editedComment}
-                            onChange={(event) => {
-                              setEditedComment(event.target.value);
-                            }}
-                          />
-                          <button onClick={() => handleCommentEdit(item.CID)}>
-                            완료
-                          </button>
-                        </div>
-                      ) : (
-                        <p style={{ padding: "16px 0px 0px 0px" }}>
-                          {item.nickname}&nbsp;
-                          <span>{item.comment}</span>
-                          <button onClick={() => setEditCommentId(item.CID)}>
-                            수정
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleCommentDelete(item.CID);
-                            }}
-                          >
-                            삭제
-                          </button>
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
+
                 <FunctionUl>
                   <li>
                     <IconSpan>
@@ -384,15 +222,6 @@ function Contents() {
                     공유하기
                   </li>
                 </FunctionUl>
-                <CommentForm onSubmit={handleCommentSubmit}>
-                  <CommentInput
-                    value={comment}
-                    onChange={(event) => {
-                      setComment(event.target.value);
-                    }}
-                  />
-                  <CommentButton>쓰기</CommentButton>
-                </CommentForm>
               </MainInner>
             </Main>
           );
