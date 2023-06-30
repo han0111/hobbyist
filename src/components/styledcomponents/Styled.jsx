@@ -88,3 +88,8 @@ export const SubmitBtn = styled(Button)`
   color: white;
   margin-bottom: 10px;
 `;
+
+export const VerifyMessage = styled.span`
+  font-size: 12px;
+  color: ${(props) => (props.invalid ? "red" : "blue")};
+`;
