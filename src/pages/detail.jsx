@@ -11,12 +11,21 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../service/firebase";
+const Browser = styled.div`
+  aspect-ratio: 1/1;
+  width: 100%;
+`;
 
 const DetailContainer = styled.div`
   margin-top: 100px;
   background-color: #d9d9d9;
   padding: 30px;
   box-shadow: 0px 1px 5px gray;
+  width: 65%;
+  border-radius: 2%;
+  display: flex;
+  flex-direction: column;
+  margin: 10px 20% 10px 15%;
 `;
 const ContentHeader = styled.div`
   display: flex;
@@ -38,7 +47,7 @@ const ProfileName = styled.span`
 `;
 const ContentImage = styled.div`
   /* background-color: gray; */
-  height: 600px;
+  height: 400px;
   width: 100%;
   margin-bottom: 10px;
   background-image: ${(props) => `url(${props.backgroundImg})`};
@@ -239,68 +248,70 @@ function Detail() {
         return (
           <div key={post.id}>
             <TopBar />
-            <DetailContainer>
-              <div>
-                <ContentHeader>
-                  <ProfileImage></ProfileImage>
-                  <ProfileName>{post.nickname}</ProfileName>
-                </ContentHeader>
-                <ContentImage backgroundImg={post.downloadURL}></ContentImage>
-                <ContentFunc>
-                  <LikeContainer>
-                    <LikeButton
-                      onClick={updateLike}
-                      islike={content.isLike ? "true" : "false"}
+            <Browser>
+              <DetailContainer>
+                <div>
+                  <ContentHeader>
+                    <ProfileImage></ProfileImage>
+                    <ProfileName>{post.nickname}</ProfileName>
+                  </ContentHeader>
+                  <ContentImage backgroundImg={post.downloadURL}></ContentImage>
+                  <ContentFunc>
+                    <LikeContainer>
+                      <LikeButton
+                        onClick={updateLike}
+                        islike={content.isLike ? "true" : "false"}
+                      >
+                        {content.isLike ? (
+                          <img
+                            src="https://img.icons8.com/?size=1x&id=16424&format=png"
+                            alt="좋아요"
+                          />
+                        ) : (
+                          <img
+                            src="https://img.icons8.com/?size=1x&id=581&format=png"
+                            alt="좋아요 취소"
+                          />
+                        )}
+                      </LikeButton>
+                      <Likecount>{content.likeCount}</Likecount>
+                    </LikeContainer>
+                    <BookButton
+                      onClick={updateBooked}
+                      isbooked={content.isBooked ? "true" : "false"}
                     >
-                      {content.isLike ? (
+                      {content.isBooked ? (
                         <img
-                          src="https://img.icons8.com/?size=1x&id=16424&format=png"
-                          alt="좋아요"
+                          src="https://img.icons8.com/?size=1x&id=26083&format=png"
+                          alt="북마크"
                         />
                       ) : (
                         <img
-                          src="https://img.icons8.com/?size=1x&id=581&format=png"
-                          alt="좋아요 취소"
+                          src="https://img.icons8.com/?size=1x&id=25157&format=png"
+                          alt="북마크 해제"
                         />
                       )}
-                    </LikeButton>
-                    <Likecount>{content.likeCount}</Likecount>
-                  </LikeContainer>
-                  <BookButton
-                    onClick={updateBooked}
-                    isbooked={content.isBooked ? "true" : "false"}
-                  >
-                    {content.isBooked ? (
-                      <img
-                        src="https://img.icons8.com/?size=1x&id=26083&format=png"
-                        alt="북마크"
-                      />
-                    ) : (
-                      <img
-                        src="https://img.icons8.com/?size=1x&id=25157&format=png"
-                        alt="북마크 해제"
-                      />
-                    )}
-                  </BookButton>
-                  <TextArea
-                    ref={copyUrlRef}
-                    value={window.location.href}
-                    readOnly
-                  ></TextArea>
-                  <ShareButton onClick={copyUrl}>공유하기</ShareButton>
-                </ContentFunc>
-                <ContentTitle>{post.title}</ContentTitle>
-                <ContentBody>{post.body}</ContentBody>
-              </div>
-              <CommentContainer>
-                <CommentTitle>댓글</CommentTitle>
-                <CommentBody>
-                  <span>아이디</span>
-                  <p>댓글</p>
-                  <CommentLike></CommentLike>
-                </CommentBody>
-              </CommentContainer>
-            </DetailContainer>
+                    </BookButton>
+                    <TextArea
+                      ref={copyUrlRef}
+                      value={window.location.href}
+                      readOnly
+                    ></TextArea>
+                    <ShareButton onClick={copyUrl}>공유하기</ShareButton>
+                  </ContentFunc>
+                  <ContentTitle>{post.title}</ContentTitle>
+                  <ContentBody>{post.body}</ContentBody>
+                </div>
+                <CommentContainer>
+                  <CommentTitle>댓글</CommentTitle>
+                  <CommentBody>
+                    <span>아이디</span>
+                    <p>댓글</p>
+                    <CommentLike></CommentLike>
+                  </CommentBody>
+                </CommentContainer>
+              </DetailContainer>
+            </Browser>
           </div>
         );
       })}
