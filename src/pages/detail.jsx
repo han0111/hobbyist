@@ -18,11 +18,6 @@ import { db } from "../service/firebase";
 import { getAuth } from "firebase/auth";
 
 const Browser = styled.div`
-  aspect-ratio: 1/1;
-  width: 100%;
-`;
-
-const Browser = styled.div`
   aspect-ratio: 2/1;
   width: 100%;
   height: 100%;
@@ -73,7 +68,6 @@ const ButtonGroup = styled.div`
 const Button = styled.button`
   margin-left: 10px;
 `;
-
 
 const ContentImage = styled.div`
   background-color: white;
@@ -379,7 +373,6 @@ function Detail() {
       {filteredPosts.map((post) => {
         return (
           <div key={post.id}>
-
             <Browser>
               <TopBar />
 
