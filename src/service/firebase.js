@@ -15,20 +15,28 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   // 우정님 firebase API 키
-  // apiKey: "AIzaSyBfNHo0wuQcZrrVWX8iUFdwpMwnqWNb-q0",
-  // authDomain: "fir-test-a8fe2.firebaseapp.com",
-  // projectId: "fir-test-a8fe2",
-  // storageBucket: "fir-test-a8fe2.appspot.com",
-  // messagingSenderId: "982481039500",
-  // appId: "1:982481039500:web:ef48c3e8ee16180e920ba9",
+  apiKey: "AIzaSyBfNHo0wuQcZrrVWX8iUFdwpMwnqWNb-q0",
+  authDomain: "fir-test-a8fe2.firebaseapp.com",
+  projectId: "fir-test-a8fe2",
+  storageBucket: "fir-test-a8fe2.appspot.com",
+  messagingSenderId: "982481039500",
+  appId: "1:982481039500:web:ef48c3e8ee16180e920ba9",
 
   // 유길
-  apiKey: "AIzaSyBMVH9MLz1rBnI7aapwImQtA5Rw-WM21k0",
-  authDomain: "testproject-ed7cc.firebaseapp.com",
-  projectId: "testproject-ed7cc",
-  storageBucket: "testproject-ed7cc.appspot.com",
-  messagingSenderId: "883829817146",
-  appId: "1:883829817146:web:a5591680b556d1b0025a03",
+  // apiKey: "AIzaSyBMVH9MLz1rBnI7aapwImQtA5Rw-WM21k0",
+  // authDomain: "testproject-ed7cc.firebaseapp.com",
+  // projectId: "testproject-ed7cc",
+  // storageBucket: "testproject-ed7cc.appspot.com",
+  // messagingSenderId: "883829817146",
+  // appId: "1:883829817146:web:a5591680b556d1b0025a03",
+
+  // // 윤건
+  apiKey: "AIzaSyBYtriPYjeOSg4WIEWBqyutqxu9oJTNzvI",
+  authDomain: "hobbyist-40edb.firebaseapp.com",
+  projectId: "hobbyist-40edb",
+  storageBucket: "hobbyist-40edb.appspot.com",
+  messagingSenderId: "415353098643",
+  appId: "1:415353098643:web:6ec6c18d0251493579d866",
 
   //한희님
   // apiKey: "AIzaSyAojcDu2jBPfdgiHohB7a6NS_EN5sqgXUE",
@@ -37,14 +45,6 @@ const firebaseConfig = {
   // storageBucket: "hobbyist-391107.appspot.com",
   // messagingSenderId: "260045142119",
   // appId: "1:260045142119:web:2f84805b38876f7673bcc2",
-
-  // 윤건님
-  // apiKey: "AIzaSyBYtriPYjeOSg4WIEWBqyutqxu9oJTNzvI",
-  // authDomain: "hobbyist-40edb.firebaseapp.com",
-  // projectId: "hobbyist-40edb",
-  // storageBucket: "hobbyist-40edb.appspot.com",
-  // messagingSenderId: "415353098643",
-  // appId: "1:415353098643:web:6ec6c18d0251493579d866",
 };
 
 export const signInWithGoogle = () => {

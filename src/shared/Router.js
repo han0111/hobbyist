@@ -8,8 +8,14 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Main />} />
+
         <Route path="/detail/:id" element={<Detail />} />
         <Route path="/mypage/:id" element={<Mypage />} />
+          
+//우정님이 하신부분
+//         <Route path="/detail" element={<Detail />} />
+//         <Route path="/mypage" element={<Mypage />} />
+
       </Routes>
     </BrowserRouter>
   );

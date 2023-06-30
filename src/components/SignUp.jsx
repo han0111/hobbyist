@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 import {
   Input,
@@ -31,11 +32,12 @@ function SignUp() {
   const [passwordverify, setPasswordVerify] = useState(false);
 
   const auth = getAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       console.log("user", user);
-      return auth.currentUser ? setJoin("마이페이지") : null;
+      return !auth.currentUser ? setJoin("회원가입") : setJoin("마이페이지");
     });
   }, [auth]);
 
@@ -95,6 +97,8 @@ function SignUp() {
         uid: uid,
         email: email,
         nickname: nickname,
+        memo: "자기소개를 입력해주세요.",
+        img: "사진파일이름",
       });
 
       console.log("가입에 성공했습니다", userCredential);
@@ -145,7 +149,16 @@ function SignUp() {
 
   return (
     <>
-      <TopButton className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
+      <TopButton
+        className="Sign-Up-Btn"
+        onClick={
+          join === "회원가입"
+            ? SignUpBtnHandler
+            : () => {
+                navigate(`/mypage/${auth.currentUser.uid}`);
+              }
+        }
+      >
         {join}
       </TopButton>
       {isModalOpen2 && (
