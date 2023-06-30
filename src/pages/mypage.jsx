@@ -1,6 +1,7 @@
 import React from "react";
 import TopBar from "../components/TopBar";
 import { styled } from "styled-components";
+import Profile from "../components/Profile";
 
 const MypageLayout = styled.div`
   margin-top: 100px;
@@ -16,51 +17,6 @@ const MypageLayout = styled.div`
   overflow: hidden;
 `;
 
-const ProfileContainer = styled.div`
-  background-color: white;
-  width: 500px;
-  height: 600px;
-
-  border-radius: 20px;
-
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-
-  box-shadow: 0px 1px 5px gray;
-`;
-
-const MyImg = styled.img`
-  background-color: gray;
-  border-radius: 70%;
-  width: 250px;
-  height: 250px;
-  overflow: hidden;
-  margin-top: 20px;
-  margin-bottom: 10px;
-`;
-
-const NameContainer = styled.div`
-  padding-left: 10px;
-  margin-bottom: 40px;
-`;
-
-const MyName = styled.span`
-  font-size: 30px;
-  font-weight: bold;
-  margin-right: 10px;
-`;
-
-const IntroduceMe = styled.div`
-  background-color: #f5f5f5;
-  width: 80%;
-  height: 180px;
-  padding: 10px;
-
-  display: flex;
-  flex-direction: row;
-`;
-
 const EditBtn = styled.button`
   background-image: url("https://img.icons8.com/?size=1x&id=47749&format=png");
   background-size: cover;
@@ -69,10 +25,6 @@ const EditBtn = styled.button`
   width: ${(props) => props.width};
   height: ${(props) => props.height};
   margin-left: auto;
-`;
-
-const IntroduceMent = styled.p`
-  font-size: 20px;
 `;
 
 const MyContents = styled.div`
@@ -148,17 +100,7 @@ function Mypage() {
     <div>
       <TopBar />
       <MypageLayout>
-        <ProfileContainer>
-          <MyImg></MyImg>
-          <NameContainer>
-            <MyName>User</MyName>
-            <EditBtn width="30px" height="30px"></EditBtn>
-          </NameContainer>
-          <IntroduceMe>
-            <IntroduceMent>간단한 소개글</IntroduceMent>
-            <EditBtn width="30px" height="30px"></EditBtn>
-          </IntroduceMe>
-        </ProfileContainer>
+        <Profile />
         <MyContents>
           <MyButton>내가 쓴 글</MyButton>
           <MyButton>북마크 한 글</MyButton>

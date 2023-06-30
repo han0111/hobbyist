@@ -326,7 +326,7 @@ function Contents() {
               <MainInner>
                 <MainUser
                   onClick={() => {
-                    navigate(`/mypage/${post.id}`);
+                    navigate(`/mypage/${post.uid}`);
                   }}
                 >
                   <UserImg src="images/user_img.png" alt="" />

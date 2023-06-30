@@ -100,7 +100,7 @@ function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [, setUserData] = useState(null);
-  const [login, setLogin] = useState(localStorage.getItem("login") || "로그인");
+  const [login, setLogin] = useState("로그인");
 
   useEffect(() => {
     localStorage.setItem("login", login);
@@ -109,8 +109,9 @@ function SignIn() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       console.log("user", user);
+      return !auth.currentUser ? setLogin("로그인") : setLogin("로그아웃");
     });
-  }, []);
+  }, [auth]);
 
   const onChange = (event) => {
     const {
