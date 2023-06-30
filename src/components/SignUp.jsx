@@ -147,6 +147,10 @@ function SignUp() {
     }
   };
 
+  const navigateToMyPage = () => {
+    navigate(`/mypage/${auth.currentUser.uid}`);
+  };
+
   return (
     <>
       <TopButton
@@ -155,7 +159,7 @@ function SignUp() {
           join === "회원가입"
             ? SignUpBtnHandler
             : () => {
-                navigate(`/mypage/${auth.currentUser.uid}`);
+                navigateToMyPage();
               }
         }
       >

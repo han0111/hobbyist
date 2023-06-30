@@ -3,21 +3,9 @@ import { styled } from "styled-components";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import github from "../img/github.png";
-import { auth } from "../service/firebase";
-import {
-  Firestore,
-  collection,
-  getDocs,
-  query,
-  addDoc,
-  orderBy,
-  deleteDoc,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+
 import { db } from "../service/firebase";
 
 const EditBtn = styled.button`
@@ -59,13 +47,6 @@ const ListContainer = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
-
-// const ContentImg = styled.div`
-//   background-size: cover;
-//   margin: 20px;
-//   width: 30px;
-//   height: 30px;
-// `;
 
 const ContentBody = styled.div`
   margin-left: 30px;
@@ -129,7 +110,7 @@ function MyPost() {
       {myPost
         .filter((post) => post.uid === params.id)
         .map((post) => (
-          <ListContainer>
+          <ListContainer key={post.id}>
             <img
               style={{
                 width: "300px",

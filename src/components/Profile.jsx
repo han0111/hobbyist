@@ -4,15 +4,18 @@ import { useState } from "react";
 import { useEffect } from "react";
 import github from "../img/github.png";
 import { useParams } from "react-router-dom";
+
 import {
   collection,
   getDocs,
   query,
   updateDoc,
   where,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 
-import { db } from "../service/firebase";
+import { db, auth } from "../service/firebase";
 
 // 모달 디자인//
 
@@ -152,8 +155,9 @@ const IntroduceMent = styled.p`
 
 const ProfileEditBtn = styled.button`
   display: ${(props) =>
-    props.currentUserId === props.params ? "block" : "none"};
+    props.currentuserid === props.params ? "block" : "none"};
 `;
+
 function Profile() {
   const [users, setUsers] = useState([]);
   const [memo, setMemo] = useState("");
@@ -161,6 +165,7 @@ function Profile() {
   const [image] = useState(github);
   const [editedName, setEditedName] = useState("");
   const [editedMemo, setEditedMemo] = useState("");
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   // 현재 유저 아이디 가져옴
   const params = useParams().id;
@@ -178,13 +183,12 @@ function Profile() {
       }));
 
       // 유저의 정보를 받아와서 닉네임 및 메모 자동 설정
-      const thisUser = fetchedUsers.find(
-        (user) => params === user.uid
-      ).nickname;
-      setUsers(thisUser);
-      const thisMemo = fetchedUsers.find((user) => params === user.uid).memo;
-      setMemo(thisMemo);
-      console.log(thisMemo);
+      const thisUser = fetchedUsers.find((user) => params === user.uid);
+      if (thisUser) {
+        setUsers(thisUser.nickname);
+        setMemo(thisUser.memo);
+        console.log(thisUser.memo);
+      }
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
@@ -213,24 +217,51 @@ function Profile() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    const fetchUserData = async () => {
+      if (params) {
+        try {
+          const docRef = doc(db, "users", params);
+          const docSnapshot = await getDoc(docRef);
+          if (docSnapshot.exists()) {
+            const userData = docSnapshot.data();
+            setUsers(userData.nickname);
+            setMemo(userData.memo);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [params]);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      fetchUsers();
+      if (user) {
+        setCurrentUserId(user.uid);
+      } else {
+        setCurrentUserId(null);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const profileModalHandler = () => {
     setOpen(!open);
+    fetchUsers();
   };
-
-  const currentUserId = auth.currentUser.uid;
-  console.log(currentUserId);
 
   return (
     <>
       <ProfileContainer>
         <MyDiv>
-          <img src={image} style={{ width: "250px" }} />
+          <img src={image} alt="프로필 이미지" style={{ width: "250px" }} />
         </MyDiv>
         <ProfileEditBtn
-          currentUserId={currentUserId}
+          currentuserid={currentUserId}
           params={params}
           onClick={profileModalHandler}
         >
