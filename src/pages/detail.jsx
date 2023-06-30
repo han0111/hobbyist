@@ -19,11 +19,22 @@ import { db } from "../service/firebase";
 import { useParams } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 
+
+const Browser = styled.div`
+  aspect-ratio: 1/1;
+  width: 100%;
+`;
+
 const DetailContainer = styled.div`
   margin-top: 100px;
   background-color: #d9d9d9;
   padding: 30px;
   box-shadow: 0px 1px 5px gray;
+  width: 65%;
+  border-radius: 2%;
+  display: flex;
+  flex-direction: column;
+  margin: 10px 20% 10px 15%;
 `;
 const ContentHeader = styled.div`
   display: flex;
@@ -45,7 +56,7 @@ const ProfileName = styled.span`
 `;
 const ContentImage = styled.div`
   /* background-color: gray; */
-  height: 600px;
+  height: 400px;
   width: 100%;
   margin-bottom: 10px;
   background-image: ${(props) => `url(${props.backgroundimg})`};
@@ -183,6 +194,7 @@ const Button = styled.button`
 function Detail() {
   const [, setContents] = useState([]);
   const [content, setContent] = useState([]);
+
   const [comments, setComments] = useState([]);
   const [editCommentId, setEditCommentId] = useState("");
   const [editedComment, setEditedComment] = useState("");
@@ -190,7 +202,6 @@ function Detail() {
   const [comment, setComment] = useState("");
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [editedTitle, setEditedTitle] = useState("");
   const [editedBody, setEditedBody] = useState("");
 
@@ -500,7 +511,7 @@ function Detail() {
 
   const filteredPosts = posts.filter((post) => post.id === id);
   const filteredComments = comments.filter((comment) => comment.postId === id);
-
+  
   return (
     <>
       <TopBar />
@@ -624,8 +635,12 @@ function Detail() {
           </div>
         );
       })}
-
     </>
   );
 }
 export default Detail;
+
+//사진크기조절
+// 백그라운드 커버말고 다른거? 모지란거 검은배경 비율지키기!
+
+//사이드바 카테고리

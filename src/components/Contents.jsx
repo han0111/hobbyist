@@ -24,7 +24,6 @@ const Main = styled.main`
   margin-top: 150px;
   margin-left: 100px;
 `;
-
 const MainInner = styled.div`
   margin-bottom: 20px;
 `;
@@ -107,12 +106,33 @@ function Contents() {
   const [likeCount, setLikeCount] = useState(false);
   const [, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
+  //현재 로그인 된 아이디 알아오는 함수
+  const getCurrentUserUid = () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    console.log("현재 로그인 된 아이디", currentUser);
+    if (currentUser) {
+      return currentUser.uid;
+    } else {
+      console.log("로그인된 사용자가 없습니다!");
+      return null;
+    }
+  };
+  //
+  const getNickname = async (uid) => {
+    console.log(uid);
   const [, setUsers] = useState();
 
   const fetchUsers = async () => {
     try {
       const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData.nickname;
+      } else {
+        throw new Error("User not found");
+      }
 
       const fetchedUsers = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -135,22 +155,20 @@ function Contents() {
     try {
       const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
-
       const fetchedComments = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-
       setComments(fetchedComments);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
   };
-
+    
   useEffect(() => {
     fetchComments();
   }, []);
-
+    
   //Like 함수 부분 빼놨습니다!
   const handleLike = async () => {
     try {
@@ -165,10 +183,65 @@ function Contents() {
         .update({
           likeCount: currentCount + 1,
         });
-
       setLikeCount(currentCount + 1);
     } catch (error) {
       console.error("Error updating like count:", error);
+    }
+  };
+
+  //입력시 DB에 저장하는 함수
+  const handleCommentSubmit = async (event) => {
+    event.preventDefault();
+    // 닉네임 가져오기
+    const uid = getCurrentUserUid();
+    if (!uid) {
+      console.error("User UID not found");
+      return;
+    }
+    try {
+      const fetchedNickname = await getNickname(uid);
+      const newComment = {
+        CID: uuid(),
+        comment: comment,
+        createdAt: new Date(),
+        nickname: fetchedNickname,
+      };
+      await addDoc(collection(db, "Comments"), newComment);
+      setComment(""); // 댓글 작성 후 입력 필드 비우기
+      fetchComments(); // 댓글 목록 다시 불러오기
+    } catch (error) {
+      console.error("Error adding comment: ", error);
+    }
+  };
+  //DB에서 해당하는 CID값을 가진 댓글을 수정하는 함수
+  const handleCommentEdit = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "Comments"), where("CID", "==", CID))
+      );
+      querySnapshot.forEach(async (doc) => {
+        await updateDoc(doc.ref, {
+          comment: editedComment,
+        });
+      });
+      setEditCommentId("");
+      setEditedComment("");
+      fetchComments();
+    } catch (error) {
+      console.error("댓글 수정 오류:", error);
+    }
+  };
+  //DB에서 해당하는 CID값을 가진 댓글을 삭제하는 함수
+  const handleCommentDelete = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "Comments"), where("CID", "==", CID))
+      );
+      const deletecomment = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+      await Promise.all(deletecomment);
+      fetchComments();
+    } catch (error) {
+      console.error("댓글 삭제 오류:", error);
     }
   };
 
@@ -177,23 +250,19 @@ function Contents() {
     try {
       const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
       const querySnapshot = await getDocs(q);
-
       const fetchedPosts = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-
       setPosts(fetchedPosts);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
   };
-
   // 포스트 저장 부분 불러옴
   useEffect(() => {
     fetchPosts();
   }, []);
-
 
   //DB에서 해당하는 CID값을 가진 댓글을 삭제하는 함수
   const PostDeleteBtn = async (CID) => {
@@ -202,7 +271,6 @@ function Contents() {
         query(collection(db, "posts"), where("CID", "==", CID))
       );
       const deletePost = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
-
       await Promise.all(deletePost);
       fetchPosts();
     } catch (error) {
@@ -299,5 +367,4 @@ function Contents() {
     </>
   );
 }
-
 export default Contents;
