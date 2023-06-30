@@ -4,6 +4,9 @@ import {
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
 } from "firebase/auth";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 import {
   Input,
@@ -14,6 +17,7 @@ import {
   SubmitBtn,
   TopButton,
   StH2,
+  VerifyMessage,
 } from "./styledcomponents/Styled";
 
 import { collection, addDoc, getFirestore } from "firebase/firestore";
@@ -24,8 +28,18 @@ function SignUp() {
   const [password, setPassword] = useState("");
   const [verifypassword, setVerifyPassword] = useState("");
   const [nickname, setNickName] = useState("");
+  const [join, setJoin] = useState("회원가입");
+  const [passwordverify, setPasswordVerify] = useState(false);
 
   const auth = getAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
+      return !auth.currentUser ? setJoin("회원가입") : setJoin("마이페이지");
+    });
+  }, [auth]);
 
   const emailChangeHandler = (event) => {
     setEmail(event.target.value);
@@ -33,6 +47,7 @@ function SignUp() {
 
   const passwordChangeHandler = (event) => {
     setPassword(event.target.value);
+    setPasswordVerify(event.target.value.length < 8);
   };
 
   const SignUpBtnHandler = () => {
@@ -44,6 +59,8 @@ function SignUp() {
     setEmail("");
     setPassword("");
     setVerifyPassword("");
+    setPasswordVerify(true);
+    setNickName("");
   };
 
   //회원가입 버튼 핸들러
@@ -80,6 +97,8 @@ function SignUp() {
         uid: uid,
         email: email,
         nickname: nickname,
+        memo: "자기소개를 입력해주세요.",
+        img: "사진파일이름",
       });
 
       console.log("가입에 성공했습니다", userCredential);
@@ -91,7 +110,7 @@ function SignUp() {
       setNickName("");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
-        alert("이미 존재하는 이메일입니다.");
+        alert("이미 누군가 사용중인 이메일입니다.");
       } else {
         alert("가입에 실패했습니다!");
         console.log("가입 실패", error.code, error.message);
@@ -130,8 +149,17 @@ function SignUp() {
 
   return (
     <>
-      <TopButton className="Sign-Up-Btn" onClick={SignUpBtnHandler}>
-        회원가입
+      <TopButton
+        className="Sign-Up-Btn"
+        onClick={
+          join === "회원가입"
+            ? SignUpBtnHandler
+            : () => {
+                navigate(`/mypage/${auth.currentUser.uid}`);
+              }
+        }
+      >
+        {join}
       </TopButton>
       {isModalOpen2 && (
         <ModalContainer className="Modal-Container">
@@ -154,8 +182,15 @@ function SignUp() {
                   onChange={passwordChangeHandler}
                   placeholder="비밀번호"
                 />
+                {passwordverify && (
+                  <VerifyMessage invalid>
+                    비밀번호가 8자리 미만입니다.
+                  </VerifyMessage>
+                )}
+                {!passwordverify && (
+                  <VerifyMessage>8자리 이상입니다.</VerifyMessage>
+                )}
               </p>
-
               <p>
                 <Input
                   className="Verify-Password-Input"
@@ -165,6 +200,7 @@ function SignUp() {
                   placeholder="비밀번호 확인"
                 />
               </p>
+
               <p>
                 <Input
                   className="Nickname-Input"
