@@ -4,7 +4,10 @@ import { useState } from "react";
 import { useEffect } from "react";
 import github from "../img/github.png";
 import { useParams } from "react-router-dom";
-
+import { ref } from "firebase/storage";
+import { storage } from "../service/firebase";
+import { uploadBytes } from "firebase/storage";
+import { getDownloadURL } from "firebase/storage";
 import {
   collection,
   getDocs,
@@ -161,10 +164,12 @@ function Profile() {
   const [users, setUsers] = useState([]);
   const [memo, setMemo] = useState("");
   const [open, setOpen] = useState(false);
-  const [image] = useState(github);
   const [editedName, setEditedName] = useState("");
   const [editedMemo, setEditedMemo] = useState("");
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [downloadURL, setDownloadURL] = useState("");
+  const [image, setImage] = useState(github);
 
   // 현재 유저 아이디 가져옴
   const params = useParams().id;
@@ -187,6 +192,7 @@ function Profile() {
       if (thisUser) {
         setUsers(thisUser.nickname);
         setMemo(thisUser.memo);
+        setImage(thisUser.img);
         console.log(thisUser.memo);
       }
     } catch (error) {
@@ -194,8 +200,27 @@ function Profile() {
     }
   }, [params]);
 
+  // 프로필 사진 넣기
+
+  const handleFileSelect = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    const imageRef = ref(
+      storage,
+      `${auth.currentUser.uid}/${selectedFile.name}`
+    );
+    await uploadBytes(imageRef, selectedFile);
+
+    const downloadURL = await getDownloadURL(imageRef);
+    setDownloadURL(downloadURL);
+  };
+
   // 수정
-  const handleProfileEdit = async (params) => {
+  const handleProfileEdit = async (params, downloadURL) => {
+
     try {
       const querySnapshot = await getDocs(
         query(collection(db, "users"), where("uid", "==", params))
@@ -204,10 +229,12 @@ function Profile() {
         await updateDoc(doc.ref, {
           nickname: editedName,
           memo: editedMemo,
+          img: downloadURL,
         });
       });
       setEditedName("");
       setEditedMemo("");
+      setSelectedFile("");
       fetchUsers();
       setOpen(!open);
     } catch (error) {
@@ -300,11 +327,14 @@ function Profile() {
                   onChange={(e) => setEditedMemo(e.target.value)}
                 />
               </p>
-              {/* <Profile setDownloadURL={setDownloadURL} /> */}
+              <>
+                <input type="file" onChange={handleFileSelect} />
+                <button onClick={handleUpload}>Upload</button>
+              </>
               <StLoginBtn
                 onClick={(event) => {
                   event.preventDefault(); // 기본 동작인 새로고침을 막음
-                  handleProfileEdit(params);
+                  handleProfileEdit(params, downloadURL);
                 }}
               >
                 수정완료

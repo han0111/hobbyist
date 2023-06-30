@@ -183,6 +183,21 @@ function Post() {
     }
   };
 
+  //img 가져오는 함수
+  const getImg = async (uid) => {
+    console.log(uid);
+    try {
+      const q = query(collection(db, "users"), where("uid", "==", uid));
+      const querySnapshot = await getDocs(q);
+
+      const userData = querySnapshot.docs[0].data();
+      return userData.img;
+    } catch (error) {
+      console.error("Error getting nickImg:", error);
+      throw error;
+    }
+  };
+
   // db에 값 저장
   const handlePostSubmit = async (event) => {
     event.preventDefault();
@@ -199,6 +214,7 @@ function Post() {
 
     try {
       const nickname = await getNickname(uid);
+      const img = await getImg(uid);
 
       const newPost = {
         CID: uuid(),
@@ -210,6 +226,7 @@ function Post() {
         likesByUser: { [uid]: false },
         downloadURL,
         likeCount: 0,
+        img: img,
         category,
         subcategory,
       };
