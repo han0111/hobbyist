@@ -9,7 +9,6 @@ import {
   query,
   addDoc,
   orderBy,
-  doc,
   updateDoc,
   deleteDoc,
   where,
@@ -17,83 +16,75 @@ import {
 import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
 
+const Browser = styled.div`
+  aspect-ratio: 2/1;
+  width: 100%;
+  height: 100%;
+`;
+
 const DetailContainer = styled.div`
   margin-top: 100px;
   background-color: #d9d9d9;
   padding: 30px;
   box-shadow: 0px 1px 5px gray;
+  width: 65%;
+  border-radius: 2%;
+  display: flex;
+  flex-direction: column;
+  margin: 150px 20% 10px 15%;
 `;
 const ContentHeader = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 20px;
+`;
+
+const ProfileGroup = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 const ProfileImage = styled.img`
   /* background-image: ; */
   background-color: gray;
   border-radius: 70%;
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   overflow: hidden;
 `;
 const ProfileName = styled.span`
   font-size: 30px;
   margin-left: 20px;
 `;
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const Button = styled.button`
+  margin-left: 10px;
+`;
 
 const ContentImage = styled.div`
-  /* background-color: gray; */
-  height: 600px;
+  background-color: white;
+  height: 500px;
   width: 100%;
   margin-bottom: 10px;
   background-image: ${(props) => `url(${props.backgroundimg})`};
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  border-radius: 20px;
 `;
-
 const ContentFunc = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   margin-bottom: 10px;
 `;
-const LikeContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-const Likecount = styled.div`
-  font-size: 25px;
-  font-weight: bold;
-  padding-top: 10px;
-`;
-const LikeButton = styled.button`
-  border: 0;
-  background-color: transparent;
-  font-size: 50px;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  transition: opacity 0.3s;
-  &:hover {
-    opacity: 0.5;
-  }
-`;
-const BookButton = styled.button`
-  border: 0;
-  background-color: transparent;
-  height: 50px;
-  width: 50px;
-  margin-left: 20px;
-  cursor: pointer;
-  transition: opacity 0.3s;
-  &:hover {
-    opacity: 0.5;
-  }
-`;
+
 const ShareButton = styled.button`
   border: 0;
   background-color: transparent;
@@ -107,6 +98,7 @@ const ShareButton = styled.button`
   }
 `;
 const ContentTitle = styled.h2``;
+
 const ContentBody = styled.p`
   margin-bottom: 20px;
   height: 150px;
@@ -170,16 +162,6 @@ const CommentForm = styled.form`
   right: 0;
   top: 0;
 `;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const Button = styled.button`
-  margin-left: 10px;
-`;
-
 function Detail() {
   const [, setContents] = useState([]);
   const [content, setContent] = useState([]);
@@ -284,37 +266,6 @@ function Detail() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  // Like update
-  const updateLike = async (event) => {
-    const contentRef = doc(db, "contents", "content");
-    if (content.isLike) {
-      // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
-      await updateDoc(contentRef, {
-        isLike: false,
-        likeCount: content.likeCount - 1,
-      });
-      fetchData();
-    } else {
-      // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
-      await updateDoc(contentRef, {
-        isLike: true,
-        likeCount: content.likeCount + 1,
-      });
-
-      fetchData();
-    }
-  };
-
-  // 북마크 update
-  const updateBooked = async (event) => {
-    const contentRef = doc(db, "contents", "content");
-    await updateDoc(contentRef, { isBooked: !content.isBooked });
-    setContent((prevContent) => ({
-      ...prevContent,
-      isBooked: !prevContent.isBooked,
-    }));
-  };
 
   // url 복사
   const copyUrlRef = useRef(null);
@@ -475,91 +426,99 @@ function Detail() {
       {filteredPosts.map((post) => {
         return (
           <div key={post.id}>
-            <TopBar />
+            <Browser>
+              <TopBar />
 
-            <DetailContainer>
-              <div>
-                <ButtonGroup>
-                  <Button onClick={() => PostEditBtn(post.CID)}>수정</Button>
-                  <Button onClick={() => PostDeleteBtn(post.CID)}>삭제</Button>
-                </ButtonGroup>
-                <ContentHeader>
-                  <ProfileImage></ProfileImage>
-                  <ProfileName>{post.nickname}</ProfileName>
-                </ContentHeader>
-                <ContentImage backgroundimg={post.downloadURL}></ContentImage>
-                <ContentFunc>
-                  <TextArea
-                    ref={copyUrlRef}
-                    value={window.location.href}
-                    readOnly
-                  ></TextArea>
-                  <ShareButton onClick={copyUrl}>공유하기</ShareButton>
-                </ContentFunc>
-                <ContentTitle>{post.title}</ContentTitle>
-                <ContentBody>{post.body}</ContentBody>
-              </div>
-              <CommentContainer>
-                <CommentTitle>댓글</CommentTitle>
-                <CommentBody>
-                  {filteredComments.map((item) => {
-                    return (
-                      <div key={item.CID}>
-                        <p>
-                          <span>
-                            {item.nickname}: {item.comment}
-                            {editCommentId === item.CID ? (
-                              <>
-                                <input
-                                  type="text"
-                                  value={editedComment}
-                                  onChange={(event) => {
-                                    setEditedComment(event.target.value);
-                                  }}
-                                />
-                                <button
-                                  onClick={() => handleCommentEdit(item.CID)}
-                                >
-                                  완료
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                <button
-                                  onClick={() => setEditCommentId(item.CID)}
-                                >
-                                  수정
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    handleCommentDelete(item.CID);
-                                  }}
-                                >
-                                  삭제
-                                </button>
-                              </>
-                            )}
-                            <CommentLike /> &nbsp; &nbsp;
-                          </span>
-                        </p>
-                      </div>
-                    );
-                  })}
-                </CommentBody>
-                <CommentForm
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    addComment(post.id, comment);
-                  }}
-                >
-                  <CommentInput
-                    value={comment}
-                    onChange={(event) => setComment(event.target.value)}
-                  />
-                  <CommentButton type="submit">쓰기</CommentButton>
-                </CommentForm>
-              </CommentContainer>
-            </DetailContainer>
+              <DetailContainer>
+                <div>
+                  <ContentHeader>
+                    <ProfileGroup>
+                      <ProfileImage></ProfileImage>
+                      <ProfileName>{post.nickname}</ProfileName>
+                    </ProfileGroup>
+                    <ButtonGroup>
+                      <Button onClick={() => PostEditBtn(post.CID)}>
+                        수정
+                      </Button>
+                      <Button onClick={() => PostDeleteBtn(post.CID)}>
+                        삭제
+                      </Button>
+                    </ButtonGroup>
+                  </ContentHeader>
+                  <ContentImage backgroundimg={post.downloadURL}></ContentImage>
+                  <ContentFunc>
+                    <TextArea
+                      ref={copyUrlRef}
+                      value={window.location.href}
+                      readOnly
+                    ></TextArea>
+                    <ShareButton onClick={copyUrl}>공유하기</ShareButton>
+                  </ContentFunc>
+                  <ContentTitle>{post.title}</ContentTitle>
+                  <ContentBody>{post.body}</ContentBody>
+                </div>
+                <CommentContainer>
+                  <CommentTitle>댓글</CommentTitle>
+                  <CommentBody>
+                    {filteredComments.map((item) => {
+                      return (
+                        <div key={item.CID}>
+                          <p>
+                            <span>
+                              {item.nickname}: {item.comment}
+                              {editCommentId === item.CID ? (
+                                <>
+                                  <input
+                                    type="text"
+                                    value={editedComment}
+                                    onChange={(event) => {
+                                      setEditedComment(event.target.value);
+                                    }}
+                                  />
+                                  <button
+                                    onClick={() => handleCommentEdit(item.CID)}
+                                  >
+                                    완료
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    onClick={() => setEditCommentId(item.CID)}
+                                  >
+                                    수정
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      handleCommentDelete(item.CID);
+                                    }}
+                                  >
+                                    삭제
+                                  </button>
+                                </>
+                              )}
+                              <CommentLike /> &nbsp; &nbsp;
+                            </span>
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </CommentBody>
+                  <CommentForm
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      addComment(post.id, comment);
+                    }}
+                  >
+                    <CommentInput
+                      value={comment}
+                      onChange={(event) => setComment(event.target.value)}
+                    />
+                    <CommentButton type="submit">쓰기</CommentButton>
+                  </CommentForm>
+                </CommentContainer>
+              </DetailContainer>
+            </Browser>
           </div>
         );
       })}
