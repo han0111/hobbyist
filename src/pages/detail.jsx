@@ -9,12 +9,11 @@ import {
   getDocs,
   query,
   addDoc,
-  updateDoc,
   orderBy,
+  doc,
+  updateDoc,
   deleteDoc,
   where,
-  doc,
-  getDoc,
 } from "firebase/firestore";
 import { db } from "../service/firebase";
 import { getAuth } from "firebase/auth";
@@ -29,11 +28,6 @@ const DetailContainer = styled.div`
   background-color: #d9d9d9;
   padding: 30px;
   box-shadow: 0px 1px 5px gray;
-  width: 65%;
-  border-radius: 2%;
-  display: flex;
-  flex-direction: column;
-  margin: 10px 20% 10px 15%;
 `;
 const ContentHeader = styled.div`
   display: flex;
@@ -56,7 +50,7 @@ const ProfileName = styled.span`
 
 const ContentImage = styled.div`
   /* background-color: gray; */
-  height: 400px;
+  height: 600px;
   width: 100%;
   margin-bottom: 10px;
   background-image: ${(props) => `url(${props.backgroundimg})`};
@@ -203,6 +197,7 @@ function Detail() {
   const [comment, setComment] = useState("");
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [editedTitle, setEditedTitle] = useState("");
   const [editedBody, setEditedBody] = useState("");
 
