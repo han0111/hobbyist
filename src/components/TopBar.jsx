@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
+import logo from "../img/logo.png";
 
 const Header = styled.header`
   position: fixed;
@@ -95,7 +96,7 @@ function TopBar() {
               navigate(`/`);
             }}
           >
-            Hobbyist
+            <img src={logo} alt="" style={{ width: "200px" }} />
           </Logo>
           <Form>
             <FaSistrix size="20" color="gray"></FaSistrix>

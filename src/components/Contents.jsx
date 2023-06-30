@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
+import google from "../img/google.png";
 
 const Main = styled.main`
   padding: 20px;
@@ -159,7 +160,7 @@ function Contents() {
                     navigate(`/mypage/${post.uid}`);
                   }}
                 >
-                  <UserImg src="images/user_img.png" alt="" />
+                  <UserImg src={post.img ? post.img : google} alt="" />
                   <User>{post.nickname}</User>
                 </MainUser>
                 <ContentsBox
