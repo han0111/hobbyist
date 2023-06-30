@@ -14,8 +14,13 @@ import {
   deleteDoc,
   where,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
+import { getAuth } from "firebase/auth";
+
+const Browser = styled.div`
+  aspect-ratio: 1/1;
+  width: 100%;
+`;
 
 const Browser = styled.div`
   aspect-ratio: 2/1;
@@ -59,6 +64,7 @@ const ProfileName = styled.span`
   font-size: 30px;
   margin-left: 20px;
 `;
+
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -67,6 +73,7 @@ const ButtonGroup = styled.div`
 const Button = styled.button`
   margin-left: 10px;
 `;
+
 
 const ContentImage = styled.div`
   background-color: white;
@@ -372,6 +379,7 @@ function Detail() {
       {filteredPosts.map((post) => {
         return (
           <div key={post.id}>
+
             <Browser>
               <TopBar />
 

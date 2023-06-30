@@ -30,6 +30,7 @@ const firebaseConfig = {
   // messagingSenderId: "883829817146",
   // appId: "1:883829817146:web:a5591680b556d1b0025a03",
 
+
   // 한희
   // apiKey: "AIzaSyAojcDu2jBPfdgiHohB7a6NS_EN5sqgXUE",
   // authDomain: "hobbyist-391107.firebaseapp.com",
