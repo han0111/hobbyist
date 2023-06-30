@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { auth } from "../service/firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import {
   signInWithPopup,
   GoogleAuthProvider,
   GithubAuthProvider,
   signOut,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 import { VerifyMessage } from "./styledcomponents/Styled";
@@ -102,17 +102,17 @@ function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [, setUserData] = useState(null);
-//우정님이 하신 부분
   const [login, setLogin] = useState("로그인");
-
-  //로컬로 하는부분
-//   const [login, setLogin] = useState(localStorage.getItem("login") || "로그인");
   const [passwordverify, setPasswordVerify] = useState(false);
-
 
   useEffect(() => {
     localStorage.setItem("login", login);
   }, [login]);
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      console.log("user", user);
+    });
+  }, []);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
