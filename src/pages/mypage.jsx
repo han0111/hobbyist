@@ -17,7 +17,6 @@ const MypageLayout = styled.div`
   overflow: hidden;
 `;
 
-
 const ProfileContainer = styled.div`
   background-color: white;
   width: 500px;
@@ -62,7 +61,6 @@ const IntroduceMe = styled.div`
   display: flex;
   flex-direction: row;
 `;
-
 
 const EditBtn = styled.button`
   background-image: url("https://img.icons8.com/?size=1x&id=47749&format=png");
@@ -153,17 +151,7 @@ function Mypage() {
     <div>
       <TopBar />
       <MypageLayout>
-        <ProfileContainer>
-          <MyImg></MyImg>
-          <NameContainer>
-            <MyName>User</MyName>
-            <EditBtn width="30px" height="30px"></EditBtn>
-          </NameContainer>
-          <IntroduceMe>
-            <IntroduceMent>간단한 소개글</IntroduceMent>
-            <EditBtn width="30px" height="30px"></EditBtn>
-          </IntroduceMe>
-        </ProfileContainer>
+        <Profile />
         <MyContents>
           <MyButton>내가 쓴 글</MyButton>
           <MyButton>북마크 한 글</MyButton>

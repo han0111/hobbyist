@@ -2,22 +2,16 @@ import React from "react";
 import { styled } from "styled-components";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import github from "../img/github.png";
-import { auth } from "../service/firebase";
 import { useParams } from "react-router-dom";
 import {
-  Firestore,
   collection,
   getDocs,
   query,
-  addDoc,
-  orderBy,
-  deleteDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+
 import { db } from "../service/firebase";
 
 // 모달 디자인//
@@ -160,7 +154,7 @@ function Profile() {
   const [users, setUsers] = useState([]);
   const [memo, setMemo] = useState("");
   const [open, setOpen] = useState(false);
-  const [image, setImage] = useState(github);
+  const [image] = useState(github);
   const [editedName, setEditedName] = useState("");
   const [editedMemo, setEditedMemo] = useState("");
 
@@ -206,6 +200,8 @@ function Profile() {
       });
       setEditedName("");
       setEditedMemo("");
+      fetchUsers();
+      setOpen(!open);
     } catch (error) {
       console.error("프로필 수정 오류:", error);
     }
@@ -261,7 +257,12 @@ function Profile() {
                 />
               </p>
               {/* <Profile setDownloadURL={setDownloadURL} /> */}
-              <StLoginBtn onClick={handleProfileEdit(params)}>
+              <StLoginBtn
+                onClick={(event) => {
+                  event.preventDefault(); // 기본 동작인 새로고침을 막음
+                  handleProfileEdit(params);
+                }}
+              >
                 수정완료
               </StLoginBtn>
               <br />
