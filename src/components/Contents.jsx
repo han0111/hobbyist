@@ -107,7 +107,6 @@ function Contents() {
     fetchComments();
   }, []);
 
-
   // DB에서 저장된 포스트를 불러오는 함수
   const fetchPosts = async () => {
     try {

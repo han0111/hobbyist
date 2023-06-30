@@ -25,6 +25,7 @@ function SideBar2() {
   ];
   return (
     <>
+
       {allLists.map((allList, index) => {
         return (
           <div className="전체" key={`list-${index}`}>
@@ -49,6 +50,7 @@ function SideBar2() {
               <div className="작은목차">
                 <div>{allList.sublist[0]}</div>
                 <div>{allList.sublist[0]}</div>
+
               </div>
             </div>
           </div>

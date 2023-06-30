@@ -147,7 +147,8 @@ function Post() {
         body: body,
         createdAt: new Date(),
         uid: uid,
-        nickname: nickname,
+        nickname: nickname, // Include the nickname in the new post object
+        likesByUser: { [uid]: false },
         downloadURL,
         likeCount: 0,
       };

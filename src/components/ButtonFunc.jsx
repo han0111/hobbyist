@@ -244,11 +244,13 @@ function ButtonFunc() {
           />
         )}
       </BookButton>
+
       <TextArea
         readOnly
         ref={copyUrlRef}
         value={window.location.href}
       ></TextArea>
+
       <ShareButton onClick={copyUrl}>공유하기</ShareButton>
     </ContentFunc>
   );
