@@ -166,39 +166,30 @@ function Detail() {
     fetchData();
   }, []);
 
-  // console.log(posts);
-  // console.log(id);
-  // console.log(post);
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
 
-  //-----------------------------------------------------------------------
+  //현재 로그인 된 아이디 알아오는 함수
+  const getCurrentUserUid = () => {
+    if (currentUser) {
+      return currentUser.uid;
+    } else {
+      return null;
+    }
+  };
 
   // likesByUser
   const updateLikes = async () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-
-    //현재 로그인 된 아이디 알아오는 함수
-    const getCurrentUserUid = () => {
-      if (currentUser) {
-        return currentUser.uid;
-      } else {
-        return null;
-      }
-    };
-
-    // getCurrentUserUid();
-
     const postRef = doc(db, "posts", id);
     const postSnapshot = await getDoc(postRef);
     const postData = postSnapshot.data();
     const uid = getCurrentUserUid();
+    const { likesByUser, likeCount } = postData;
 
     if (!postData) {
       alert("피드가 존재하지 않습니다.");
       return;
     }
-    const { likesByUser, likeCount } = postData;
-    // console.log(postData);
 
     if (getCurrentUserUid() !== null) {
       if (likesByUser && likesByUser[uid]) {
@@ -224,18 +215,53 @@ function Detail() {
 
     fetchData(); // 데이터 갱신
   };
+  console.log(getCurrentUserUid());
+  const likesByUser = post.likesByUser;
+  //id 별 좋아요 여부 확인
+  const isLikedByUser =
+    likesByUser && likesByUser.hasOwnProperty(getCurrentUserUid());
 
   //-----------------------------------------------------------------------
 
-  // // 북마크 update
-  // const updateBooked = async (event) => {
-  //   const contentRef = doc(db, "contents", "content");
-  //   await updateDoc(contentRef, { isBooked: !content.isBooked });
-  //   setContent((prevContent) => ({
-  //     ...prevContent,
-  //     isBooked: !prevContent.isBooked,
-  //   }));
-  // };
+  const updateBooked = async () => {
+    const postRef = doc(db, "posts", id);
+    const postSnapshot = await getDoc(postRef);
+    const postData = postSnapshot.data();
+    const uid = getCurrentUserUid();
+    const { bookedByUsers } = postData;
+
+    if (!postData) {
+      alert("피드가 존재하지 않습니다.");
+      return;
+    }
+
+    if (getCurrentUserUid() !== null) {
+      if (bookedByUsers && bookedByUsers[uid]) {
+        // 이미 해당 사용자가 북마크를 누른 경우, 북마크 취소 처리
+        delete bookedByUsers[uid];
+        await updateDoc(postRef, {
+          bookedByUsers: { ...bookedByUsers },
+        });
+      } else {
+        // 해당 사용자가 북마크를 누르지 않은 경우, 북마크 처리
+        await updateDoc(postRef, {
+          bookedByUsers: {
+            ...bookedByUsers,
+            [uid]: true,
+          },
+        });
+      }
+    } else {
+      alert("로그인이 필요합니다.");
+    }
+
+    fetchData(); // 데이터 갱신
+  };
+  console.log(getCurrentUserUid());
+  const bookedByUsers = post.bookedByUsers;
+  //id 별 북마크 여부 확인
+  const isBookedByUser =
+    bookedByUsers && bookedByUsers.hasOwnProperty(getCurrentUserUid());
 
   // url 복사
   const copyUrlRef = useRef(null);
@@ -263,39 +289,33 @@ function Detail() {
           <ContentImage></ContentImage>
           <ContentFunc>
             <LikeContainer>
-              <LikeButton
-                onClick={updateLikes}
-                // islike={content.isLike ? "true" : "false"}
-              >
-                {/* {content.isLike ? (
+              <LikeButton onClick={updateLikes}>
+                {isLikedByUser ? (
                   <img
                     src="https://img.icons8.com/?size=1x&id=16424&format=png"
-                    alt="좋아요"
+                    alt="하트 이미지"
                   />
                 ) : (
                   <img
                     src="https://img.icons8.com/?size=1x&id=581&format=png"
-                    alt="좋아요 취소"
+                    alt="하트 이미지"
                   />
-                )} */}
+                )}
               </LikeButton>
               <Likecount>{post.likeCount}</Likecount>
             </LikeContainer>
-            <BookButton
-            // onClick={updateBooked}
-            // isbooked={content.isBooked ? "true" : "false"}
-            >
-              {/* {content.isBooked ? (
+            <BookButton onClick={updateBooked}>
+              {isBookedByUser ? (
                 <img
                   src="https://img.icons8.com/?size=1x&id=26083&format=png"
-                  alt="북마크"
+                  alt="북마크 이미지"
                 />
               ) : (
                 <img
                   src="https://img.icons8.com/?size=1x&id=25157&format=png"
-                  alt="북마크 해제"
+                  alt="북마크 이미지"
                 />
-              )} */}
+              )}
             </BookButton>
             <TextArea ref={copyUrlRef} value={window.location.href}></TextArea>
             <ShareButton onClick={copyUrl}>공유하기</ShareButton>
