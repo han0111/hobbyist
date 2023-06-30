@@ -1,5 +1,7 @@
 import React from "react";
 import { FaSistrix, FaGlobe } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
 import styled from "styled-components";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
@@ -29,6 +31,7 @@ const Logo = styled.h1`
   color: #5e5ee8;
   margin-left: 20px;
   margin-right: 20px;
+  cursor: pointer;
 `;
 
 const Form = styled.form`
@@ -81,11 +84,19 @@ const TopButton = styled.button`
 `;
 
 function TopBar() {
+  const navigate = useNavigate();
+
   return (
     <>
       <Header>
         <LogoInput>
-          <Logo>Hobbyist</Logo>
+          <Logo
+            onClick={() => {
+              navigate(`/`);
+            }}
+          >
+            Hobbyist
+          </Logo>
           <Form>
             <FaSistrix size="20" color="gray"></FaSistrix>
             <Input type="text" placeholder="검색 가능합니다."></Input>

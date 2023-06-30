@@ -49,7 +49,7 @@ export const ModalContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.5); /* 배경에 투명한 검은색 레이어 추가 */
+  background-color: rgba(0, 0, 0, 0.5);
 `;
 
 export const signUp = styled.form`
