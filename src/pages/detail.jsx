@@ -2,23 +2,21 @@ import React, { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 import uuid from "react-uuid";
 import TopBar from "../components/TopBar";
+import ButtonFunc from "../components/ButtonFunc";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   collection,
   getDocs,
   query,
   addDoc,
-  updateDoc,
   orderBy,
+  doc,
+  updateDoc,
   deleteDoc,
   where,
-  doc,
-  getDoc,
 } from "firebase/firestore";
 import { db } from "../service/firebase";
-import { useParams } from "react-router-dom";
 import { getAuth } from "firebase/auth";
-
 
 const Browser = styled.div`
   aspect-ratio: 1/1;
@@ -30,11 +28,6 @@ const DetailContainer = styled.div`
   background-color: #d9d9d9;
   padding: 30px;
   box-shadow: 0px 1px 5px gray;
-  width: 65%;
-  border-radius: 2%;
-  display: flex;
-  flex-direction: column;
-  margin: 10px 20% 10px 15%;
 `;
 const ContentHeader = styled.div`
   display: flex;
@@ -54,9 +47,10 @@ const ProfileName = styled.span`
   font-size: 30px;
   margin-left: 20px;
 `;
+
 const ContentImage = styled.div`
   /* background-color: gray; */
-  height: 400px;
+  height: 600px;
   width: 100%;
   margin-bottom: 10px;
   background-image: ${(props) => `url(${props.backgroundimg})`};
@@ -64,6 +58,7 @@ const ContentImage = styled.div`
   background-position: center;
   background-repeat: no-repeat;
 `;
+
 const ContentFunc = styled.div`
   display: flex;
   flex-direction: row;
@@ -202,6 +197,7 @@ function Detail() {
   const [comment, setComment] = useState("");
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [editedTitle, setEditedTitle] = useState("");
   const [editedBody, setEditedBody] = useState("");
 
@@ -279,143 +275,6 @@ function Detail() {
     }
   };
 
-
-  //데이터 가져오는 함수
-  const fetchData = async () => {
-    const q = query(collection(db, "posts"));
-    const querySnapshot = await getDocs(q);
-    const initialPosts = [];
-    querySnapshot.forEach((doc) => {
-      initialPosts.push({ id: doc.id, ...doc.data() });
-    });
-// 윤건님이 하신 부
-//     setPosts(initialPosts);
-
-//     const postData = initialPosts.find((item) => item.id === id);
-//     setPost(postData);
-
-    setContents(initialContents);
-    const contentData = initialContents.find((item) => item.id === "content");
-    setContent(contentData);
-
-  };
-  // 데이터 가져오기
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-
-  const auth = getAuth();
-  const currentUser = auth.currentUser;
-
-  //현재 로그인 된 아이디 알아오는 함수
-  const getCurrentUserUid = () => {
-    if (currentUser) {
-      return currentUser.uid;
-    } else {
-      return null;
-    }
-  };
-
-
-  // likesByUser
-  const updateLikes = async () => {
-    const postRef = doc(db, "posts", id);
-    const postSnapshot = await getDoc(postRef);
-    const postData = postSnapshot.data();
-    const uid = getCurrentUserUid();
-    const { likesByUser, likeCount } = postData;
-
-    if (!postData) {
-      alert("피드가 존재하지 않습니다.");
-      return;
-    }
-
-    if (getCurrentUserUid() !== null) {
-      if (likesByUser && likesByUser[uid]) {
-        // 이미 해당 사용자가 좋아요를 누른 경우, 좋아요 취소 처리
-        delete likesByUser[uid];
-        await updateDoc(postRef, {
-          likesByUser: { ...likesByUser },
-          likeCount: likeCount - 1,
-        });
-      } else {
-        // 해당 사용자가 좋아요를 누르지 않은 경우, 좋아요 처리
-        await updateDoc(postRef, {
-          likesByUser: {
-            ...likesByUser,
-            [uid]: true,
-          },
-          likeCount: likeCount + 1,
-        });
-      }
-    } else {
-      alert("로그인이 필요합니다.");
-
-    }
-
-    fetchData(); // 데이터 갱신
-  };
-  console.log(getCurrentUserUid());
-  const likesByUser = post.likesByUser;
-  //id 별 좋아요 여부 확인
-  const isLikedByUser =
-    likesByUser && likesByUser.hasOwnProperty(getCurrentUserUid());
-
-  //-----------------------------------------------------------------------
-
-  const updateBooked = async () => {
-    const postRef = doc(db, "posts", id);
-    const postSnapshot = await getDoc(postRef);
-    const postData = postSnapshot.data();
-    const uid = getCurrentUserUid();
-    const { bookedByUsers } = postData;
-
-    if (!postData) {
-      alert("피드가 존재하지 않습니다.");
-      return;
-    }
-
-    if (getCurrentUserUid() !== null) {
-      if (bookedByUsers && bookedByUsers[uid]) {
-        // 이미 해당 사용자가 북마크를 누른 경우, 북마크 취소 처리
-        delete bookedByUsers[uid];
-        await updateDoc(postRef, {
-          bookedByUsers: { ...bookedByUsers },
-        });
-      } else {
-        // 해당 사용자가 북마크를 누르지 않은 경우, 북마크 처리
-        await updateDoc(postRef, {
-          bookedByUsers: {
-            ...bookedByUsers,
-            [uid]: true,
-          },
-        });
-      }
-    } else {
-      alert("로그인이 필요합니다.");
-    }
-
-    fetchData(); // 데이터 갱신
-  };
-  console.log(getCurrentUserUid());
-  const bookedByUsers = post.bookedByUsers;
-  //id 별 북마크 여부 확인
-  const isBookedByUser =
-    bookedByUsers && bookedByUsers.hasOwnProperty(getCurrentUserUid());
-
-
-  // url 복사
-  const copyUrlRef = useRef(null);
-  const copyUrl = (e) => {
-    if (!document.queryCommandSupported("copy")) {
-      return alert("복사 기능이 지원되지 않는 브라우저입니다.");
-    }
-    copyUrlRef.current.select();
-    document.execCommand("copy");
-    alert("링크가 복사되었습니다.");
-  };
-
   // DB에서 저장된 포스트를 불러오는 함수
   const fetchPosts = async () => {
     try {
@@ -435,7 +294,7 @@ function Detail() {
     fetchPosts();
   }, []);
 
-  // DB에서 저장된 값 불러오는 부분과 재렌더링
+  // DB에서 저장된 코멘트 불러오는 부분과 재렌더링
   const fetchComments = async () => {
     try {
       const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
@@ -558,61 +417,30 @@ function Detail() {
 
   const filteredPosts = posts.filter((post) => post.id === id);
   const filteredComments = comments.filter((comment) => comment.postId === id);
-  
+
   return (
     <>
-      <TopBar />
-      <DetailContainer>
-        <div>
-          <ContentHeader>
-            <ProfileImage></ProfileImage>
-            <ProfileName>User</ProfileName>
-          </ContentHeader>
-          <ContentImage></ContentImage>
-          <ContentFunc>
-            <LikeContainer>
-              <LikeButton onClick={updateLikes}>
-                {isLikedByUser ? (
-                  <img
-                    src="https://img.icons8.com/?size=1x&id=16424&format=png"
-                    alt="하트 이미지"
-                  />
-                ) : (
-                  <img
-                    src="https://img.icons8.com/?size=1x&id=581&format=png"
-                    alt="하트 이미지"
-                  />
-                )}
-              </LikeButton>
-              <Likecount>{post.likeCount}</Likecount>
-            </LikeContainer>
-            <BookButton onClick={updateBooked}>
-              {isBookedByUser ? (
-                <img
-                  src="https://img.icons8.com/?size=1x&id=26083&format=png"
-                  alt="북마크 이미지"
-                />
-              ) : (
-                <img
-                  src="https://img.icons8.com/?size=1x&id=25157&format=png"
-                  alt="북마크 이미지"
-                />
-              )}
-            </BookButton>
-            <TextArea ref={copyUrlRef} value={window.location.href}></TextArea>
-            <ShareButton onClick={copyUrl}>공유하기</ShareButton>
-          </ContentFunc>
-          <ContentBody>나 여기 다녀왔어!</ContentBody>
-        </div>
-        <CommentContainer>
-          <CommentTitle>댓글</CommentTitle>
-          <CommentBody>
-            <span>아이디</span>
-            <p>댓글</p>
-            <CommentLike></CommentLike>
-          </CommentBody>
-        </CommentContainer>
-      </DetailContainer>
+      {filteredPosts.map((post) => {
+        return (
+          <div key={post.id}>
+            <TopBar />
+
+            <DetailContainer>
+              <div>
+                <ButtonGroup>
+                  <Button onClick={() => PostEditBtn(post.CID)}>수정</Button>
+                  <Button onClick={() => PostDeleteBtn(post.CID)}>삭제</Button>
+                </ButtonGroup>
+                <ContentHeader>
+                  <ProfileImage></ProfileImage>
+                  <ProfileName>{post.nickname}</ProfileName>
+                </ContentHeader>
+                <ContentImage backgroundimg={post.downloadURL}></ContentImage>
+                <ButtonFunc />
+                <ContentTitle>{post.title}</ContentTitle>
+                <ContentBody>{post.body}</ContentBody>
+              </div>
+              <CommentContainer>
                 <CommentTitle>댓글</CommentTitle>
                 <CommentBody>
                   {filteredComments.map((item) => {

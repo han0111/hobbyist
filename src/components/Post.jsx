@@ -155,6 +155,7 @@ function Post() {
         nickname: nickname, // Include the nickname in the new post object
         likesByUser: { [uid]: false },
         downloadURL,
+        likeCount: 0,
       };
 
       const docRef = await addDoc(collection(db, "posts"), newPost);
