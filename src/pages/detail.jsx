@@ -57,6 +57,7 @@ const ProfileName = styled.span`
   font-size: 30px;
   margin-left: 20px;
 `;
+
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -65,6 +66,7 @@ const ButtonGroup = styled.div`
 const Button = styled.button`
   margin-left: 10px;
 `;
+
 
 const ContentImage = styled.div`
   background-color: white;
@@ -77,6 +79,7 @@ const ContentImage = styled.div`
   background-repeat: no-repeat;
   border-radius: 20px;
 `;
+
 const ContentFunc = styled.div`
   display: flex;
   flex-direction: row;
@@ -362,7 +365,7 @@ function Detail() {
     fetchPosts();
   }, []);
 
-  // DB에서 저장된 값 불러오는 부분과 재렌더링
+  // DB에서 저장된 코멘트 불러오는 부분과 재렌더링
   const fetchComments = async () => {
     try {
       const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
@@ -584,6 +587,7 @@ function Detail() {
                 </CommentContainer>
               </DetailContainer>
             </Browser>
+
           </div>
         );
       })}

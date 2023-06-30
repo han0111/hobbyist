@@ -62,13 +62,13 @@ const generateRandomNickname = () => {
     "섹시한 ",
   ];
   const nounList = [
-    "호날두",
-    "코린이",
-    "말미잘",
-    "외계인",
+    ,
     "개발자",
-    "오리",
-    "잠자리",
+    "홍정기",
+    "최원장",
+    "안동훈",
+    "예병수",
+    "류명한",
   ];
   const randomAdjective =
     adjectiveList[Math.floor(Math.random() * adjectiveList.length)];
@@ -155,6 +155,7 @@ function Post() {
       console.log("Post added with ID: ", docRef.id);
       setTitle("");
       setBody("");
+      fetchData();
     } catch (error) {
       console.error("Error adding post: ", error);
     }

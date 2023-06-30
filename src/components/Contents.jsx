@@ -62,11 +62,12 @@ const IconSpan = styled.span`
 `;
 
 function Contents() {
-  const [likeCount, setLikeCount] = useState(false);
+  const [likeCount] = useState(false);
   const [, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
   const [, setUsers] = useState();
 
+  //db에서 유저 데이터 불러오는 함수
   const fetchUsers = async () => {
     try {
       const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
@@ -105,25 +106,7 @@ function Contents() {
   useEffect(() => {
     fetchComments();
   }, []);
-  //Like 함수 부분 빼놨습니다!
-  const handleLike = async () => {
-    try {
-      const snapshot = await Firestore.collection("").doc("").get();
-      let currentCount = 0;
-      if (snapshot.exists) {
-        const data = snapshot.data();
-        currentCount = data.likeCount || 0;
-      }
-      await Firestore.collection("")
-        .doc("")
-        .update({
-          likeCount: currentCount + 1,
-        });
-      setLikeCount(currentCount + 1);
-    } catch (error) {
-      console.error("Error updating like count:", error);
-    }
-  };
+
 
   // DB에서 저장된 포스트를 불러오는 함수
   const fetchPosts = async () => {
@@ -199,7 +182,7 @@ function Contents() {
                 <FunctionUl>
                   <li>
                     <IconSpan>
-                      <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
+                      {/* <FontAwesomeIcon icon={faHeart} onClick={handleLike} /> */}
                     </IconSpan>
                     {likeCount}
                   </li>
