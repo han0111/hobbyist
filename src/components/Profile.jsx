@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { styled } from "styled-components";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -176,7 +176,8 @@ function Profile() {
   console.log(params);
 
   // DB에서 저장된 값 불러오는 부분과 재렌더링
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
+    // 함수의 내용을 그대로 유지합니다.
     try {
       const q = query(collection(db, "users"));
       const querySnapshot = await getDocs(q);
@@ -197,7 +198,7 @@ function Profile() {
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
-  };
+  }, [params]);
 
   // 프로필 사진 넣기
 
@@ -218,8 +219,8 @@ function Profile() {
   };
 
   // 수정
-
   const handleProfileEdit = async (params, downloadURL) => {
+
     try {
       const querySnapshot = await getDocs(
         query(collection(db, "users"), where("uid", "==", params))
@@ -272,7 +273,7 @@ function Profile() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [fetchUsers]);
 
   const profileModalHandler = () => {
     setOpen(!open);

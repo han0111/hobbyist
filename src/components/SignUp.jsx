@@ -29,7 +29,7 @@ function SignUp() {
   const [verifypassword, setVerifyPassword] = useState("");
   const [nickname, setNickName] = useState("");
   const [join, setJoin] = useState("회원가입");
-  const [passwordverify, setPasswordVerify] = useState(false);
+  const [passwordverify, setPasswordVerify] = useState(true);
 
   const auth = getAuth();
   const navigate = useNavigate();

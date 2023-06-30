@@ -103,11 +103,12 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [, setUserData] = useState(null);
   const [login, setLogin] = useState("로그인");
-  const [passwordverify, setPasswordVerify] = useState(false);
+  const [passwordverify, setPasswordVerify] = useState(true);
 
   useEffect(() => {
     localStorage.setItem("login", login);
   }, [login]);
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       console.log("user", user);
@@ -115,11 +116,12 @@ function SignIn() {
   }, []);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("user", user);
-      return !auth.currentUser ? setLogin("로그인") : setLogin("로그아웃");
+      setLogin(user ? "로그아웃" : "로그인");
     });
-  }, [auth]);
+    return () => unsubscribe();
+  }, []);
 
   const onChange = (event) => {
     const {

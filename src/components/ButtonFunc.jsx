@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { styled } from "styled-components";
 import { db } from "../service/firebase";
 import { getAuth } from "firebase/auth";
@@ -87,7 +87,7 @@ function ButtonFunc() {
   const [post, setPost] = useState([]);
   const { id } = useParams();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const q = query(collection(db, "posts"));
     const querySnapshot = await getDocs(q);
     const initialPosts = [];
@@ -98,11 +98,11 @@ function ButtonFunc() {
 
     const postData = initialPosts.find((item) => item.id === id);
     setPost(postData);
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   //현재 로그인 된 아이디 알아오는 함수
   const auth = getAuth();

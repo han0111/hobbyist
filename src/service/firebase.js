@@ -23,12 +23,12 @@ const firebaseConfig = {
   appId: "1:982481039500:web:ef48c3e8ee16180e920ba9",
 
   // 유길
-  // apiKey: "AIzaSyBMVH9MLz1rBnI7aapwImQtA5Rw-WM21k0",
-  // authDomain: "testproject-ed7cc.firebaseapp.com",
-  // projectId: "testproject-ed7cc",
-  // storageBucket: "testproject-ed7cc.appspot.com",
-  // messagingSenderId: "883829817146",
-  // appId: "1:883829817146:web:a5591680b556d1b0025a03",
+  apiKey: "AIzaSyBMVH9MLz1rBnI7aapwImQtA5Rw-WM21k0",
+  authDomain: "testproject-ed7cc.firebaseapp.com",
+  projectId: "testproject-ed7cc",
+  storageBucket: "testproject-ed7cc.appspot.com",
+  messagingSenderId: "883829817146",
+  appId: "1:883829817146:web:a5591680b556d1b0025a03",
 
   // 한희
   // apiKey: "AIzaSyAojcDu2jBPfdgiHohB7a6NS_EN5sqgXUE",
