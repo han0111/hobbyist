@@ -190,11 +190,11 @@ function Detail() {
 
   // likesByUser
   const updateLikes = async () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
     //현재 로그인 된 아이디 알아오는 함수
     const getCurrentUserUid = () => {
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
-      console.log("현재 로그인 된 아이디", currentUser);
       if (currentUser) {
         return currentUser.uid;
       } else {
@@ -203,33 +203,33 @@ function Detail() {
       }
     };
 
-    getCurrentUserUid();
+    // getCurrentUserUid();
 
     const postRef = doc(db, "posts", id);
-
     const postSnapshot = await getDoc(postRef);
     const postData = postSnapshot.data();
+    const uid = getCurrentUserUid();
 
     if (!postData) {
       alert("피드가 존재하지 않습니다.");
       return;
     }
+    const { likesByUser, likeCount } = postData;
+    // console.log(postData);
 
-    const { likes, likeCount } = postData;
-
-    if (likes && likes[id]) {
+    if (likesByUser && likesByUser[uid]) {
       // 이미 해당 사용자가 좋아요를 누른 경우, 좋아요 취소 처리
-      delete likes[id];
+      delete likesByUser[uid];
       await updateDoc(postRef, {
-        likes: { ...likes },
+        likesByUser: { ...likesByUser },
         likeCount: likeCount - 1,
       });
     } else {
       // 해당 사용자가 좋아요를 누르지 않은 경우, 좋아요 처리
       await updateDoc(postRef, {
-        likes: {
-          ...likes,
-          [id]: true,
+        likesByUser: {
+          ...likesByUser,
+          [uid]: true,
         },
         likeCount: likeCount + 1,
       });
@@ -238,32 +238,7 @@ function Detail() {
     fetchData(); // 데이터 갱신
   };
 
-  // 좋아요 업데이트 함수 호출
-  // updateLikes();
-
   //-----------------------------------------------------------------------
-
-  // // Like update
-  // const updateLike = async (event) => {
-  //   const contentRef = doc(db, "contents", "content");
-
-  //   if (content.isLike) {
-  //     // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
-  //     await updateDoc(contentRef, {
-  //       isLike: false,
-  //       likeCount: content.likeCount - 1,
-  //     });
-
-  //     fetchData();
-  //   } else {
-  //     // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
-  //     await updateDoc(contentRef, {
-  //       isLike: true,
-  //       likeCount: content.likeCount + 1,
-  //     });
-  //     fetchData();
-  //   }
-  // };
 
   // // 북마크 update
   // const updateBooked = async (event) => {
@@ -301,11 +276,8 @@ function Detail() {
           <ContentImage></ContentImage>
           <ContentFunc>
             <LikeContainer>
-              <LikeButton
-              // onClick={updateLikes}
-              // islike={content.isLike}
-              ></LikeButton>
-              <Likecount></Likecount>
+              <LikeButton onClick={updateLikes}></LikeButton>
+              <Likecount>{post.likeCount}</Likecount>
             </LikeContainer>
             <BookButton
             // onClick={updateBooked}
