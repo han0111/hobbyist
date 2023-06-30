@@ -93,3 +93,8 @@ export const VerifyMessage = styled.span`
   font-size: 12px;
   color: ${(props) => (props.invalid ? "red" : "blue")};
 `;
+
+export const StSelect = styled.select`
+  width: 400px;
+  height: 30px;
+`;

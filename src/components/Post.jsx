@@ -1,6 +1,4 @@
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { collection, getDocs, addDoc, where, query } from "firebase/firestore";
 import FileUpload from "./FileUpload";
 import { db } from "../service/firebase";
@@ -8,6 +6,8 @@ import uuid from "react-uuid";
 import { getAuth } from "firebase/auth";
 import { styled } from "styled-components";
 import { auth } from "../service/firebase";
+import CategorySelect from "../components/CategorySelect/CategorySelect";
+import SubcategorySelect from "../components/CategorySelect/SubcategorySlect";
 
 const BcDiv = styled.div`
   position: fixed;
@@ -31,8 +31,8 @@ const BodyInput = styled.input`
 `;
 
 const StDiv = styled.div`
-  width: 650px;
-  height: 500px;
+  width: 800px;
+  height: 600px;
   z-index: 9999;
   position: fixed;
   top: 50%;
@@ -40,6 +40,9 @@ const StDiv = styled.div`
   transform: translate(-50%, -50%);
   background-color: white;
   border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Stbtn = styled.button`
@@ -61,15 +64,7 @@ const generateRandomNickname = () => {
     "똑똑한 ",
     "섹시한 ",
   ];
-  const nounList = [
-    ,
-    "개발자",
-    "홍정기",
-    "최원장",
-    "안동훈",
-    "예병수",
-    "류명한",
-  ];
+  const nounList = ["홍정기", "최원장", "안동훈", "예병수", "류명한"];
   const randomAdjective =
     adjectiveList[Math.floor(Math.random() * adjectiveList.length)];
   const randomNoun = nounList[Math.floor(Math.random() * nounList.length)];
@@ -78,11 +73,75 @@ const generateRandomNickname = () => {
 
 export { generateRandomNickname };
 
+const categoryOptions = [
+  { value: "", label: "카테고리를 선택해주세요!" },
+  { value: "여행", label: "여행" },
+  { value: "음악", label: "음악" },
+  { value: "경제", label: "경제" },
+  { value: "스포츠", label: "스포츠" },
+  { value: "영화", label: "영화" },
+  { value: "게임", label: "게임" },
+  { value: "기타", label: "기타" },
+];
+
+const subcategoryOptions = {
+  여행: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "국내여행", label: "국내여행" },
+    { value: "해외여행", label: "해외여행" },
+    { value: "기타여향", label: "기타여행" },
+  ],
+
+  음악: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "국내음악", label: "국내음악" },
+    { value: "해외음악", label: "해외음악" },
+    { value: "기타음악", label: "기타음악" },
+  ],
+
+  경제: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "주식", label: "주식" },
+    { value: "가상화폐", label: "가상화폐" },
+    { value: "부동산", label: "부동산" },
+    { value: "기타 경제", label: "기타 경제" },
+  ],
+
+  스포츠: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "축구", label: "축구" },
+    { value: "야구", label: "야구" },
+    { value: "농구", label: "농구" },
+    { value: "기타 스포츠", label: "기타 스포츠" },
+  ],
+
+  영화: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "국내영화", label: "국내영화" },
+    { value: "해외영화", label: "해외영화" },
+    { value: "기타영화", label: "기타영화" },
+  ],
+
+  게임: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "온라인게임", label: "온라인게임" },
+    { value: "콘솔게임", label: "콘솔게임" },
+    { value: "기타게임", label: "기타게임" },
+  ],
+
+  기타: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "기타", label: "기타" },
+  ],
+};
+
 function Post() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [downloadURL, setDownloadURL] = useState(null);
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
 
   const fetchData = async () => {
     try {
@@ -143,14 +202,16 @@ function Post() {
 
       const newPost = {
         CID: uuid(),
-        title: title,
-        body: body,
+        title,
+        body,
         createdAt: new Date(),
-        uid: uid,
+        uid,
         nickname: nickname, // Include the nickname in the new post object
         likesByUser: { [uid]: false },
         downloadURL,
         likeCount: 0,
+        category,
+        subcategory,
       };
 
       const docRef = await addDoc(collection(db, "posts"), newPost);
@@ -163,12 +224,17 @@ function Post() {
     }
   };
 
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+    setSubcategory("");
+  };
+
   return (
     <>
       <BcDiv open={open} onClick={postModalHandler}>
         <StDiv onClick={(e) => e.stopPropagation()}>
-          <h1>글 작성하기</h1>
           <form>
+            <h1>글 작성하기</h1>
             <p>
               <TitleInput
                 type="text"
@@ -177,6 +243,22 @@ function Post() {
                 placeholder="제목을 입력해주세요."
               />
             </p>
+            <p>
+              <CategorySelect
+                value={category}
+                onChange={handleCategoryChange}
+                options={categoryOptions}
+              />
+            </p>
+            {category && category !== "" && (
+              <p>
+                <SubcategorySelect
+                  value={subcategory}
+                  onChange={(e) => setSubcategory(e.target.value)}
+                  options={subcategoryOptions[category]}
+                />
+              </p>
+            )}
             <p>
               <BodyInput
                 type="text"

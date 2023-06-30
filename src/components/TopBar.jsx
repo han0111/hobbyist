@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaSistrix, FaGlobe } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -83,8 +83,15 @@ const TopButton = styled.button`
   height: 30px;
 `;
 
-function TopBar() {
+function TopBar({ onSearch }) {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    console.log("제출이 일어남", searchQuery);
+    e.preventDefault();
+    onSearch(searchQuery);
+  };
 
   return (
     <>
@@ -97,9 +104,14 @@ function TopBar() {
           >
             Hobbyist
           </Logo>
-          <Form>
+          <Form onSubmit={handleSearch}>
             <FaSistrix size="20" color="gray"></FaSistrix>
-            <Input type="text" placeholder="검색 가능합니다."></Input>
+            <Input
+              type="text"
+              placeholder="검색 가능합니다."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            ></Input>
           </Form>
         </LogoInput>
         <BtnContainer>
