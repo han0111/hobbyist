@@ -13,12 +13,10 @@ import {
   getDocs,
   query,
   orderBy,
-  deleteDoc,
-  where,
 } from "firebase/firestore";
-// import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
+
 const Main = styled.main`
   padding: 20px;
   background: #eee;
@@ -70,32 +68,6 @@ function Contents() {
   const [posts, setPosts] = useState([]);
   const [, setUsers] = useState();
 
-  // // 현재 로그인 된 아이디 알아오는 함수
-  // const getCurrentUserUid = () => {
-  //   const auth = getAuth();
-  //   const currentUser = auth.currentUser;
-  //   console.log("현재 로그인 된 아이디", currentUser);
-  //   if (currentUser) {
-  //     return currentUser.uid;
-  //   } else {
-  //     console.log("로그인된 사용자가 없습니다!");
-  //     return null;
-  //   }
-  // };
-
-  // // getCurrentUserEmail 함수
-  // const getCurrentUserEmail = () => {
-  //   const auth = getAuth();
-  //   const currentUser = auth.currentUser;
-  //   console.log("현재 로그인 된 이메일", currentUser);
-  //   if (currentUser) {
-  //     return currentUser.email;
-  //   } else {
-  //     console.log("로그인된 사용자가 없습니다!");
-  //     return null;
-  //   }
-  // };
-
   const fetchUsers = async () => {
     try {
       const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
@@ -116,25 +88,6 @@ function Contents() {
   useEffect(() => {
     fetchUsers();
   }, []);
-
-  // // getNickname 함수
-  // const getNickname = async (uid, email) => {
-  //   console.log(uid);
-  //   try {
-  //     const q = query(collection(db, "users"), where("uid", "==", uid));
-  //     const querySnapshot = await getDocs(q);
-
-  //     if (!querySnapshot.empty) {
-  //       const userData = querySnapshot.docs[0].data();
-  //       return userData.nickname || email;
-  //     } else {
-  //       throw new Error("User not found");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error getting nickname:", error);
-  //     throw error;
-  //   }
-  // };
 
   // DB에서 저장된 값 불러오는 부분과 재렌더링
   const fetchComments = async () => {
@@ -200,21 +153,6 @@ function Contents() {
     fetchPosts();
   }, []);
 
-  //DB에서 해당하는 CID값을 가진 게시글을 삭제하는 함수
-  const PostDeleteBtn = async (CID) => {
-    try {
-      const querySnapshot = await getDocs(
-        query(collection(db, "posts"), where("CID", "==", CID))
-      );
-      const deletePost = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
-
-      await Promise.all(deletePost);
-      fetchPosts();
-    } catch (error) {
-      console.error("포스트 삭제 오류:", error);
-    }
-  };
-
   // url 복사
   const copyUrlRef = useRef(null);
 
@@ -250,7 +188,6 @@ function Contents() {
                 >
                   <UserImg src="images/user_img.png" alt="" />
                   <User>{post.nickname}</User>
-                  <button onClick={() => PostDeleteBtn(post.CID)}>삭제</button>
                 </MainUser>
                 <ContentsBox
                   onClick={() => {

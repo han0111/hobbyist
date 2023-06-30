@@ -10,6 +10,8 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
+import { VerifyMessage } from "./styledcomponents/Styled";
+
 import github from "../img/github.png";
 import google from "../img/google.png";
 
@@ -101,6 +103,7 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [, setUserData] = useState(null);
   const [login, setLogin] = useState(localStorage.getItem("login") || "로그인");
+  const [passwordverify, setPasswordVerify] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("login", login);
@@ -121,6 +124,7 @@ function SignIn() {
     }
     if (name === "password") {
       setPassword(value);
+      setPasswordVerify(value.length < 8); //비밀번호 길이 검증
     }
   };
 
@@ -165,10 +169,14 @@ function SignIn() {
       setIsOpen(false);
       setLogin("로그아웃");
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      alert("아이디와 비밀번호를 확인해주세요.");
-      console.log("error with signIn", errorCode, errorMessage);
+      if (error.code === "auth/user-not-found") {
+        alert("존재하지 않는 이메일입니다.");
+      } else {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert("아이디와 비밀번호를 확인해주세요.");
+        console.log("error with signIn", errorCode, errorMessage);
+      }
     }
     setEmail("");
     setPassword("");
@@ -183,6 +191,9 @@ function SignIn() {
 
   const loginModalHandler = () => {
     setIsOpen(!open);
+    setEmail("");
+    setPassword("");
+    setPasswordVerify(true);
   };
 
   return (
@@ -212,7 +223,17 @@ function SignIn() {
                   placeholder="패스워드를 입력하세요."
                 />
               </p>
+              {passwordverify && (
+                <VerifyMessage invalid>
+                  비밀번호가 8자리 미만입니다.
+                </VerifyMessage>
+              )}
+              {!passwordverify && (
+                <VerifyMessage>8자리 이상입니다.</VerifyMessage>
+              )}
+              <p />
               <StLoginBtn onClick={signInByEmail}>로그인</StLoginBtn>
+
               <br />
               <button
                 style={{

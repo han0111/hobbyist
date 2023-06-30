@@ -52,11 +52,6 @@ const Stbtn = styled.button`
   cursor: pointer;
 `;
 
-// const PostBtn = styled.button`
-//   height: 50px;
-//   width: 200px;
-// `;
-
 const generateRandomNickname = () => {
   const adjectiveList = [
     "행복한 ",

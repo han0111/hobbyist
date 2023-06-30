@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 import uuid from "react-uuid";
 import TopBar from "../components/TopBar";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   collection,
   getDocs,
@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
+
 const DetailContainer = styled.div`
   margin-top: 100px;
   background-color: #d9d9d9;
@@ -168,6 +169,15 @@ const CommentForm = styled.form`
   top: 0;
 `;
 
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const Button = styled.button`
+  margin-left: 10px;
+`;
+
 function Detail() {
   const [, setContents] = useState([]);
   const [content, setContent] = useState([]);
@@ -177,6 +187,10 @@ function Detail() {
   const [posts, setPosts] = useState([]);
   const [comment, setComment] = useState("");
   const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedBody, setEditedBody] = useState("");
 
   // 랜덤 닉네임 생성 함수
   const generateRandomNickname = () => {
@@ -191,12 +205,13 @@ function Detail() {
       "기쁜 ",
     ];
     const nouns = [
-      "호날두",
-      "코린이",
       "말미잘",
+      "코린이",
+      "사자",
       "외계인",
       "개발자",
       "오리",
+      "호날두",
       "잠자리",
       "박지성",
     ];
@@ -385,9 +400,7 @@ function Detail() {
       );
 
       querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {
-          comment: editedComment,
-        });
+        await updateDoc(doc.ref, {});
       });
 
       setEditCommentId("");
@@ -413,6 +426,44 @@ function Detail() {
     }
   };
 
+  //DB에서 해당하는 CID값을 가진 게시글을 삭제하는 함수
+  const PostDeleteBtn = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "posts"), where("CID", "==", CID))
+      );
+      const deletePost = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+
+      await Promise.all(deletePost);
+      alert("피드가 삭제되었습니다!");
+      fetchPosts();
+      navigate(`/`);
+    } catch (error) {
+      console.error("포스트 삭제 오류:", error);
+    }
+  };
+
+  //DB에서 해당하는 CID 값을 가진 게시글을 수정하는 함수
+  const PostEditBtn = async (CID) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "posts"), where("CID", "==", CID))
+      );
+
+      querySnapshot.forEach(async (doc) => {
+        await updateDoc(doc.ref, {
+          title: editedTitle,
+          body: editedBody,
+        });
+      });
+
+      alert("게시글이 수정 되었습니다!");
+      fetchPosts();
+    } catch (error) {
+      console.error("포스트 수정 오류:", error);
+    }
+  };
+
   const filteredPosts = posts.filter((post) => post.id === id);
   const filteredComments = comments.filter((comment) => comment.postId === id);
 
@@ -422,8 +473,13 @@ function Detail() {
         return (
           <div key={post.id}>
             <TopBar />
+
             <DetailContainer>
               <div>
+                <ButtonGroup>
+                  <Button onClick={() => PostEditBtn(post.CID)}>수정</Button>
+                  <Button onClick={() => PostDeleteBtn(post.CID)}>삭제</Button>
+                </ButtonGroup>
                 <ContentHeader>
                   <ProfileImage></ProfileImage>
                   <ProfileName>{post.nickname}</ProfileName>
