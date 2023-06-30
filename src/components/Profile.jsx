@@ -12,7 +12,7 @@ import {
   where,
 } from "firebase/firestore";
 
-import { db } from "../service/firebase";
+import { db, auth } from "../service/firebase";
 
 // 모달 디자인//
 

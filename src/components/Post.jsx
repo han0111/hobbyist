@@ -154,6 +154,7 @@ function Post() {
         uid: uid,
         nickname: nickname,
         downloadURL,
+        likeCount: 0,
       };
 
       const docRef = await addDoc(collection(db, "posts"), newPost);
