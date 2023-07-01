@@ -1,6 +1,12 @@
-import React from "react";
-import { FaSistrix } from "react-icons/fa";
-import { styled } from "styled-components";
+import React, { useState } from "react";
+import { FaSistrix, FaGlobe } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
+import styled from "styled-components";
+import SignUp from "./SignUp";
+import SignIn from "./SignIn";
+import logo from "../img/logo.png";
+
 const Header = styled.header`
   position: fixed;
   top: 0;
@@ -12,21 +18,21 @@ const Header = styled.header`
   background-color: white;
   font-weight: bold;
   display: flex;
-  /* justify-content: space-between; */
   align-items: center;
 
   box-shadow: 1px 1px 5px gray;
 `;
-const A = styled.div`
+const LogoInput = styled.div`
   display: flex;
   flex-direction: row;
 `;
 
-const Title = styled.h1`
+const Logo = styled.h1`
   font-size: 50px;
   color: #5e5ee8;
   margin-left: 20px;
   margin-right: 20px;
+  cursor: pointer;
 `;
 
 const Form = styled.form`
@@ -45,12 +51,19 @@ const Input = styled.input`
   border-radius: 20px;
   height: 30px;
   padding-left: 10px;
-
-  /* box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); */
 `;
+
 const BtnContainer = styled.div`
   margin-left: 50%;
   display: flex;
+
+  @media screen and (max-width: 1500px) {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-left: 30%;
+    margin-right: auto;
+    margin-top: 10px;
+  }
 `;
 const TopButton = styled.button`
   font-size: 20px;
@@ -61,24 +74,56 @@ const TopButton = styled.button`
   &:hover {
     transform: scale(1.2);
   }
+
+  @media screen and (max-width: 1500px) {
+    margin-top: 5px;
+    width: 100%;
+    max-width: 200px;
+  }
+
+  height: 30px;
 `;
 
-function TopBar() {
+function TopBar({ onSearch }) {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    console.log("제출이 일어남", searchQuery);
+    e.preventDefault();
+    onSearch(searchQuery);
+  };
+
   return (
-    <Header>
-      <A>
-        <Title>Hobbyist</Title>
-        <Form>
-          <FaSistrix size="20" color="gray"></FaSistrix>
-          <Input type="text" placeholder="검색 가능합니다."></Input>
-        </Form>
-      </A>
-      <BtnContainer>
-        <TopButton>번역이미지 KR</TopButton>
-        <TopButton>로그인</TopButton>
-        <TopButton>회원가입</TopButton>
-      </BtnContainer>
-    </Header>
+    <>
+      <Header>
+        <LogoInput>
+          <Logo
+            onClick={() => {
+              navigate(`/`);
+            }}
+          >
+            <img src={logo} alt="" style={{ width: "200px" }} />
+          </Logo>
+          <Form onSubmit={handleSearch}>
+            <FaSistrix size="20" color="gray"></FaSistrix>
+            <Input
+              type="text"
+              placeholder="검색 가능합니다."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            ></Input>
+          </Form>
+        </LogoInput>
+        <BtnContainer>
+          <TopButton>
+            <FaGlobe style={{ marginRight: "5px" }} /> KR
+          </TopButton>
+          <SignIn />
+          <SignUp />
+        </BtnContainer>
+      </Header>
+    </>
   );
 }
 
