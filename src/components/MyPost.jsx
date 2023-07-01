@@ -133,23 +133,36 @@ const Stbtn = styled.button`
   cursor: pointer;
 `;
 
-const categoryOptions = [
+export const categoryOptions = [
   { value: "", label: "카테고리를 선택해주세요!" },
+  { value: "경제", label: "경제" },
+  { value: "애완동.식물", label: "애완동.식물" },
   { value: "여행", label: "여행" },
   { value: "음악", label: "음악" },
-  { value: "경제", label: "경제" },
-  { value: "스포츠", label: "스포츠" },
-  { value: "영화", label: "영화" },
-  { value: "게임", label: "게임" },
   { value: "기타", label: "기타" },
 ];
 
-const subcategoryOptions = {
+export const subcategoryOptions = {
+  경제: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "주식", label: "주식" },
+    { value: "가상화폐", label: "가상화폐" },
+    { value: "부동산", label: "부동산" },
+    { value: "기타경제", label: "기타경제" },
+  ],
+
+  애완동식물: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "꿀팁", label: "꿀팁" },
+    { value: "쇼핑", label: "쇼핑" },
+    { value: "기타여행", label: "기타여행" },
+  ],
+
   여행: [
     { value: "", label: "카테고리를 선택해주세요!" },
     { value: "국내여행", label: "국내여행" },
     { value: "해외여행", label: "해외여행" },
-    { value: "기타여향", label: "기타여행" },
+    { value: "기타여행", label: "기타여행" },
   ],
 
   음악: [
@@ -157,36 +170,6 @@ const subcategoryOptions = {
     { value: "국내음악", label: "국내음악" },
     { value: "해외음악", label: "해외음악" },
     { value: "기타음악", label: "기타음악" },
-  ],
-
-  경제: [
-    { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "주식", label: "주식" },
-    { value: "가상화폐", label: "가상화폐" },
-    { value: "부동산", label: "부동산" },
-    { value: "기타 경제", label: "기타 경제" },
-  ],
-
-  스포츠: [
-    { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "축구", label: "축구" },
-    { value: "야구", label: "야구" },
-    { value: "농구", label: "농구" },
-    { value: "기타 스포츠", label: "기타 스포츠" },
-  ],
-
-  영화: [
-    { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "국내영화", label: "국내영화" },
-    { value: "해외영화", label: "해외영화" },
-    { value: "기타영화", label: "기타영화" },
-  ],
-
-  게임: [
-    { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "온라인게임", label: "온라인게임" },
-    { value: "콘솔게임", label: "콘솔게임" },
-    { value: "기타게임", label: "기타게임" },
   ],
 
   기타: [

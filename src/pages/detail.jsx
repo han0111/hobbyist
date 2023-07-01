@@ -16,6 +16,9 @@ import {
 } from "firebase/firestore";
 import { db } from "../service/firebase";
 import { getAuth } from "firebase/auth";
+import { useRef } from "react";
+
+const AllPage = styled.div``;
 
 const Browser = styled.div`
   aspect-ratio: 2/1;
@@ -174,6 +177,10 @@ const CommentForm = styled.form`
 
 function Detail() {
   const [comments, setComments] = useState([]);
+
+  const [contents, setContents] = useState([]);
+  const [content, setContent] = useState([]);
+
   const [editCommentId, setEditCommentId] = useState("");
   const [editedComment, setEditedComment] = useState("");
   const [posts, setPosts] = useState([]);

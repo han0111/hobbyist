@@ -1,10 +1,11 @@
 import React from "react";
 import { styled } from "styled-components";
 import { useState } from "react";
+import { categoryOptions, subcategoryOptions } from "./MyPost";
 
 const AllList = styled.button`
   margin-top: 200px;
-  height: 540px;
+  /* height: 540px; */
   width: 200px;
   padding: 10px;
   border-radius: 20px;
@@ -45,25 +46,40 @@ const SmallList = styled.button`
   font-size: 15px;
   padding-top: 10px;
   text-align: left;
-  border: none;
+  /* border: none; */
 `;
 
 function SideBar2() {
+  console.log(subcategoryOptions);
   const initialallLists = [
     {
       id: 1,
       list: "💰 경제",
-      sublist: ["📈 주식", "💸 가상화폐"],
+      sublist: subcategoryOptions["경제"].map((option) => option.value),
+      // sublist: ["📈 주식", "💸 가상화폐"],
       isOpen: false,
     },
     {
       id: 2,
       list: "🐶 애완동.식물",
-      sublist: ["🍯 꿀팁", "💳 쇼핑"],
+      sublist: subcategoryOptions["애완동식물"].map((option) => option.value),
+      // sublist: ["🍯 꿀팁", "💳 쇼핑"],
       isOpen: false,
     },
-    { id: 3, list: "🚙 여행", sublist: ["🚅 국내", "🛩️ 해외"], isOpen: false },
-    { id: 4, list: "🎧 음악", sublist: ["🎤 추천", "🎹 정보"], isOpen: false },
+    {
+      id: 3,
+      list: "🚙 여행",
+      sublist: subcategoryOptions["여행"].map((option) => option.value),
+      // sublist: ["🚅 국내", "🛩️ 해외"],
+      isOpen: false,
+    },
+    {
+      id: 4,
+      list: "🎧 음악",
+      sublist: subcategoryOptions["음악"].map((option) => option.value),
+      // sublist: ["🎤 추천", "🎹 정보"],
+      isOpen: false,
+    },
   ];
 
   // const [isOpen, setIsOpen] = useState(false);
@@ -97,8 +113,13 @@ function SideBar2() {
           >
             <div>{allList.list}</div>
             <SmallLists className="작은목차" isOpen={allList.isOpen}>
+              {/* <SmallList onClick>{allList.sublist}</SmallList> */}
               <SmallList>{allList.sublist[0]}</SmallList>
               <SmallList>{allList.sublist[1]}</SmallList>
+              <SmallList>{allList.sublist[2]}</SmallList>
+              <SmallList>{allList.sublist[3]}</SmallList>
+              <SmallList>{allList.sublist[4]}</SmallList>
+              {/* //allList map돌리기 */}
             </SmallLists>
           </List>
         );
