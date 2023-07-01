@@ -9,16 +9,23 @@ import {
   query,
   addDoc,
   orderBy,
-  doc,
   updateDoc,
   deleteDoc,
   where,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../service/firebase";
+
+const AllPage = styled.div`
+  align-items: center;
+`;
+
 const Browser = styled.div`
   aspect-ratio: 1/1;
   width: 100%;
+  height: 100%;
+
+  max-height: 100vh; /* Set the maximum height of the container */
 `;
 
 const DetailContainer = styled.div`
@@ -30,7 +37,7 @@ const DetailContainer = styled.div`
   border-radius: 2%;
   display: flex;
   flex-direction: column;
-  margin: 150px 20% 10px 15%;
+  margin: 150px 20% 40px 15%;
 `;
 const ContentHeader = styled.div`
   display: flex;
@@ -83,41 +90,7 @@ const ContentFunc = styled.div`
   align-items: center;
   margin-bottom: 10px;
 `;
-const LikeContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-const Likecount = styled.div`
-  font-size: 25px;
-  font-weight: bold;
-  padding-top: 10px;
-`;
-const LikeButton = styled.button`
-  border: 0;
-  background-color: transparent;
-  font-size: 50px;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  transition: opacity 0.3s;
-  &:hover {
-    opacity: 0.5;
-  }
-`;
-const BookButton = styled.button`
-  border: 0;
-  background-color: transparent;
-  height: 50px;
-  width: 50px;
-  margin-left: 20px;
-  cursor: pointer;
-  transition: opacity 0.3s;
-  &:hover {
-    opacity: 0.5;
-  }
-`;
+
 const ShareButton = styled.button`
   border: 0;
   background-color: transparent;
@@ -137,6 +110,12 @@ const ContentBody = styled.p`
   height: 150px;
   font-size: 20px;
 `;
+
+const CommentsAllContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 const CommentTitle = styled.div`
   font-size: 25px;
   font-weight: bold;
@@ -146,13 +125,29 @@ const CommentBody = styled.div`
   padding: 10px;
   font-size: 20px;
   display: flex;
-  flex-direction: column;
-  align-items: left;
+  flex-direction: row;
+  background-color: green;
+  /* justify-content: flex-end; */
+  /* justify-content: space-between; */
 `;
-const CommentContainer = styled.div``;
+const NicknameComment = styled.div`
+  background-color: red;
+`;
+const EditDeleteLikeContainer = styled.div`
+  background-color: orange;
+  margin-left: auto;
+  position: relative;
+  justify-content: flex-end;
+`;
+
+const CommentContainer = styled.div`
+  background-color: blue;
+`;
+
 const CommentLike = styled.button`
   border: 0;
-  background-color: transparent;
+  background-color: white;
+  /* transparent; */
   background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
   background-size: cover;
   font-size: 30px;
@@ -300,37 +295,6 @@ function Detail() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  // Like update
-  const updateLike = async (event) => {
-    const contentRef = doc(db, "contents", "content");
-    if (content.isLike) {
-      // 이미 좋아요가 눌린 상태인 경우, 좋아요 취소 처리
-      await updateDoc(contentRef, {
-        isLike: false,
-        likeCount: content.likeCount - 1,
-      });
-      fetchData();
-    } else {
-      // 좋아요가 눌리지 않은 상태인 경우, 좋아요 처리
-      await updateDoc(contentRef, {
-        isLike: true,
-        likeCount: content.likeCount + 1,
-      });
-
-      fetchData();
-    }
-  };
-
-  // 북마크 update
-  const updateBooked = async (event) => {
-    const contentRef = doc(db, "contents", "content");
-    await updateDoc(contentRef, { isBooked: !content.isBooked });
-    setContent((prevContent) => ({
-      ...prevContent,
-      isBooked: !prevContent.isBooked,
-    }));
-  };
 
   // url 복사
   const copyUrlRef = useRef(null);
@@ -487,7 +451,7 @@ function Detail() {
   const filteredComments = comments.filter((comment) => comment.postId === id);
 
   return (
-    <>
+    <AllPage>
       {filteredPosts.map((post) => {
         return (
           <div key={post.id}>
@@ -529,8 +493,10 @@ function Detail() {
                       return (
                         <div key={item.CID}>
                           <p>
-                            <span>
-                              {item.nickname}: {item.comment}
+                            <CommentsAllContainer>
+                              <NicknameComment>
+                                {item.nickname}: {item.comment}
+                              </NicknameComment>
                               {editCommentId === item.CID ? (
                                 <>
                                   <input
@@ -547,7 +513,7 @@ function Detail() {
                                   </button>
                                 </>
                               ) : (
-                                <>
+                                <EditDeleteLikeContainer>
                                   <button
                                     onClick={() => setEditCommentId(item.CID)}
                                   >
@@ -560,10 +526,10 @@ function Detail() {
                                   >
                                     삭제
                                   </button>
-                                </>
+                                  <CommentLike />
+                                </EditDeleteLikeContainer>
                               )}
-                              <CommentLike /> &nbsp; &nbsp;
-                            </span>
+                            </CommentsAllContainer>
                           </p>
                         </div>
                       );
@@ -587,12 +553,7 @@ function Detail() {
           </div>
         );
       })}
-    </>
+    </AllPage>
   );
 }
 export default Detail;
-
-//사진크기조절
-// 백그라운드 커버말고 다른거? 모지란거 검은배경 비율지키기!
-
-//사이드바 카테고리

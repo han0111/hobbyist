@@ -194,8 +194,10 @@ function Post() {
         style={{
           width: "200px",
           height: "50px",
-          marginTop: "100px",
+          marginTop: "130px",
           position: "fixed",
+          border: "none",
+          borderRadius: "15px",
         }}
         onClick={postModalHandler}
       >

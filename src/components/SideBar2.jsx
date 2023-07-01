@@ -1,60 +1,109 @@
 import React from "react";
+import { styled } from "styled-components";
+import { useState } from "react";
+
+const AllList = styled.button`
+  margin-top: 200px;
+  height: 540px;
+  width: 200px;
+  padding: 10px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  /* margin-bottom: 10px; */
+  padding-top: 20px;
+  border: none;
+  position: fixed;
+`;
+const CategoryFont = styled.div`
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+`;
+const List = styled.button`
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  flex-direction: column;
+  background-color: transparent;
+  border: none;
+  /* font-weight: bold; */
+  font-size: 18px;
+  padding: 15px;
+  width: 150px;
+  /* margin-top: 10px; */
+`;
+const SmallLists = styled.div`
+  display: ${(props) => (props.isOpen ? "flex" : "none")};
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: center;
+`;
+const SmallList = styled.button`
+  font-size: 15px;
+  padding-top: 10px;
+  text-align: left;
+  border: none;
+`;
 
 function SideBar2() {
-  const allLists = [
+  const initialallLists = [
     {
-      list: "경제",
-      sublist: ["주식", "가상화폐"],
+      id: 1,
+      list: "💰 경제",
+      sublist: ["📈 주식", "💸 가상화폐"],
       isOpen: false,
     },
     {
-      list: "애완동.식물",
-      sublist: ["꿀팁", "쇼핑"],
+      id: 2,
+      list: "🐶 애완동.식물",
+      sublist: ["🍯 꿀팁", "💳 쇼핑"],
       isOpen: false,
     },
-    {
-      list: "여행",
-      sublist: ["국내", "해외"],
-      isOpen: false,
-    },
-    {
-      list: "음악",
-      sublist: ["추천", "정보"],
-      isOpen: false,
-    },
+    { id: 3, list: "🚙 여행", sublist: ["🚅 국내", "🛩️ 해외"], isOpen: false },
+    { id: 4, list: "🎧 음악", sublist: ["🎤 추천", "🎹 정보"], isOpen: false },
   ];
+
+  // const [isOpen, setIsOpen] = useState(false);
+  // const handleList = () => {
+  //   setIsOpen(!isOpen);
+  // };
+  const handleList = (id) => {
+    const updatedLists = allLists.map((item) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          isOpen: !item.isOpen,
+        };
+      }
+      return item;
+    });
+    setAllLists(updatedLists);
+  };
+
+  const [allLists, setAllLists] = useState(initialallLists);
+
   return (
-    <>
+    <AllList>
+      <CategoryFont>♞ Category</CategoryFont>
       {allLists.map((allList) => {
         return (
-          <div className="전체" key={allList.id}>
-            <div className="큰목차">
-              <div>{allList.list}</div>
-              <div className="작은목차">
-                <div>{allList.sublist[0]}</div>
-                <div>{allList.sublist[1]}</div>
-              </div>
-              <div>{allList.list}</div>
-              <div className="작은목차">
-                <div>{allList.sublist[0]}</div>
-                <div>{allList.sublist[1]}</div>
-              </div>
-
-              <div className="큰목차">{allList.list}</div>
-              <div className="작은목차">
-                <div>{allList.sublist[0]}</div>
-                <div>{allList.sublist[1]}</div>
-              </div>
-              <div className="큰목차">{allList.list}</div>
-              <div className="작은목차">
-                <div>{allList.sublist[0]}</div>
-                <div>{allList.sublist[0]}</div>
-              </div>
-            </div>
-          </div>
+          <List
+            className="큰목차"
+            key={allList.id}
+            onClick={() => handleList(allList.id)}
+          >
+            <div>{allList.list}</div>
+            <SmallLists className="작은목차" isOpen={allList.isOpen}>
+              <SmallList>{allList.sublist[0]}</SmallList>
+              <SmallList>{allList.sublist[1]}</SmallList>
+            </SmallLists>
+          </List>
         );
       })}
-    </>
+    </AllList>
   );
 }
 export default SideBar2;

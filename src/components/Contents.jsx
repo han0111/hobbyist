@@ -16,6 +16,9 @@ import {
 } from "firebase/firestore";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
+const AllContents = styled.div`
+  margin-left: 200px;
+`;
 
 const Main = styled.main`
   padding: 20px;
@@ -166,7 +169,7 @@ function Contents() {
   const navigate = useNavigate();
 
   return (
-    <>
+    <AllContents>
       <div style={{ width: "650px" }}>
         {posts.map((post) => {
           return (
@@ -227,7 +230,7 @@ function Contents() {
           );
         })}
       </div>
-    </>
+    </AllContents>
   );
 }
 export default Contents;

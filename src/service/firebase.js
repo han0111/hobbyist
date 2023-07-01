@@ -45,14 +45,6 @@ const firebaseConfig = {
   storageBucket: "hobbyist-391107.appspot.com",
   messagingSenderId: "260045142119",
   appId: "1:260045142119:web:2f84805b38876f7673bcc2",
-
-  // // 윤건
-  // apiKey: "AIzaSyBYtriPYjeOSg4WIEWBqyutqxu9oJTNzvI",
-  // authDomain: "hobbyist-40edb.firebaseapp.com",
-  // projectId: "hobbyist-40edb",
-  // storageBucket: "hobbyist-40edb.appspot.com",
-  // messagingSenderId: "415353098643",
-  // appId: "1:415353098643:web:6ec6c18d0251493579d866",
 };
 
 export const signInWithGoogle = () => {
