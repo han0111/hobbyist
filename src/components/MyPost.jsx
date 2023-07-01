@@ -21,7 +21,6 @@ import {
   where,
 } from "firebase/firestore";
 
-import { VerifyMessage } from "./styledcomponents/Styled";
 import { db } from "../service/firebase";
 const EditBtn = styled.button`
   background-image: url("https://img.icons8.com/?size=1x&id=47749&format=png");
@@ -207,8 +206,7 @@ function MyPost() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [downloadURL, setDownloadURL] = useState(null);
-  const [uploadComplete, setUploadComplete] = useState(false);
+  const [, setDownloadURL] = useState(null);
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
   const [modalCID, setModalCID] = useState("");
@@ -216,6 +214,8 @@ function MyPost() {
   const navigate = useNavigate();
 
   const params = useParams();
+
+  //피드 정보 불러오는 함수
   const fetchMyposts = async () => {
     try {
       const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
@@ -230,8 +230,11 @@ function MyPost() {
       console.error("Error fetching MyPosts:", error);
     }
   };
+
+  //피드 삭제 버튼 핸들러
   const PostDeleteBtn = async (CID) => {
     try {
+      console.log("삭제한 피드의CID값은?", CID);
       const querySnapshot = await getDocs(
         query(collection(db, "posts"), where("CID", "==", CID))
       );
@@ -247,7 +250,6 @@ function MyPost() {
   }, []);
 
   const handleFileSelect = (e) => {
-    setUploadComplete(false);
     setSelectedFile(e.target.files[0]);
   };
 
@@ -271,26 +273,34 @@ function MyPost() {
 
     setDownloadURL(downloadURL);
 
-    setUploadComplete(true);
+    return downloadURL;
   };
 
   // 글 수정
-
-  const handlePostEdit = async (CID, downloadURL) => {
-    await handleUpload();
+  const handlePostEdit = async (CID) => {
     try {
+      let downloadURL = "";
+
+      if (selectedFile) {
+        downloadURL = await handleUpload();
+      }
+
       const querySnapshot = await getDocs(
         query(collection(db, "posts"), where("CID", "==", CID))
       );
-      querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {
-          title,
-          body,
-          downloadURL,
-          category,
-          subcategory,
-        });
-      });
+      console.log("현재 CID 값은?", CID);
+      await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          await updateDoc(doc.ref, {
+            title,
+            body,
+            downloadURL,
+            category,
+            subcategory,
+          });
+        })
+      );
+
       setSelectedFile("");
       fetchMyposts();
       setOpen(!open);
@@ -312,22 +322,19 @@ function MyPost() {
       return;
     }
 
+    console.log(post.CID);
+
     setOpen(!open);
 
-    const thisUser = {};
-
-    if (thisUser) {
-      // 기존 게시물 값으로 입력 필드 설정
-      setTitle(post.title);
-      setBody(post.body);
-      setCategory(post.category);
-      setSubcategory(post.subcategory);
-    }
-
-    console.log("수정폼 유저데이터", thisUser);
 
     await fetchMyposts();
     showItsCID(post.CID);
+
+    setTitle(post.title);
+    setBody(post.body);
+    setCategory(post.category);
+    setSubcategory(post.subcategory);
+
   };
 
   //카테고리 핸들러
@@ -411,21 +418,10 @@ function MyPost() {
                     </p>
                     <p>
                       <input type="file" onChange={handleFileSelect} />
-                      <button onClick={(e) => handleUpload(e)}>Upload</button>
-                      {!uploadComplete && (
-                        <VerifyMessage invalid="true">
-                          업로드 안 함
-                        </VerifyMessage>
-                      )}
-
-                      {uploadComplete && (
-                        <VerifyMessage>업로드 완료</VerifyMessage>
-                      )}
                     </p>
                     <button
                       onClick={(event) => {
                         event.preventDefault(); // 기본 동작인 새로고침을 막음
-
                         handlePostEdit(modalCID, downloadURL);
                       }}
                     >

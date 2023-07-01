@@ -17,8 +17,6 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-
-import { VerifyMessage } from "./styledcomponents/Styled";
 import { db, auth } from "../service/firebase";
 
 // 모달 디자인//
@@ -169,7 +167,7 @@ function Profile() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [downloadURL, setDownloadURL] = useState("");
   const [image, setImage] = useState(github);
-  const [uploadComplete, setUploadComplete] = useState(false);
+  const [, setUploadComplete] = useState(false);
 
   // 현재 유저 아이디 가져옴
   const params = useParams().id;
@@ -208,8 +206,9 @@ function Profile() {
   };
 
   const handleUpload = async (e) => {
-    e.preventDefault();
-
+    if (e) {
+      e.preventDefault();
+    }
     if (!selectedFile) {
       alert("파일을 선택해주세요.");
       return;
@@ -222,14 +221,18 @@ function Profile() {
     await uploadBytes(imageRef, selectedFile);
 
     const downloadURL = await getDownloadURL(imageRef);
+    console.log("downloadURL", downloadURL);
+
     setDownloadURL(downloadURL);
 
-    setUploadComplete(true);
+    return downloadURL;
   };
 
   // 수정
   const handleProfileEdit = async (params, downloadURL) => {
     try {
+      const downloadURL = await handleUpload();
+
       const querySnapshot = await getDocs(
         query(collection(db, "users"), where("uid", "==", params))
       );
@@ -347,12 +350,6 @@ function Profile() {
               <>
                 <p>
                   <input type="file" onChange={handleFileSelect} />
-                  <button onClick={handleUpload}>Upload</button>
-                  {!uploadComplete && (
-                    <VerifyMessage invalid="true">업로드 안 함</VerifyMessage>
-                  )}
-
-                  {uploadComplete && <VerifyMessage>업로드 완료</VerifyMessage>}
                 </p>
               </>
               <div style={{ marginTop: "20px" }}>

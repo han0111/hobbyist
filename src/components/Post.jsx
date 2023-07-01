@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, addDoc, where, query } from "firebase/firestore";
-import FileUpload from "./FileUpload";
+// import FileUpload from "./FileUpload";
 import { db } from "../service/firebase";
 import uuid from "react-uuid";
 import { getAuth } from "firebase/auth";
 import { styled } from "styled-components";
-import { auth } from "../service/firebase";
+import { auth, storage } from "../service/firebase";
 import CategorySelect from "../components/CategorySelect/CategorySelect";
 import SubcategorySelect from "../components/CategorySelect/SubcategorySlect";
+import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 
 const BcDiv = styled.div`
   position: fixed;
@@ -139,10 +140,10 @@ function Post() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const [downloadURL, setDownloadURL] = useState(null);
+  const [, setDownloadURL] = useState(null);
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
-  const [, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -153,6 +154,33 @@ function Post() {
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
+  };
+
+  const handleFileSelect = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleUpload = async (e) => {
+    if (e) {
+      e.preventDefault();
+    }
+    if (!selectedFile) {
+      alert("파일을 선택해주세요.");
+      return;
+    }
+
+    const imageRef = ref(
+      storage,
+      `${auth.currentUser.uid}/${selectedFile.name}`
+    );
+    await uploadBytes(imageRef, selectedFile);
+
+    const downloadURL = await getDownloadURL(imageRef);
+    console.log("downloadURL", downloadURL);
+
+    setDownloadURL(downloadURL);
+
+    return downloadURL;
   };
 
   useEffect(() => {
@@ -223,8 +251,16 @@ function Post() {
     }
 
     try {
+      let downloadURL = "";
+
+      if (selectedFile) {
+        downloadURL = await handleUpload(); // 파일을 올렸을 경우에만 업로드 수행
+      }
+
       const nickname = await getNickname(uid);
       const img = await getImg(uid);
+
+      console.log(downloadURL);
 
       const newPost = {
         CID: uuid(),
@@ -232,13 +268,11 @@ function Post() {
         body,
         createdAt: new Date(),
         uid,
-        nickname: nickname ? nickname : generateRandomNickname,
+        nickname,
         likesByUser: { [uid]: false },
         downloadURL,
         likeCount: 0,
-        img: img
-          ? img
-          : "https://ca.slack-edge.com/T043597JK8V-U057B2LN1NU-f07fd31753d9-512",
+        img,
         category,
         subcategory,
       };
@@ -247,9 +281,7 @@ function Post() {
       console.log("Post added with ID: ", docRef.id);
       setTitle("");
       setBody("");
-      setDownloadURL(null);
       setSelectedFile(null);
-      fetchData();
       setOpen(false);
     } catch (error) {
       console.error("Error adding post: ", error);
@@ -301,7 +333,7 @@ function Post() {
               />
             </p>
             <p>
-              <FileUpload setDownloadURL={setDownloadURL} />
+              <input type="file" onChange={handleFileSelect} />
             </p>
             <button onClick={handlePostSubmit}>등록</button>
           </form>
