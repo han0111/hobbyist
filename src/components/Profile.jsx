@@ -17,6 +17,8 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
+
+import { VerifyMessage } from "./styledcomponents/Styled";
 import { db, auth } from "../service/firebase";
 
 // 모달 디자인//
@@ -170,6 +172,7 @@ function Profile() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [downloadURL, setDownloadURL] = useState("");
   const [image, setImage] = useState(github);
+  const [uploadComplete, setUploadComplete] = useState(false);
 
   // 현재 유저 아이디 가져옴
   const params = useParams().id;
@@ -203,11 +206,18 @@ function Profile() {
   // 프로필 사진 넣기
 
   const handleFileSelect = (e) => {
+    setUploadComplete(false);
     setSelectedFile(e.target.files[0]);
   };
 
   const handleUpload = async (e) => {
     e.preventDefault();
+
+    if (!selectedFile) {
+      alert("파일을 선택해주세요.");
+      return;
+    }
+
     const imageRef = ref(
       storage,
       `${auth.currentUser.uid}/${selectedFile.name}`
@@ -216,11 +226,12 @@ function Profile() {
 
     const downloadURL = await getDownloadURL(imageRef);
     setDownloadURL(downloadURL);
+
+    setUploadComplete(true);
   };
 
   // 수정
   const handleProfileEdit = async (params, downloadURL) => {
-
     try {
       const querySnapshot = await getDocs(
         query(collection(db, "users"), where("uid", "==", params))
@@ -234,9 +245,10 @@ function Profile() {
       });
       setEditedName("");
       setEditedMemo("");
-      setSelectedFile("");
+      setSelectedFile(null);
       fetchUsers();
       setOpen(!open);
+      alert("수정이 완료되었습니다!");
     } catch (error) {
       console.error("프로필 수정 오류:", error);
     }
@@ -275,9 +287,23 @@ function Profile() {
     return () => unsubscribe();
   }, [fetchUsers]);
 
-  const profileModalHandler = () => {
+  //수정 폼을 오픈하면 유저의 정보들어있게 만듬
+  const profileModalHandler = async () => {
     setOpen(!open);
-    fetchUsers();
+
+    const thisUser = {
+      nickname: users,
+      memo: memo,
+    };
+
+    if (thisUser) {
+      setEditedName(thisUser.nickname);
+      setEditedMemo(thisUser.memo);
+    }
+
+    console.log("수정폼 유저데이터", thisUser);
+
+    await fetchUsers();
   };
 
   return (
@@ -328,20 +354,28 @@ function Profile() {
                 />
               </p>
               <>
-                <input type="file" onChange={handleFileSelect} />
-                <button onClick={handleUpload}>Upload</button>
+                <p>
+                  <input type="file" onChange={handleFileSelect} />
+                  <button onClick={handleUpload}>Upload</button>
+                  {!uploadComplete && (
+                    <VerifyMessage invalid="true">업로드 안 함</VerifyMessage>
+                  )}
+
+                  {uploadComplete && <VerifyMessage>업로드 완료</VerifyMessage>}
+                </p>
               </>
-              <StLoginBtn
-                onClick={(event) => {
-                  event.preventDefault(); // 기본 동작인 새로고침을 막음
-                  handleProfileEdit(params, downloadURL);
-                }}
-              >
-                수정완료
-              </StLoginBtn>
+              <div style={{ marginTop: "20px" }}>
+                <StLoginBtn
+                  onClick={(event) => {
+                    event.preventDefault(); // 기본 동작인 새로고침을 막음
+                    handleProfileEdit(params, downloadURL);
+                  }}
+                >
+                  수정완료
+                </StLoginBtn>
+              </div>
               <br />
             </StForm>
-
             <Stbtn onClick={profileModalHandler}>x</Stbtn>
           </StDiv>
         </BcDiv>

@@ -278,7 +278,7 @@ function Detail() {
       );
 
       querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {});
+        await updateDoc(doc.ref, { comment: editedComment });
       });
 
       setEditCommentId("");
@@ -314,12 +314,11 @@ function Detail() {
           <div key={post.id}>
             <Browser>
               <TopBar />
-
               <DetailContainer>
                 <div>
                   <ContentHeader>
                     <ProfileGroup>
-                      <ProfileImage></ProfileImage>
+                      <ProfileImage src={post.img} alt="" />
                       <ProfileName>{post.nickname}</ProfileName>
                     </ProfileGroup>
                   </ContentHeader>

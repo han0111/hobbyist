@@ -142,6 +142,7 @@ function Post() {
   const [downloadURL, setDownloadURL] = useState(null);
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
+  const [, setSelectedFile] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -161,6 +162,13 @@ function Post() {
   // 글쓰기 모달창 열기
   const postModalHandler = () => {
     !auth.currentUser ? alert("로그인 후 사용해주세요.") : setOpen(!open);
+
+    setTitle("");
+    setBody("");
+    setCategory("");
+    setSubcategory("");
+    setDownloadURL(null);
+    setSelectedFile(null);
   };
 
   //닉네임 가져오는 함수
@@ -201,7 +209,6 @@ function Post() {
   // db에 값 저장
   const handlePostSubmit = async (event) => {
     event.preventDefault();
-    setOpen(false);
 
     const auth = getAuth();
     const currentUser = auth.currentUser;
@@ -222,7 +229,7 @@ function Post() {
         body,
         createdAt: new Date(),
         uid,
-        nickname: nickname, // Include the nickname in the new post object
+        nickname: nickname,
         likesByUser: { [uid]: false },
         downloadURL,
         likeCount: 0,
@@ -235,12 +242,16 @@ function Post() {
       console.log("Post added with ID: ", docRef.id);
       setTitle("");
       setBody("");
+      setDownloadURL(null);
+      setSelectedFile(null);
       fetchData();
+      setOpen(false);
     } catch (error) {
       console.error("Error adding post: ", error);
     }
   };
 
+  //카테고리 핸들러
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
     setSubcategory("");

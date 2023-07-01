@@ -187,7 +187,7 @@ function SignUp() {
                   placeholder="비밀번호"
                 />
                 {passwordverify && (
-                  <VerifyMessage invalid>
+                  <VerifyMessage invalid={passwordverify ? "true" : undefined}>
                     비밀번호가 8자리 미만입니다.
                   </VerifyMessage>
                 )}

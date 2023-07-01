@@ -9,6 +9,8 @@ import { storage } from "../service/firebase";
 import { uploadBytes } from "firebase/storage";
 import { getDownloadURL } from "firebase/storage";
 import { updateDoc } from "firebase/firestore";
+import CategorySelect from "../components/CategorySelect/CategorySelect";
+import SubcategorySelect from "../components/CategorySelect/SubcategorySlect";
 import {
   collection,
   getDocs,
@@ -18,6 +20,7 @@ import {
   where,
 } from "firebase/firestore";
 
+import { VerifyMessage } from "./styledcomponents/Styled";
 import { db } from "../service/firebase";
 const EditBtn = styled.button`
   background-image: url("https://img.icons8.com/?size=1x&id=47749&format=png");
@@ -106,8 +109,8 @@ const BodyInput = styled.input`
 `;
 
 const StDiv = styled.div`
-  width: 650px;
-  height: 500px;
+  width: 800px;
+  height: 600px;
   z-index: 9999;
   position: fixed;
   top: 50%;
@@ -115,6 +118,9 @@ const StDiv = styled.div`
   transform: translate(-50%, -50%);
   background-color: white;
   border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Stbtn = styled.button`
@@ -127,6 +133,68 @@ const Stbtn = styled.button`
   cursor: pointer;
 `;
 
+const categoryOptions = [
+  { value: "", label: "카테고리를 선택해주세요!" },
+  { value: "여행", label: "여행" },
+  { value: "음악", label: "음악" },
+  { value: "경제", label: "경제" },
+  { value: "스포츠", label: "스포츠" },
+  { value: "영화", label: "영화" },
+  { value: "게임", label: "게임" },
+  { value: "기타", label: "기타" },
+];
+
+const subcategoryOptions = {
+  여행: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "국내여행", label: "국내여행" },
+    { value: "해외여행", label: "해외여행" },
+    { value: "기타여향", label: "기타여행" },
+  ],
+
+  음악: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "국내음악", label: "국내음악" },
+    { value: "해외음악", label: "해외음악" },
+    { value: "기타음악", label: "기타음악" },
+  ],
+
+  경제: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "주식", label: "주식" },
+    { value: "가상화폐", label: "가상화폐" },
+    { value: "부동산", label: "부동산" },
+    { value: "기타 경제", label: "기타 경제" },
+  ],
+
+  스포츠: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "축구", label: "축구" },
+    { value: "야구", label: "야구" },
+    { value: "농구", label: "농구" },
+    { value: "기타 스포츠", label: "기타 스포츠" },
+  ],
+
+  영화: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "국내영화", label: "국내영화" },
+    { value: "해외영화", label: "해외영화" },
+    { value: "기타영화", label: "기타영화" },
+  ],
+
+  게임: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "온라인게임", label: "온라인게임" },
+    { value: "콘솔게임", label: "콘솔게임" },
+    { value: "기타게임", label: "기타게임" },
+  ],
+
+  기타: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "기타", label: "기타" },
+  ],
+};
+
 function MyPost() {
   const [myPost, setMyPost] = useState([]);
   const [open, setOpen] = useState(false);
@@ -134,6 +202,9 @@ function MyPost() {
   const [body, setBody] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [downloadURL, setDownloadURL] = useState(null);
+  const [uploadComplete, setUploadComplete] = useState(false);
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
 
   const params = useParams();
   const fetchMyposts = async () => {
@@ -167,11 +238,19 @@ function MyPost() {
   }, []);
 
   const handleFileSelect = (e) => {
+    setUploadComplete(false);
     setSelectedFile(e.target.files[0]);
   };
 
   const handleUpload = async (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
+    if (!selectedFile) {
+      alert("파일을 선택해주세요.");
+      return;
+    }
+
     const imageRef = ref(
       storage,
       `${auth.currentUser.uid}/${selectedFile.name}`
@@ -182,12 +261,14 @@ function MyPost() {
     console.log("downloadURL", downloadURL);
 
     setDownloadURL(downloadURL);
+
+    setUploadComplete(true);
   };
 
   // 글 수정
 
   const handlePostEdit = async (CID, downloadURL) => {
-    console.log(CID);
+    await handleUpload();
     try {
       const querySnapshot = await getDocs(
         query(collection(db, "posts"), where("CID", "==", CID))
@@ -197,20 +278,49 @@ function MyPost() {
           title,
           body,
           downloadURL,
+          category,
+          subcategory,
         });
       });
       setSelectedFile("");
       fetchMyposts();
       setOpen(!open);
+      alert("수정이 완료됐습니다!");
     } catch (error) {
       console.error("프로필 수정 오류:", error);
     }
   };
 
   // 글쓰기 모달창 열기
-  const postModalHandler = () => {
-    !auth.currentUser ? alert("로그인 후 사용해주세요.") : setOpen(!open);
+  const postModalHandler = async (post) => {
+    if (!auth.currentUser) {
+      alert("로그인 후 사용해주세요.");
+      return;
+    }
+
+    setOpen(!open);
+
+    const thisUser = {};
+
+    if (thisUser) {
+      // 기존 게시물 값으로 입력 필드 설정
+      setTitle(post.title);
+      setBody(post.body);
+      setCategory(post.category);
+      setSubcategory(post.subcategory);
+    }
+
+    console.log("수정폼 유저데이터", thisUser);
+
+    await fetchMyposts();
   };
+
+  //카테고리 핸들러
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+    setSubcategory("");
+  };
+
   return (
     <>
       <MyContents>
@@ -235,13 +345,13 @@ function MyPost() {
               <EditBtn
                 width="40px"
                 height="40px"
-                onClick={postModalHandler}
+                onClick={() => postModalHandler(post)}
               ></EditBtn>
               {/* 수정 모달창부분 */}
               <BcDiv open={open} onClick={postModalHandler}>
                 <StDiv onClick={(e) => e.stopPropagation()}>
-                  <h1>글 작성하기</h1>
                   <form>
+                    <h1>글 작성하기</h1>
                     <p>
                       <TitleInput
                         type="text"
@@ -250,6 +360,22 @@ function MyPost() {
                         placeholder="제목을 입력해주세요."
                       />
                     </p>
+                    <p>
+                      <CategorySelect
+                        value={category}
+                        onChange={handleCategoryChange}
+                        options={categoryOptions}
+                      />
+                    </p>
+                    {category && category !== "" && (
+                      <p>
+                        <SubcategorySelect
+                          value={subcategory}
+                          onChange={(e) => setSubcategory(e.target.value)}
+                          options={subcategoryOptions[category]}
+                        />
+                      </p>
+                    )}
                     <p>
                       <BodyInput
                         type="text"
@@ -260,7 +386,16 @@ function MyPost() {
                     </p>
                     <p>
                       <input type="file" onChange={handleFileSelect} />
-                      <button onClick={handleUpload}>Upload</button>
+                      <button onClick={(e) => handleUpload(e)}>Upload</button>
+                      {!uploadComplete && (
+                        <VerifyMessage invalid="true">
+                          업로드 안 함
+                        </VerifyMessage>
+                      )}
+
+                      {uploadComplete && (
+                        <VerifyMessage>업로드 완료</VerifyMessage>
+                      )}
                     </p>
                     <button
                       onClick={(event) => {
