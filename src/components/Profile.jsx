@@ -149,15 +149,12 @@ const EditBtn = styled.button`
   height: ${(props) => props.height};
   margin-left: auto;
   cursor: pointer;
+  display: ${(props) =>
+    props.currentuserid === props.params ? "block" : "none"};
 `;
 
 const IntroduceMent = styled.p`
   font-size: 20px;
-`;
-
-const ProfileEditBtn = styled.button`
-  display: ${(props) =>
-    props.currentuserid === props.params ? "block" : "none"};
 `;
 
 function Profile() {
@@ -315,24 +312,18 @@ function Profile() {
         <MyDiv>
           <img src={image} alt="프로필 이미지" style={{ width: "250px" }} />
         </MyDiv>
-        <ProfileEditBtn
-          currentuserid={currentUserId}
-          params={params}
-          onClick={profileModalHandler}
-        >
-          수정
-        </ProfileEditBtn>
         <NameContainer>
           <MyName>{users}</MyName>
           <EditBtn
             width="30px"
             height="30px"
             onClick={profileModalHandler}
+            currentuserid={currentUserId}
+            params={params}
           ></EditBtn>
         </NameContainer>
         <IntroduceMe>
           <IntroduceMent>{memo}</IntroduceMent>
-          <EditBtn width="30px" height="30px"></EditBtn>
         </IntroduceMe>
       </ProfileContainer>
       <div>
