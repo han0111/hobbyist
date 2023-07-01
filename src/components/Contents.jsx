@@ -6,6 +6,7 @@ import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
 import MainBtnFunc from "./MainBtnFunc";
 import google from "../img/google.png";
+import SideBar2 from "./SideBar2";
 
 const AllContents = styled.div`
   margin-left: 200px;
@@ -48,6 +49,8 @@ function Contents() {
   const [posts, setPosts] = useState([]);
   const [, setUsers] = useState();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSubcategory] = useState(null);
+  const [subcategory, setSubcategory] = useState(null);
 
   //db에서 유저 데이터 불러오는 함수
   const fetchUsers = async () => {
@@ -116,18 +119,35 @@ function Contents() {
 
   const navigate = useNavigate();
 
+  // 검색어와 카테고리에 따라 필터링하는 함수
   const filterPosts = () => {
+    let filteredPosts = posts;
+
     if (searchQuery) {
-      return posts.filter((post) => post.title.includes(searchQuery));
-    } else {
-      return posts;
+      filteredPosts = filteredPosts.filter((post) =>
+        post.title.includes(searchQuery)
+      );
     }
+
+    if (subcategory) {
+      console.log(selectedSubcategory);
+      filteredPosts = filteredPosts.filter(
+        (post) => post.subcategory === subcategory
+      );
+    }
+
+    return filteredPosts;
   };
 
   return (
     <AllContents>
       <TopBar onSearch={handleSearch} />
+      <SideBar2
+        selectedSubcategory={subcategory}
+        setSelectedSubcategory={setSubcategory}
+      />
       <div style={{ width: "650px" }}>
+        {console.log(subcategory)}
         {filterPosts().map((post) => {
           return (
             <Main key={post.CID}>

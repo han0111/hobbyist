@@ -15,6 +15,7 @@ const AllList = styled.button`
   align-items: center;
   /* margin-bottom: 10px; */
   padding-top: 20px;
+  left: 190px;
   border: none;
   position: fixed;
 `;
@@ -23,7 +24,7 @@ const CategoryFont = styled.div`
   font-size: 20px;
   font-weight: bold;
 `;
-const List = styled.button`
+const List = styled.div`
   display: flex;
   /* align-items: center; */
   justify-content: center;
@@ -35,22 +36,24 @@ const List = styled.button`
   padding: 15px;
   width: 180px;
   /* margin-top: 10px; */
+  cursor: pointer;
 `;
 const SmallLists = styled.div`
-  display: ${(props) => (props.isOpen ? "flex" : "none")};
+  display: ${(props) => (props.isopen ? "flex" : "none")};
   flex-direction: column;
   /* align-items: center; */
   justify-content: center;
 `;
-const SmallList = styled.button`
+const SmallList = styled.div`
   font-size: 15px;
   padding-top: 10px;
-  text-align: left;
+  text-align: center;
   border: none;
+
+  cursor: pointer;
 `;
 
-function SideBar2() {
-  console.log(subcategoryOptions);
+function SideBar2({ setSelectedSubcategory }) {
   const initialallLists = [
     {
       id: 1,
@@ -89,25 +92,30 @@ function SideBar2() {
     },
   ];
 
-  // const [isOpen, setIsOpen] = useState(false);
-  // const handleList = () => {
-  //   setIsOpen(!isOpen);
-  // };
+  const [allLists, setAllLists] = useState(initialallLists);
 
   const handleList = (id) => {
     const updatedLists = allLists.map((item) => {
       if (item.id === id) {
         return {
           ...item,
-          isOpen: !item.isOpen,
+          isopen: !item.isopen,
         };
       }
-      return item;
+
+      return {
+        ...item,
+        isopen: false,
+      };
     });
     setAllLists(updatedLists);
   };
 
-  const [allLists, setAllLists] = useState(initialallLists);
+  const handleSubcategory = (subcategory) => {
+    const cleanSubcategory = subcategory.substring(2).trim();
+    setSelectedSubcategory(cleanSubcategory);
+    console.log(cleanSubcategory);
+  };
 
   return (
     <AllList>
@@ -120,16 +128,16 @@ function SideBar2() {
             onClick={() => handleList(allList.id)}
           >
             <div>{allList.list}</div>
-            <SmallLists className="작은목차" isOpen={allList.isOpen}>
-              {allLists.map((subList, i) => {
-                if (allList.sublist[i]) {
-                  return (
-                    allList.sublist.length > 0 && (
-                      <SmallList key={i}>{allList.sublist[i]}</SmallList>
-                    )
-                  );
-                }
-                return null;
+            <SmallLists className="작은목차" isopen={allList.isopen}>
+              {allList.sublist.map((subListItem, i) => {
+                return (
+                  <SmallList
+                    key={i}
+                    onClick={() => handleSubcategory(subListItem)}
+                  >
+                    {subListItem}
+                  </SmallList>
+                );
               })}
             </SmallLists>
           </List>

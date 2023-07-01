@@ -215,7 +215,7 @@ function MainBtnFunc(props) {
               />
             )}
           </IconSpan>
-          <Likecount>{post.likeCount}</Likecount>
+          <Likecount>{isNaN(post.likeCount) ? 0 : post.likeCount}</Likecount>
         </FunctionLi>
         <FunctionLi>
           <IconSpan onClick={updateBooked}>
