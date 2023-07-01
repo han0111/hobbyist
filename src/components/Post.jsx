@@ -342,10 +342,13 @@ function Post() {
       </BcDiv>
       <button
         style={{
-          width: "200px",
+          width: "220px",
           height: "50px",
-          marginTop: "100px",
+          marginTop: "130px",
           position: "fixed",
+          border: "none",
+          borderRadius: "15px",
+          fontWeight: "bold",
         }}
         onClick={postModalHandler}
       >

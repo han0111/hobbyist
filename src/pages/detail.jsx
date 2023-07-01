@@ -92,16 +92,6 @@ const CommentBody = styled.div`
   align-items: left;
 `;
 const CommentContainer = styled.div``;
-const CommentLike = styled.button`
-  border: 0;
-  background-color: transparent;
-  background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
-  background-size: cover;
-  font-size: 30px;
-  width: 30px;
-  height: 30px;
-  margin-left: auto;
-`;
 
 const CommentInput = styled.input`
   width: 100%;
@@ -218,7 +208,6 @@ function Detail() {
   };
   // 포스트 저장 부분 불러옴
   useEffect(() => {
-    console.log("패치일어남");
     fetchPosts();
   }, []);
 
@@ -368,7 +357,6 @@ function Detail() {
                                   </button>
                                 </>
                               )}
-                              <CommentLike /> &nbsp; &nbsp;
                             </span>
                           </p>
                         </div>

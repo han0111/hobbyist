@@ -32,22 +32,13 @@ const EditBtn = styled.button`
   margin-left: auto;
   cursor: pointer;
   display: ${(props) =>
-    props.currentUserId === props.params.id ? "block" : "none"};
+    props.currentuserid === props.params.id ? "block" : "none"};
 `;
 const MyContents = styled.div`
-  margin-left: 100px;
   width: 100%;
   height: 90%;
 `;
-const MyButton = styled.button`
-  width: 250px;
-  height: 50px;
-  font-size: 20px;
-  font-weight: bold;
-  border: none;
-  background-color: #cccccc;
-  box-shadow: 0px 1px 5px gray;
-`;
+
 const ListContainer = styled.div`
   background-color: #efefea;
   height: 20%;
@@ -56,7 +47,6 @@ const ListContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
 `;
 
 const ContentBody = styled.div`
@@ -87,7 +77,7 @@ const DeleteBtn = styled.button`
   margin-left: 20px;
   cursor: pointer;
   display: ${(props) =>
-    props.currentUserId === props.params.id ? "block" : "none"};
+    props.currentuserid === props.params.id ? "block" : "none"};
 `;
 
 // 모달디자인
@@ -149,54 +139,39 @@ const categoryOptions = [
   { value: "기타", label: "기타" },
 ];
 
-const subcategoryOptions = {
+export const subcategoryOptions = {
+  경제: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "📈 주식", label: "주식" },
+    { value: "💸 가상화폐", label: "가상화폐" },
+    { value: "🏡 부동산", label: "부동산" },
+    { value: "🪙 기타경제", label: "기타경제" },
+  ],
+
+  애완동식물: [
+    { value: "", label: "카테고리를 선택해주세요!" },
+    { value: "🍯 꿀팁", label: "꿀팁" },
+    { value: "💳 쇼핑", label: "쇼핑" },
+    { value: "🐱 기타정보", label: "기타정보" },
+  ],
+
   여행: [
     { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "국내여행", label: "국내여행" },
-    { value: "해외여행", label: "해외여행" },
-    { value: "기타여향", label: "기타여행" },
+    { value: "🚅 국내여행", label: "국내여행" },
+    { value: "🛩️ 해외여행", label: "해외여행" },
+    { value: "🗺️ 기타여행", label: "기타여행" },
   ],
 
   음악: [
     { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "국내음악", label: "국내음악" },
-    { value: "해외음악", label: "해외음악" },
-    { value: "기타음악", label: "기타음악" },
-  ],
-
-  경제: [
-    { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "주식", label: "주식" },
-    { value: "가상화폐", label: "가상화폐" },
-    { value: "부동산", label: "부동산" },
-    { value: "기타 경제", label: "기타 경제" },
-  ],
-
-  스포츠: [
-    { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "축구", label: "축구" },
-    { value: "야구", label: "야구" },
-    { value: "농구", label: "농구" },
-    { value: "기타 스포츠", label: "기타 스포츠" },
-  ],
-
-  영화: [
-    { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "국내영화", label: "국내영화" },
-    { value: "해외영화", label: "해외영화" },
-    { value: "기타영화", label: "기타영화" },
-  ],
-
-  게임: [
-    { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "온라인게임", label: "온라인게임" },
-    { value: "콘솔게임", label: "콘솔게임" },
-    { value: "기타게임", label: "기타게임" },
+    { value: "🇰🇷 국내음악", label: "국내음악" },
+    { value: "🏳️‍🌈 해외음악", label: "해외음악" },
+    { value: "🎸 기타음악", label: "기타음악" },
   ],
 
   기타: [
     { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "기타", label: "기타" },
+    { value: "📱 기타", label: "기타" },
   ],
 };
 
@@ -326,7 +301,6 @@ function MyPost() {
 
     setOpen(!open);
 
-
     await fetchMyposts();
     showItsCID(post.CID);
 
@@ -334,7 +308,6 @@ function MyPost() {
     setBody(post.body);
     setCategory(post.category);
     setSubcategory(post.subcategory);
-
   };
 
   //카테고리 핸들러
@@ -344,12 +317,11 @@ function MyPost() {
   };
 
   const currentUserId = auth.currentUser.uid;
+  console.log(currentUserId);
 
   return (
     <>
       <MyContents>
-        <MyButton>내가 쓴 글</MyButton>
-        <MyButton>북마크 한 글</MyButton>
         {myPost
           .filter((post) => post.uid === params.id)
           .map((post) => (
@@ -377,7 +349,7 @@ function MyPost() {
                 height="40px"
                 onClick={() => postModalHandler(post)}
                 params={params}
-                currentUserId={currentUserId}
+                currentuserid={currentUserId}
               ></EditBtn>
               {/* 수정 모달창부분 */}
               <BcDiv open={open} onClick={postModalHandler}>
@@ -422,7 +394,7 @@ function MyPost() {
                     <button
                       onClick={(event) => {
                         event.preventDefault(); // 기본 동작인 새로고침을 막음
-                        handlePostEdit(modalCID, downloadURL);
+                        handlePostEdit(modalCID);
                       }}
                     >
                       수정
@@ -435,7 +407,7 @@ function MyPost() {
               <DeleteBtn
                 onClick={() => PostDeleteBtn(post.CID)}
                 params={params}
-                currentUserId={currentUserId}
+                currentuserid={currentUserId}
               ></DeleteBtn>
             </ListContainer>
           ))}
