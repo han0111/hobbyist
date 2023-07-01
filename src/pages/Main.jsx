@@ -14,7 +14,6 @@ function App() {
       >
         <div style={{ display: "flex" }}>
           <TopBar />
-          {/* <SideBar2 /> */}
           <Contents />
           <Post />
         </div>

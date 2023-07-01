@@ -231,7 +231,11 @@ function Profile() {
   // 수정
   const handleProfileEdit = async (params, downloadURL) => {
     try {
-      const downloadURL = await handleUpload();
+      let downloadURL = ""; // 사진이 없을 경우 빈 문자열로 초기화
+
+      if (selectedFile) {
+        downloadURL = await handleUpload();
+      }
 
       const querySnapshot = await getDocs(
         query(collection(db, "users"), where("uid", "==", params))

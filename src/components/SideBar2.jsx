@@ -39,7 +39,7 @@ const List = styled.div`
   cursor: pointer;
 `;
 const SmallLists = styled.div`
-  display: ${(props) => (props.isopen ? "flex" : "none")};
+  display: ${(props) => (props.isopen === "true" ? "flex" : "none")};
   flex-direction: column;
   /* align-items: center; */
   justify-content: center;
@@ -128,7 +128,10 @@ function SideBar2({ setSelectedSubcategory }) {
             onClick={() => handleList(allList.id)}
           >
             <div>{allList.list}</div>
-            <SmallLists className="작은목차" isopen={allList.isopen}>
+            <SmallLists
+              className="작은목차"
+              isopen={allList.isopen ? "true" : "false"}
+            >
               {allList.sublist.map((subListItem, i) => {
                 return (
                   <SmallList
