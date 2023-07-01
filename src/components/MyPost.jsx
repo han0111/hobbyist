@@ -9,6 +9,7 @@ import { storage } from "../service/firebase";
 import { uploadBytes } from "firebase/storage";
 import { getDownloadURL } from "firebase/storage";
 import { updateDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import CategorySelect from "../components/CategorySelect/CategorySelect";
 import SubcategorySelect from "../components/CategorySelect/SubcategorySlect";
 import {
@@ -31,6 +32,8 @@ const EditBtn = styled.button`
   height: ${(props) => props.height};
   margin-left: auto;
   cursor: pointer;
+  display: ${(props) =>
+    props.currentUserId === props.params.id ? "block" : "none"};
 `;
 const MyContents = styled.div`
   margin-left: 100px;
@@ -69,6 +72,7 @@ const ContentBody = styled.div`
 const ContentTitle = styled.div`
   font-size: 30px;
   font-weight: bold;
+  cursor: pointer;
 `;
 const ContentMent = styled.p`
   font-size: 20px;
@@ -83,6 +87,8 @@ const DeleteBtn = styled.button`
   margin-right: 50px;
   margin-left: 20px;
   cursor: pointer;
+  display: ${(props) =>
+    props.currentUserId === props.params.id ? "block" : "none"};
 `;
 
 // 모달디자인
@@ -205,6 +211,9 @@ function MyPost() {
   const [uploadComplete, setUploadComplete] = useState(false);
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
+  const [modalCID, setModalCID] = useState("");
+
+  const navigate = useNavigate();
 
   const params = useParams();
   const fetchMyposts = async () => {
@@ -291,8 +300,13 @@ function MyPost() {
     }
   };
 
+  const showItsCID = (CID) => {
+    console.log(`cid는 ${CID}`);
+  };
+
   // 글쓰기 모달창 열기
   const postModalHandler = async (post) => {
+    setModalCID(post.CID);
     if (!auth.currentUser) {
       alert("로그인 후 사용해주세요.");
       return;
@@ -313,6 +327,7 @@ function MyPost() {
     console.log("수정폼 유저데이터", thisUser);
 
     await fetchMyposts();
+    showItsCID(post.CID);
   };
 
   //카테고리 핸들러
@@ -320,6 +335,8 @@ function MyPost() {
     setCategory(e.target.value);
     setSubcategory("");
   };
+
+  const currentUserId = auth.currentUser.uid;
 
   return (
     <>
@@ -329,7 +346,7 @@ function MyPost() {
         {myPost
           .filter((post) => post.uid === params.id)
           .map((post) => (
-            <ListContainer key={post.id}>
+            <ListContainer key={post.CID}>
               <img
                 style={{
                   width: "300px",
@@ -339,13 +356,21 @@ function MyPost() {
                 alt=""
               ></img>
               <ContentBody>
-                <ContentTitle>{post.title}</ContentTitle>
+                <ContentTitle
+                  onClick={() => {
+                    navigate(`/detail/${post.id}`);
+                  }}
+                >
+                  {post.title}
+                </ContentTitle>
                 <ContentMent>{post.body}</ContentMent>
               </ContentBody>
               <EditBtn
                 width="40px"
                 height="40px"
                 onClick={() => postModalHandler(post)}
+                params={params}
+                currentUserId={currentUserId}
               ></EditBtn>
               {/* 수정 모달창부분 */}
               <BcDiv open={open} onClick={postModalHandler}>
@@ -400,7 +425,8 @@ function MyPost() {
                     <button
                       onClick={(event) => {
                         event.preventDefault(); // 기본 동작인 새로고침을 막음
-                        handlePostEdit(post.CID, downloadURL);
+
+                        handlePostEdit(modalCID, downloadURL);
                       }}
                     >
                       수정
@@ -410,7 +436,11 @@ function MyPost() {
                 </StDiv>
               </BcDiv>
               {/* 수정모달창부분 */}
-              <DeleteBtn onClick={() => PostDeleteBtn(post.CID)}></DeleteBtn>
+              <DeleteBtn
+                onClick={() => PostDeleteBtn(post.CID)}
+                params={params}
+                currentUserId={currentUserId}
+              ></DeleteBtn>
             </ListContainer>
           ))}
       </MyContents>
