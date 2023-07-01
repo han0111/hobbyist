@@ -46,7 +46,7 @@ const SmallList = styled.button`
   font-size: 15px;
   padding-top: 10px;
   text-align: left;
-  /* border: none; */
+  border: none;
 `;
 
 function SideBar2() {
@@ -77,6 +77,13 @@ function SideBar2() {
       id: 4,
       list: "🎧 음악",
       sublist: subcategoryOptions["음악"].map((option) => option.value),
+      // sublist: ["🎤 추천", "🎹 정보"],
+      isOpen: false,
+    },
+    {
+      id: 5,
+      list: "🍀 기타",
+      sublist: subcategoryOptions["기타"].map((option) => option.value),
       // sublist: ["🎤 추천", "🎹 정보"],
       isOpen: false,
     },
@@ -113,13 +120,16 @@ function SideBar2() {
           >
             <div>{allList.list}</div>
             <SmallLists className="작은목차" isOpen={allList.isOpen}>
-              {/* <SmallList onClick>{allList.sublist}</SmallList> */}
-              <SmallList>{allList.sublist[0]}</SmallList>
-              <SmallList>{allList.sublist[1]}</SmallList>
-              <SmallList>{allList.sublist[2]}</SmallList>
-              <SmallList>{allList.sublist[3]}</SmallList>
-              <SmallList>{allList.sublist[4]}</SmallList>
-              {/* //allList map돌리기 */}
+              {allLists.map((subList, i) => {
+                if (allList.sublist[i]) {
+                  return (
+                    allList.sublist.length > 0 && (
+                      <SmallList key={i}>{allList.sublist[i]}</SmallList>
+                    )
+                  );
+                }
+                return null;
+              })}
             </SmallLists>
           </List>
         );

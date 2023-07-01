@@ -145,36 +145,36 @@ export const categoryOptions = [
 export const subcategoryOptions = {
   경제: [
     { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "주식", label: "주식" },
-    { value: "가상화폐", label: "가상화폐" },
-    { value: "부동산", label: "부동산" },
-    { value: "기타경제", label: "기타경제" },
+    { value: "📈 주식", label: "주식" },
+    { value: "💸 가상화폐", label: "가상화폐" },
+    { value: "🏡 부동산", label: "부동산" },
+    { value: "🪙 기타경제", label: "기타경제" },
   ],
 
   애완동식물: [
     { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "꿀팁", label: "꿀팁" },
-    { value: "쇼핑", label: "쇼핑" },
-    { value: "기타여행", label: "기타여행" },
+    { value: "🍯 꿀팁", label: "꿀팁" },
+    { value: "💳 쇼핑", label: "쇼핑" },
+    { value: "🐱 기타정보", label: "기타정보" },
   ],
 
   여행: [
     { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "국내여행", label: "국내여행" },
-    { value: "해외여행", label: "해외여행" },
-    { value: "기타여행", label: "기타여행" },
+    { value: "🚅 국내여행", label: "국내여행" },
+    { value: "🛩️ 해외여행", label: "해외여행" },
+    { value: "🗺️ 기타여행", label: "기타여행" },
   ],
 
   음악: [
     { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "국내음악", label: "국내음악" },
-    { value: "해외음악", label: "해외음악" },
-    { value: "기타음악", label: "기타음악" },
+    { value: "🇰🇷 국내음악", label: "국내음악" },
+    { value: "🏳️‍🌈 해외음악", label: "해외음악" },
+    { value: "🎸 기타음악", label: "기타음악" },
   ],
 
   기타: [
     { value: "", label: "카테고리를 선택해주세요!" },
-    { value: "기타", label: "기타" },
+    { value: "📱 기타", label: "기타" },
   ],
 };
 
