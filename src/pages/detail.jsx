@@ -3,7 +3,7 @@ import { styled } from "styled-components";
 import uuid from "react-uuid";
 import TopBar from "../components/TopBar";
 import ButtonFunc from "../components/ButtonFunc";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   collection,
   getDocs,
@@ -58,15 +58,6 @@ const ProfileImage = styled.img`
 const ProfileName = styled.span`
   font-size: 30px;
   margin-left: 20px;
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const Button = styled.button`
-  margin-left: 10px;
 `;
 
 const ContentImage = styled.div`
@@ -146,10 +137,6 @@ function Detail() {
   const [posts, setPosts] = useState([]);
   const [comment, setComment] = useState("");
   const { id } = useParams();
-  const navigate = useNavigate();
-
-  const [editedTitle] = useState("");
-  const [editedBody] = useState("");
 
   // 랜덤 닉네임 생성 함수
   const generateRandomNickname = () => {
@@ -160,20 +147,10 @@ function Detail() {
       "최고의 ",
       "똑똑한 ",
       "섹시한 ",
-      "슬픈 ",
+      "춤추는 ",
       "기쁜 ",
     ];
-    const nouns = [
-      "말미잘",
-      "코린이",
-      "사자",
-      "외계인",
-      "개발자",
-      "오리",
-      "호날두",
-      "잠자리",
-      "박지성",
-    ];
+    const nouns = ["홍정기", "최원장", "안동훈", "예병수", "류명한"];
     const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
     const noun = nouns[Math.floor(Math.random() * nouns.length)];
     return adjective + noun;
@@ -301,7 +278,7 @@ function Detail() {
       );
 
       querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {});
+        await updateDoc(doc.ref, { comment: editedComment });
       });
 
       setEditCommentId("");
@@ -327,44 +304,6 @@ function Detail() {
     }
   };
 
-  //DB에서 해당하는 CID값을 가진 게시글을 삭제하는 함수
-  const PostDeleteBtn = async (CID) => {
-    try {
-      const querySnapshot = await getDocs(
-        query(collection(db, "posts"), where("CID", "==", CID))
-      );
-      const deletePost = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
-
-      await Promise.all(deletePost);
-      alert("피드가 삭제되었습니다!");
-      fetchPosts();
-      navigate(`/`);
-    } catch (error) {
-      console.error("포스트 삭제 오류:", error);
-    }
-  };
-
-  //DB에서 해당하는 CID 값을 가진 게시글을 수정하는 함수
-  const PostEditBtn = async (CID) => {
-    try {
-      const querySnapshot = await getDocs(
-        query(collection(db, "posts"), where("CID", "==", CID))
-      );
-
-      querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {
-          title: editedTitle,
-          body: editedBody,
-        });
-      });
-
-      alert("게시글이 수정 되었습니다!");
-      fetchPosts();
-    } catch (error) {
-      console.error("포스트 수정 오류:", error);
-    }
-  };
-
   const filteredPosts = posts.filter((post) => post.id === id);
   const filteredComments = comments.filter((comment) => comment.postId === id);
 
@@ -375,22 +314,13 @@ function Detail() {
           <div key={post.id}>
             <Browser>
               <TopBar />
-
               <DetailContainer>
                 <div>
                   <ContentHeader>
                     <ProfileGroup>
-                      <ProfileImage></ProfileImage>
+                      <ProfileImage src={post.img} alt="" />
                       <ProfileName>{post.nickname}</ProfileName>
                     </ProfileGroup>
-                    <ButtonGroup>
-                      <Button onClick={() => PostEditBtn(post.CID)}>
-                        수정
-                      </Button>
-                      <Button onClick={() => PostDeleteBtn(post.CID)}>
-                        삭제
-                      </Button>
-                    </ButtonGroup>
                   </ContentHeader>
                   <ContentImage backgroundimg={post.downloadURL}></ContentImage>
                   <ButtonFunc />

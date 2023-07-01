@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { styled } from "styled-components";
 import { useState } from "react";
 import { useEffect } from "react";
 import github from "../img/github.png";
 import { useParams } from "react-router-dom";
-
+import { ref } from "firebase/storage";
+import { storage } from "../service/firebase";
+import { uploadBytes } from "firebase/storage";
+import { getDownloadURL } from "firebase/storage";
 import {
   collection,
   getDocs,
@@ -14,8 +17,9 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-import { db, auth } from "../service/firebase";
 
+import { VerifyMessage } from "./styledcomponents/Styled";
+import { db, auth } from "../service/firebase";
 
 // 모달 디자인//
 
@@ -162,17 +166,21 @@ function Profile() {
   const [users, setUsers] = useState([]);
   const [memo, setMemo] = useState("");
   const [open, setOpen] = useState(false);
-  const [image] = useState(github);
   const [editedName, setEditedName] = useState("");
   const [editedMemo, setEditedMemo] = useState("");
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [downloadURL, setDownloadURL] = useState("");
+  const [image, setImage] = useState(github);
+  const [uploadComplete, setUploadComplete] = useState(false);
 
   // 현재 유저 아이디 가져옴
   const params = useParams().id;
   console.log(params);
 
   // DB에서 저장된 값 불러오는 부분과 재렌더링
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
+    // 함수의 내용을 그대로 유지합니다.
     try {
       const q = query(collection(db, "users"));
       const querySnapshot = await getDocs(q);
@@ -187,16 +195,43 @@ function Profile() {
       if (thisUser) {
         setUsers(thisUser.nickname);
         setMemo(thisUser.memo);
+        setImage(thisUser.img);
         console.log(thisUser.memo);
       }
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
+  }, [params]);
+
+  // 프로필 사진 넣기
+
+  const handleFileSelect = (e) => {
+    setUploadComplete(false);
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+
+    if (!selectedFile) {
+      alert("파일을 선택해주세요.");
+      return;
+    }
+
+    const imageRef = ref(
+      storage,
+      `${auth.currentUser.uid}/${selectedFile.name}`
+    );
+    await uploadBytes(imageRef, selectedFile);
+
+    const downloadURL = await getDownloadURL(imageRef);
+    setDownloadURL(downloadURL);
+
+    setUploadComplete(true);
   };
 
   // 수정
-
-  const handleProfileEdit = async (params) => {
+  const handleProfileEdit = async (params, downloadURL) => {
     try {
       const querySnapshot = await getDocs(
         query(collection(db, "users"), where("uid", "==", params))
@@ -205,12 +240,15 @@ function Profile() {
         await updateDoc(doc.ref, {
           nickname: editedName,
           memo: editedMemo,
+          img: downloadURL,
         });
       });
       setEditedName("");
       setEditedMemo("");
+      setSelectedFile(null);
       fetchUsers();
       setOpen(!open);
+      alert("수정이 완료되었습니다!");
     } catch (error) {
       console.error("프로필 수정 오류:", error);
     }
@@ -247,11 +285,25 @@ function Profile() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [fetchUsers]);
 
-  const profileModalHandler = () => {
+  //수정 폼을 오픈하면 유저의 정보들어있게 만듬
+  const profileModalHandler = async () => {
     setOpen(!open);
-    fetchUsers();
+
+    const thisUser = {
+      nickname: users,
+      memo: memo,
+    };
+
+    if (thisUser) {
+      setEditedName(thisUser.nickname);
+      setEditedMemo(thisUser.memo);
+    }
+
+    console.log("수정폼 유저데이터", thisUser);
+
+    await fetchUsers();
   };
 
   return (
@@ -301,18 +353,29 @@ function Profile() {
                   onChange={(e) => setEditedMemo(e.target.value)}
                 />
               </p>
-              {/* <Profile setDownloadURL={setDownloadURL} /> */}
-              <StLoginBtn
-                onClick={(event) => {
-                  event.preventDefault(); // 기본 동작인 새로고침을 막음
-                  handleProfileEdit(params);
-                }}
-              >
-                수정완료
-              </StLoginBtn>
+              <>
+                <p>
+                  <input type="file" onChange={handleFileSelect} />
+                  <button onClick={handleUpload}>Upload</button>
+                  {!uploadComplete && (
+                    <VerifyMessage invalid="true">업로드 안 함</VerifyMessage>
+                  )}
+
+                  {uploadComplete && <VerifyMessage>업로드 완료</VerifyMessage>}
+                </p>
+              </>
+              <div style={{ marginTop: "20px" }}>
+                <StLoginBtn
+                  onClick={(event) => {
+                    event.preventDefault(); // 기본 동작인 새로고침을 막음
+                    handleProfileEdit(params, downloadURL);
+                  }}
+                >
+                  수정완료
+                </StLoginBtn>
+              </div>
               <br />
             </StForm>
-
             <Stbtn onClick={profileModalHandler}>x</Stbtn>
           </StDiv>
         </BcDiv>

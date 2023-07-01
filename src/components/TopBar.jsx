@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaSistrix, FaGlobe } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 import styled from "styled-components";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
+import logo from "../img/logo.png";
 
 const Header = styled.header`
   position: fixed;
@@ -83,8 +84,15 @@ const TopButton = styled.button`
   height: 30px;
 `;
 
-function TopBar() {
+function TopBar({ onSearch }) {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    console.log("제출이 일어남", searchQuery);
+    e.preventDefault();
+    onSearch(searchQuery);
+  };
 
   return (
     <>
@@ -95,11 +103,16 @@ function TopBar() {
               navigate(`/`);
             }}
           >
-            Hobbyist
+            <img src={logo} alt="" style={{ width: "200px" }} />
           </Logo>
-          <Form>
+          <Form onSubmit={handleSearch}>
             <FaSistrix size="20" color="gray"></FaSistrix>
-            <Input type="text" placeholder="검색 가능합니다."></Input>
+            <Input
+              type="text"
+              placeholder="검색 가능합니다."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            ></Input>
           </Form>
         </LogoInput>
         <BtnContainer>

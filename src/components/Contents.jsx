@@ -1,21 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import TopBar from "./TopBar";
 import {
   faBookmark,
-  faHeart,
   faCommentDots,
   faShareFromSquare,
 } from "@fortawesome/free-regular-svg-icons";
-import {
-  Firestore,
-  collection,
-  getDocs,
-  query,
-  orderBy,
-} from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
+import google from "../img/google.png";
 
 const Main = styled.main`
   padding: 20px;
@@ -66,6 +61,7 @@ function Contents() {
   const [, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
   const [, setUsers] = useState();
+  const [searchQuery, setSearchQuery] = useState("");
 
   //db에서 유저 데이터 불러오는 함수
   const fetchUsers = async () => {
@@ -111,6 +107,7 @@ function Contents() {
   const fetchPosts = async () => {
     try {
       const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+
       const querySnapshot = await getDocs(q);
       const fetchedPosts = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -121,10 +118,14 @@ function Contents() {
       console.error("Error fetching posts:", error);
     }
   };
-  // 포스트 저장 부분 불러옴
+
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
 
   // url 복사
   const copyUrlRef = useRef(null);
@@ -147,10 +148,19 @@ function Contents() {
   };
   const navigate = useNavigate();
 
+  const filterPosts = () => {
+    if (searchQuery) {
+      return posts.filter((post) => post.title.includes(searchQuery));
+    } else {
+      return posts;
+    }
+  };
+
   return (
     <>
+      <TopBar onSearch={handleSearch} />
       <div style={{ width: "650px" }}>
-        {posts.map((post) => {
+        {filterPosts().map((post) => {
           return (
             <Main key={post.CID}>
               <MainInner>
@@ -159,7 +169,7 @@ function Contents() {
                     navigate(`/mypage/${post.uid}`);
                   }}
                 >
-                  <UserImg src="images/user_img.png" alt="" />
+                  <UserImg src={post.img ? post.img : google} alt="" />
                   <User>{post.nickname}</User>
                 </MainUser>
                 <ContentsBox
