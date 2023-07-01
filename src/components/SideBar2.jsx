@@ -17,6 +17,7 @@ const AllList = styled.button`
   padding-top: 20px;
   border: none;
   position: fixed;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 `;
 const CategoryFont = styled.div`
   margin-bottom: 20px;

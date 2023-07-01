@@ -349,6 +349,7 @@ function Post() {
           border: "none",
           borderRadius: "15px",
           fontWeight: "bold",
+          boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
         }}
         onClick={postModalHandler}
       >
