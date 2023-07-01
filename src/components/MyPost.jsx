@@ -320,7 +320,7 @@ function MyPost() {
     setCategory(e.target.value);
     setSubcategory("");
   };
-
+  // 수정
   return (
     <>
       <MyContents>
