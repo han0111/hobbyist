@@ -10,12 +10,12 @@ const AllList = styled.button`
   padding: 10px;
   border-radius: 20px;
   display: flex;
+  left: 460px;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   /* margin-bottom: 10px; */
   padding-top: 20px;
-  left: 190px;
   border: none;
   position: fixed;
 `;
