@@ -6,7 +6,7 @@ import { categoryOptions, subcategoryOptions } from "./MyPost";
 const AllList = styled.button`
   margin-top: 200px;
   /* height: 540px; */
-  width: 200px;
+  width: 220px;
   padding: 10px;
   border-radius: 20px;
   display: flex;
@@ -33,7 +33,7 @@ const List = styled.button`
   /* font-weight: bold; */
   font-size: 18px;
   padding: 15px;
-  width: 150px;
+  width: 180px;
   /* margin-top: 10px; */
 `;
 const SmallLists = styled.div`
