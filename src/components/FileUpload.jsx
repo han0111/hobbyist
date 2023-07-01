@@ -1,14 +1,11 @@
 import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 import { storage, auth } from "../service/firebase";
 import React, { useState } from "react";
-import { VerifyMessage } from "./styledcomponents/Styled";
 
-function FileUpload({ setDownloadURL, resetSelectedFile }) {
+function FileUpload({ setDownloadURL }) {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadComplete, setUploadComplete] = useState(false);
 
   const handleFileSelect = (e) => {
-    setUploadComplete(false);
     setSelectedFile(e.target.files[0]);
   };
 
@@ -30,19 +27,13 @@ function FileUpload({ setDownloadURL, resetSelectedFile }) {
     console.log("downloadURL", downloadURL);
 
     setDownloadURL(downloadURL);
-
-    setUploadComplete(true);
+    return downloadURL;
   };
 
   return (
     <>
       <input type="file" onChange={handleFileSelect} />
       <button onClick={handleUpload}>Upload</button>
-      {!uploadComplete && (
-        <VerifyMessage invalid="true">업로드 안 함</VerifyMessage>
-      )}
-
-      {uploadComplete && <VerifyMessage>업로드 완료</VerifyMessage>}
     </>
   );
 }

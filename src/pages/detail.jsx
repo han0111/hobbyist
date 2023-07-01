@@ -218,6 +218,7 @@ function Detail() {
   };
   // 포스트 저장 부분 불러옴
   useEffect(() => {
+    console.log("패치일어남");
     fetchPosts();
   }, []);
 
