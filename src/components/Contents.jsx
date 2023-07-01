@@ -1,21 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import TopBar from "./TopBar";
 import {
   faBookmark,
-  faHeart,
   faCommentDots,
   faShareFromSquare,
 } from "@fortawesome/free-regular-svg-icons";
-import {
-  Firestore,
-  collection,
-  getDocs,
-  query,
-  orderBy,
-} from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
+import google from "../img/google.png";
+
 const AllContents = styled.div`
   margin-left: 200px;
 `;
@@ -65,11 +61,13 @@ const IconSpan = styled.span`
 `;
 
 function Contents() {
-  const [likeCount, setLikeCount] = useState(false);
+  const [likeCount] = useState(false);
   const [, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
   const [, setUsers] = useState();
+  const [searchQuery, setSearchQuery] = useState("");
 
+  //db에서 유저 데이터 불러오는 함수
   const fetchUsers = async () => {
     try {
       const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
@@ -108,30 +106,12 @@ function Contents() {
   useEffect(() => {
     fetchComments();
   }, []);
-  //Like 함수 부분 빼놨습니다!
-  const handleLike = async () => {
-    try {
-      const snapshot = await Firestore.collection("").doc("").get();
-      let currentCount = 0;
-      if (snapshot.exists) {
-        const data = snapshot.data();
-        currentCount = data.likeCount || 0;
-      }
-      await Firestore.collection("")
-        .doc("")
-        .update({
-          likeCount: currentCount + 1,
-        });
-      setLikeCount(currentCount + 1);
-    } catch (error) {
-      console.error("Error updating like count:", error);
-    }
-  };
 
   // DB에서 저장된 포스트를 불러오는 함수
   const fetchPosts = async () => {
     try {
       const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+
       const querySnapshot = await getDocs(q);
       const fetchedPosts = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -142,10 +122,14 @@ function Contents() {
       console.error("Error fetching posts:", error);
     }
   };
-  // 포스트 저장 부분 불러옴
+
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
 
   // url 복사
   const copyUrlRef = useRef(null);
@@ -168,10 +152,18 @@ function Contents() {
   };
   const navigate = useNavigate();
 
+  const filterPosts = () => {
+    if (searchQuery) {
+      return posts.filter((post) => post.title.includes(searchQuery));
+    } else {
+      return posts;
+    }
+  };
+
   return (
     <AllContents>
       <div style={{ width: "650px" }}>
-        {posts.map((post) => {
+        {filterPosts().map((post) => {
           return (
             <Main key={post.CID}>
               <MainInner>
@@ -180,7 +172,7 @@ function Contents() {
                     navigate(`/mypage/${post.uid}`);
                   }}
                 >
-                  <UserImg src="images/user_img.png" alt="" />
+                  <UserImg src={post.img ? post.img : google} alt="" />
                   <User>{post.nickname}</User>
                 </MainUser>
                 <ContentsBox
@@ -202,7 +194,7 @@ function Contents() {
                 <FunctionUl>
                   <li>
                     <IconSpan>
-                      <FontAwesomeIcon icon={faHeart} onClick={handleLike} />
+                      {/* <FontAwesomeIcon icon={faHeart} onClick={handleLike} /> */}
                     </IconSpan>
                     {likeCount}
                   </li>

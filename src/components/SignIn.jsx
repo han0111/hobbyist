@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { auth } from "../service/firebase";
+import { auth, db } from "../service/firebase";
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -9,6 +9,8 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
+
+import { doc, setDoc } from "firebase/firestore";
 
 import { VerifyMessage } from "./styledcomponents/Styled";
 
@@ -101,18 +103,13 @@ function SignIn() {
   const [open, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [, setUserData] = useState(null);
-//우정님이 하신 부분
   const [login, setLogin] = useState("로그인");
-
-  //로컬로 하는부분
-//   const [login, setLogin] = useState(localStorage.getItem("login") || "로그인");
-  const [passwordverify, setPasswordVerify] = useState(false);
-
+  const [passwordverify, setPasswordVerify] = useState(true);
 
   useEffect(() => {
     localStorage.setItem("login", login);
   }, [login]);
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       console.log("user", user);
@@ -120,11 +117,12 @@ function SignIn() {
   }, []);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("user", user);
-      return !auth.currentUser ? setLogin("로그인") : setLogin("로그아웃");
+      setLogin(user ? "로그아웃" : "로그인");
     });
-  }, [auth]);
+    return () => unsubscribe();
+  }, []);
 
   const onChange = (event) => {
     const {
@@ -140,11 +138,33 @@ function SignIn() {
   };
 
   function signInByGoogle() {
-    const provider = new GoogleAuthProvider(); // provider 구글 설정
-    signInWithPopup(auth, provider) // 팝업창 띄워서 로그인
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
       .then((data) => {
-        setUserData(data.user); // user data 설정
-        console.log(data); // console에 UserCredentialImpl 출력
+        const user = data.user;
+        const { email, uid } = user;
+
+        // 추가 필드 값들을 원하는 값으로 설정
+        const nickname = "사나운 홍정기";
+        const memo = "메모가 없습니다";
+        const img =
+          "https://ca.slack-edge.com/T043597JK8V-U057B2LN1NU-f07fd31753d9-512";
+
+        const userDocRef = doc(db, "users", uid); // 해당 유저의 문서 참조
+
+        setDoc(
+          userDocRef,
+          {
+            // 문서에 필드 추가
+            email: email,
+            nickname: nickname,
+            uid: uid,
+            memo: memo,
+            img: img,
+          },
+          { merge: true }
+        ); // 필드를 merge하여 기존 필드와 병합
+
         setIsOpen(false);
         setLogin("로그아웃");
       })
@@ -155,14 +175,35 @@ function SignIn() {
 
   function signInByGithub() {
     const provider = new GithubAuthProvider(); // provider 깃헙 설정
-    signInWithPopup(auth, provider) // 팝업창 띄워서 로그인
+    signInWithPopup(auth, provider)
       .then((data) => {
-        setUserData(data.user); // user data 설정
-        console.log(data); // console에 UserCredentialImpl 출력
+        const user = data.user;
+        const { email, uid } = user;
+
+        // 추가 필드 값들을 원하는 값으로 설정
+        const nickname = "감성적인 홍정기";
+        const memo = "메모가 없습니다";
+        const img =
+          "https://ca.slack-edge.com/T043597JK8V-U057B2LN1NU-f07fd31753d9-512";
+
+        const userDocRef = doc(db, "users", uid); // 해당 유저의 문서 참조
+
+        setDoc(
+          userDocRef,
+          {
+            // 문서에 필드 추가
+            email: email,
+            nickname: nickname,
+            uid: uid,
+            memo: memo,
+            img: img,
+          },
+          { merge: true }
+        ); // 필드를 merge하여 기존 필드와 병합
+
         setIsOpen(false);
         setLogin("로그아웃");
       })
-
       .catch((err) => {
         console.log(err);
       });
@@ -235,7 +276,7 @@ function SignIn() {
                 />
               </p>
               {passwordverify && (
-                <VerifyMessage invalid>
+                <VerifyMessage invalid={passwordverify ? "true" : undefined}>
                   비밀번호가 8자리 미만입니다.
                 </VerifyMessage>
               )}

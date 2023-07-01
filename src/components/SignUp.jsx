@@ -29,7 +29,7 @@ function SignUp() {
   const [verifypassword, setVerifyPassword] = useState("");
   const [nickname, setNickName] = useState("");
   const [join, setJoin] = useState("회원가입");
-  const [passwordverify, setPasswordVerify] = useState(false);
+  const [passwordverify, setPasswordVerify] = useState(true);
 
   const auth = getAuth();
   const navigate = useNavigate();
@@ -147,6 +147,10 @@ function SignUp() {
     }
   };
 
+  const navigateToMyPage = () => {
+    navigate(`/mypage/${auth.currentUser.uid}`);
+  };
+
   return (
     <>
       <TopButton
@@ -155,7 +159,7 @@ function SignUp() {
           join === "회원가입"
             ? SignUpBtnHandler
             : () => {
-                navigate(`/mypage/${auth.currentUser.uid}`);
+                navigateToMyPage();
               }
         }
       >
@@ -183,7 +187,7 @@ function SignUp() {
                   placeholder="비밀번호"
                 />
                 {passwordverify && (
-                  <VerifyMessage invalid>
+                  <VerifyMessage invalid={passwordverify ? "true" : undefined}>
                     비밀번호가 8자리 미만입니다.
                   </VerifyMessage>
                 )}
