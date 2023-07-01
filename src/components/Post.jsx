@@ -197,9 +197,12 @@ function Post() {
     try {
       const q = query(collection(db, "users"), where("uid", "==", uid));
       const querySnapshot = await getDocs(q);
-
-      const userData = querySnapshot.docs[0].data();
-      return userData.img;
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData.img;
+      } else {
+        return "https://ca.slack-edge.com/T043597JK8V-U057B2LN1NU-f07fd31753d9-512";
+      }
     } catch (error) {
       console.error("Error getting nickImg:", error);
       throw error;
@@ -229,11 +232,13 @@ function Post() {
         body,
         createdAt: new Date(),
         uid,
-        nickname: nickname,
+        nickname: nickname ? nickname : generateRandomNickname,
         likesByUser: { [uid]: false },
         downloadURL,
         likeCount: 0,
-        img: img,
+        img: img
+          ? img
+          : "https://ca.slack-edge.com/T043597JK8V-U057B2LN1NU-f07fd31753d9-512",
         category,
         subcategory,
       };
