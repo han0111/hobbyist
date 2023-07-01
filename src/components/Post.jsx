@@ -353,7 +353,7 @@ function Post() {
         }}
         onClick={postModalHandler}
       >
-        글쓰기버튼
+        글 작성하기
       </button>
     </>
   );

@@ -4,8 +4,9 @@ import { styled } from "styled-components";
 const StDiv = styled.div`
   top: 140px;
   right: 90px;
-  background-color: #eee;
-  color: black;
+  background-image: linear-gradient(315deg, #654ea3 0%, #eaafc8 74%);
+
+  color: white;
   height: 100px;
   width: 220px;
   border-radius: 20px;
@@ -15,7 +16,6 @@ const StDiv = styled.div`
   display: flex;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   position: fixed;
-  color: #4f4f4f;
 `;
 
 function Weather() {

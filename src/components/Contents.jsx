@@ -17,6 +17,8 @@ const Main = styled.main`
   width: 600px;
   margin-top: 150px;
   margin-left: 100px;
+  border-radius: 20px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 `;
 const MainInner = styled.div`
   margin-bottom: 20px;
@@ -137,7 +139,16 @@ function Contents() {
                     navigate(`/mypage/${post.uid}`);
                   }}
                 >
-                  <UserImg src={post.img ? post.img : google} alt="" />
+                  <div
+                    style={{
+                      width: "45px",
+                      height: "45px",
+                      borderRadius: "70%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <UserImg src={post.img ? post.img : google} alt="" />
+                  </div>
                   <User>{post.nickname}</User>
                 </MainUser>
                 <ContentsBox

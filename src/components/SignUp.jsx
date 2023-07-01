@@ -47,7 +47,9 @@ function SignUp() {
 
   const passwordChangeHandler = (event) => {
     setPassword(event.target.value);
-    setPasswordVerify(event.target.value.length < 8);
+    setPasswordVerify(
+      event.target.value.length < 8 && event.target.value.length !== 0
+    );
   };
 
   const SignUpBtnHandler = () => {
@@ -186,6 +188,7 @@ function SignUp() {
                   onChange={passwordChangeHandler}
                   placeholder="비밀번호"
                 />
+                <br />
                 {passwordverify && (
                   <VerifyMessage invalid={passwordverify ? "true" : undefined}>
                     비밀번호가 8자리 미만입니다.
