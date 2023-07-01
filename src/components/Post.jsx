@@ -332,10 +332,11 @@ function Post() {
           border: "none",
           borderRadius: "15px",
           fontWeight: "bold",
+          boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
         }}
         onClick={postModalHandler}
       >
-        글쓰기버튼
+        글 작성하기
       </button>
     </>
   );
