@@ -6,7 +6,7 @@ import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
 import MainBtnFunc from "./MainBtnFunc";
 import google from "../img/google.png";
-import SideBar2 from "./SideBar2";
+import { useSelector } from "react-redux";
 
 const AllContents = styled.div`
   margin-left: 200px;
@@ -47,12 +47,10 @@ const ContentsBox = styled.div`
 `;
 
 function Contents() {
-  const [, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
   const [, setUsers] = useState();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSubcategory] = useState(null);
-  const [subcategory, setSubcategory] = useState(null);
+  const clicksubcategory = useSelector((state) => state.subcategoryReducer);
 
   //db에서 유저 데이터 불러오는 함수
   const fetchUsers = async () => {
@@ -66,7 +64,6 @@ function Contents() {
       }));
 
       setUsers(fetchedUsers);
-      console.log(fetchedUsers);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
@@ -74,24 +71,6 @@ function Contents() {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
-
-  // DB에서 저장된 값 불러오는 부분과 재렌더링
-  const fetchComments = async () => {
-    try {
-      const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
-      const fetchedComments = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setComments(fetchedComments);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
-  useEffect(() => {
-    fetchComments();
   }, []);
 
   // DB에서 저장된 포스트를 불러오는 함수
@@ -111,7 +90,6 @@ function Contents() {
   };
 
   useEffect(() => {
-    console.log("피드데이터 호출");
     fetchPosts();
   }, []);
 
@@ -131,10 +109,10 @@ function Contents() {
       );
     }
 
-    if (subcategory) {
-      console.log(selectedSubcategory);
+    if (clicksubcategory) {
+      console.log(clicksubcategory);
       filteredPosts = filteredPosts.filter(
-        (post) => post.subcategory === subcategory
+        (post) => post.subcategory === clicksubcategory
       );
     }
 
@@ -144,12 +122,7 @@ function Contents() {
   return (
     <AllContents>
       <TopBar onSearch={handleSearch} />
-      <SideBar2
-        selectedSubcategory={subcategory}
-        setSelectedSubcategory={setSubcategory}
-      />
       <div style={{ width: "650px" }}>
-        {console.log(subcategory)}
         {filterPosts().map((post) => {
           return (
             <Main key={post.CID}>

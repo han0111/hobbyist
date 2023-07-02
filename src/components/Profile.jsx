@@ -231,22 +231,24 @@ function Profile() {
   // 수정
   const handleProfileEdit = async (params, downloadURL) => {
     try {
-      let downloadURL = ""; // 사진이 없을 경우 빈 문자열로 초기화
+      let updatedData = {
+        nickname: editedName,
+        memo: editedMemo,
+      };
 
       if (selectedFile) {
-        downloadURL = await handleUpload();
+        const downloadURL = await handleUpload();
+        updatedData.img = downloadURL;
       }
 
       const querySnapshot = await getDocs(
         query(collection(db, "users"), where("uid", "==", params))
       );
+
       querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {
-          nickname: editedName,
-          memo: editedMemo,
-          img: downloadURL,
-        });
+        await updateDoc(doc.ref, updatedData);
       });
+
       setEditedName("");
       setEditedMemo("");
       setSelectedFile(null);

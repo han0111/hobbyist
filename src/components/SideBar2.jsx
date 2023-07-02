@@ -2,19 +2,18 @@ import React from "react";
 import { styled } from "styled-components";
 import { useState } from "react";
 import { subcategoryOptions } from "./MyPost";
+import { useDispatch } from "react-redux";
+import { addCategory } from "../modules/subcategoryReducer";
 
 const AllList = styled.button`
   margin-top: 200px;
-  /* height: 540px; */
   width: 220px;
   padding: 10px;
   border-radius: 20px;
   display: flex;
-  left: 460px;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  /* margin-bottom: 10px; */
   padding-top: 20px;
   border: none;
   position: fixed;
@@ -27,22 +26,18 @@ const CategoryFont = styled.div`
 `;
 const List = styled.div`
   display: flex;
-  /* align-items: center; */
   justify-content: center;
   flex-direction: column;
   background-color: transparent;
   border: none;
-  /* font-weight: bold; */
   font-size: 18px;
   padding: 15px;
   width: 180px;
-  /* margin-top: 10px; */
   cursor: pointer;
 `;
 const SmallLists = styled.div`
   display: ${(props) => (props.isopen === "true" ? "flex" : "none")};
   flex-direction: column;
-  /* align-items: center; */
   justify-content: center;
 `;
 const SmallList = styled.div`
@@ -54,44 +49,42 @@ const SmallList = styled.div`
   cursor: pointer;
 `;
 
-function SideBar2({ setSelectedSubcategory }) {
-  const initialallLists = [
-    {
-      id: 1,
-      list: "💰 경제",
-      sublist: subcategoryOptions["경제"].map((option) => option.value),
-      // sublist: ["📈 주식", "💸 가상화폐"],
-      isOpen: false,
-    },
-    {
-      id: 2,
-      list: "🐶 애완동.식물",
-      sublist: subcategoryOptions["애완동식물"].map((option) => option.value),
-      // sublist: ["🍯 꿀팁", "💳 쇼핑"],
-      isOpen: false,
-    },
-    {
-      id: 3,
-      list: "🚙 여행",
-      sublist: subcategoryOptions["여행"].map((option) => option.value),
-      // sublist: ["🚅 국내", "🛩️ 해외"],
-      isOpen: false,
-    },
-    {
-      id: 4,
-      list: "🎧 음악",
-      sublist: subcategoryOptions["음악"].map((option) => option.value),
-      // sublist: ["🎤 추천", "🎹 정보"],
-      isOpen: false,
-    },
-    {
-      id: 5,
-      list: "🍀 기타",
-      sublist: subcategoryOptions["기타"].map((option) => option.value),
-      // sublist: ["🎤 추천", "🎹 정보"],
-      isOpen: false,
-    },
-  ];
+const initialallLists = [
+  {
+    id: 1,
+    list: "💰 경제",
+    sublist: subcategoryOptions["경제"].map((option) => option.value),
+    isOpen: false,
+  },
+  {
+    id: 2,
+    list: "🐶 애완동.식물",
+    sublist: subcategoryOptions["애완동식물"].map((option) => option.value),
+    isOpen: false,
+  },
+  {
+    id: 3,
+    list: "🚙 여행",
+    sublist: subcategoryOptions["여행"].map((option) => option.value),
+    isOpen: false,
+  },
+  {
+    id: 4,
+    list: "🎧 음악",
+    sublist: subcategoryOptions["음악"].map((option) => option.value),
+    isOpen: false,
+  },
+  {
+    id: 5,
+    list: "🍀 기타",
+    sublist: subcategoryOptions["기타"].map((option) => option.value),
+
+    isOpen: false,
+  },
+];
+
+function SideBar2() {
+  const dispatch = useDispatch();
 
   const [allLists, setAllLists] = useState(initialallLists);
 
@@ -114,8 +107,8 @@ function SideBar2({ setSelectedSubcategory }) {
 
   const handleSubcategory = (subcategory) => {
     const cleanSubcategory = subcategory.substring(2).trim();
-    setSelectedSubcategory(cleanSubcategory);
     console.log(cleanSubcategory);
+    dispatch(addCategory(cleanSubcategory));
   };
 
   return (

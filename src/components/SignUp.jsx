@@ -36,7 +36,6 @@ function SignUp() {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      console.log("user", user);
       return !auth.currentUser ? setJoin("회원가입") : setJoin("마이페이지");
     });
   }, [auth]);

@@ -69,7 +69,6 @@ function Weather() {
   const { name } = weatherData;
   const { temp, humidity } = weatherData.main;
   const { description } = weatherData.weather[0];
-  console.log(weatherData);
 
   return (
     <StDiv>
@@ -83,8 +82,10 @@ function Weather() {
       >
         {Math.ceil(temp - 273.15)}°C
       </p>
-      <p style={{ position: "absolute", top: "0", top: "45px" }}>{name}</p>
-      <p style={{ position: "absolute", bottom: "0", let: "0" }}>{humidity}%</p>
+      <p style={{ position: "absolute", top: "45px" }}>{name}</p>
+      <p style={{ position: "absolute", bottom: "0", left: "0" }}>
+        {humidity}%
+      </p>
       <p
         style={{
           position: "absolute",
