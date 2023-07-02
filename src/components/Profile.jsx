@@ -170,6 +170,8 @@ function Profile() {
   const [downloadURL, setDownloadURL] = useState("");
   const [image, setImage] = useState(github);
   const [, setUploadComplete] = useState(false);
+  const [, setUser] = useState(null);
+  const [, setFetchedUsers] = useState([]);
 
   // 현재 유저 아이디 가져옴
   const params = useParams().id;
@@ -186,10 +188,12 @@ function Profile() {
         uid: doc.id,
         ...doc.data(),
       }));
+      setFetchedUsers(fetchedUsers);
 
       // 유저의 정보를 받아와서 닉네임 및 메모 자동 설정
       const thisUser = fetchedUsers.find((user) => params === user.uid);
       if (thisUser) {
+        setUser(thisUser);
         setUsers(thisUser.nickname);
         setMemo(thisUser.memo);
         setImage(thisUser.img);

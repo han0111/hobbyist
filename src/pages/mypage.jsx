@@ -1,9 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import TopBar from "../components/TopBar";
 import { styled } from "styled-components";
 import Profile from "../components/Profile";
 import MyPost from "../components/MyPost";
 import BookedPost from "../components/BookedPost";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../service/firebase";
 
 const MypageLayout = styled.div`
   padding: 30px;
@@ -36,13 +38,27 @@ const MyButton = styled.button`
 
 function Mypage() {
   const [isActive, setIsActive] = useState(false);
-  const [isLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  /*auth 객체와 현재 사용자의 인증 상태를 나타내는 user 객체를 받는 함수
+  onAuthStateChanged에 전달된 인증 상태가 변경될 때마다 호출 */
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleButtonClick = () => {
     if (isLoggedIn) {
-      setIsActive(!isActive);
+      setIsActive((prevIsActive) => !prevIsActive);
     } else {
-      alert("로그인이 필요합니다."); // 경고 메시지 표시
+      alert("로그인이 필요합니다.");
     }
   };
 
