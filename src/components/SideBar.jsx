@@ -21,6 +21,7 @@ const AllList = styled.button`
   display: flex;
   flex-direction: column;
   border: none;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 `;
 const CategoryFont = styled.div`
   margin-bottom: 10px;
@@ -52,6 +53,25 @@ const SmallList = styled.div`
   margin-left: 14px;
   border: none;
   background: #fff;
+`;
+
+const TopBtn = styled.button`
+  width: 50px;
+  height: 50px;
+  position: fixed;
+  bottom: 50px;
+  right: 80px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  color: white;
+
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: #5e5ee8;
+  &:hover {
+    background-color: #c0c0ff;
+    color: #5e5ee8;
+  }
 `;
 
 const initialallLists = [
@@ -149,20 +169,9 @@ function SideBar() {
             );
           })}
         </AllList>
+        <Weather />
       </SidebarWrap>
-      <Weather />
-      <button
-        style={{
-          width: "50px",
-          height: "50px",
-          position: "fixed",
-          bottom: "50px",
-          right: "80px",
-          borderRadius: "30px",
-          border: "none",
-          cursor: "pointer",
-          boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-        }}
+      <TopBtn
         onClick={() => {
           window.scrollTo({
             top: 0,
@@ -171,7 +180,7 @@ function SideBar() {
         }}
       >
         Top
-      </button>
+      </TopBtn>
     </>
   );
 }

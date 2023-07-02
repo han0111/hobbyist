@@ -43,13 +43,13 @@ const IconSpan = styled.span`
 `;
 
 const Icon = styled.img`
-  width: 19px;
-  height: 19px;
+  width: 16px;
+  height: 16px;
 `;
 
 const Likecount = styled.span`
   font-weight: 500;
-  margin-bottom: 5px;
+  line-height: 19px;
 `;
 
 const TextArea = styled.textarea`

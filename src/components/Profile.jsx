@@ -99,7 +99,8 @@ const StLoginBtn = styled.button`
 
 const ProfileContainer = styled.div`
   background-color: white;
-  width: 500px;
+  position: relative;
+  width: 400px;
   height: 600px;
 
   border-radius: 20px;
@@ -147,6 +148,10 @@ const EditBtn = styled.button`
   background-size: cover;
   border: none;
   background-color: transparent;
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  z-index: 100;
   width: ${(props) => props.width};
   height: ${(props) => props.height};
   margin-left: auto;

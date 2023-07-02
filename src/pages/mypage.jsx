@@ -12,6 +12,8 @@ const MypageLayout = styled.div`
   display: flex;
   justify-content: center;
   gap: 20px;
+  width: 90%;
+  margin: 0 auto;
 `;
 
 const MyContents = styled.div`
@@ -20,7 +22,7 @@ const MyContents = styled.div`
       margin-right: 5px;
     }
   }
-  width: 60%;
+  width: 50%;
   height: 90%;
 `;
 
@@ -31,9 +33,10 @@ const MyButton = styled.button`
   border-radius: 7px;
   font-weight: ${({ active }) => (active ? "400" : "600")};
   border: solid 1px #c5c5c5;
-  color: ${({ active }) => (active ? "#111" : "#fff")};
-  background-color: ${({ active }) => (active ? "#fff" : "rgb(94, 94, 232)")};
+  color: ${({ active }) => (active ? "#fff" : "#111")};
+  background-color: ${({ active }) => (active ? "rgb(94, 94, 232)" : "#fff")};
   margin-bottom: 8px;
+  cursor: pointer;
 `;
 
 function Mypage() {

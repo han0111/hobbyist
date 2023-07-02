@@ -15,10 +15,10 @@ const MyContents = styled.div`
 
 const ListContainer = styled.div`
   background-color: #fff;
-  border-radius: 7px;
-  margin-bottom: 5px;
+  border-radius: 10px;
+  margin-bottom: 15px;
   height: 20%;
-  padding: 10px;
+  padding: 15px;
   display: flex;
   flex-direction: row;
   align-items: center;
