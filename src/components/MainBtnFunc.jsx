@@ -175,7 +175,7 @@ function MainBtnFunc(props) {
   };
 
   //id 별 북마크 여부 확인
-  const bookedByUsers = post.bookedByUsers;
+  const bookedByUsers = post?.bookedByUsers;
   const isBookedByUser =
     bookedByUsers && bookedByUsers.hasOwnProperty(getCurrentUserUid());
 

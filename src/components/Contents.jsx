@@ -145,6 +145,8 @@ function Contents() {
       }
     };
 
+    console.log("얼마나 실행되지?");
+
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
