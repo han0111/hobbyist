@@ -1,49 +1,70 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import TopBar from "./TopBar";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
 import MainBtnFunc from "./MainBtnFunc";
 import google from "../img/google.png";
 import { useSelector } from "react-redux";
+import { FaSistrix, FaGlobe } from "react-icons/fa";
 
-const AllContents = styled.div`
-  margin-left: 200px;
+const AllContents = styled.div``;
+
+const Form = styled.form`
+  display: flex;
+  border: none;
+  width: 98%;
+  border-radius: 25px;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
+  padding: 3px 10px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  margin: 0px auto 40px auto;
 `;
 
-const Main = styled.main`
-  padding: 20px;
-  background: #eee;
-  width: 600px;
-  margin-top: 150px;
-  margin-left: 100px;
+const Input = styled.input`
+  border: none;
   border-radius: 20px;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 30px;
+  outline: none;
+  padding-left: 10px;
+`;
+const Main = styled.main`
+  margin-bottom: 36px;
 `;
 const MainInner = styled.div`
   margin-bottom: 20px;
+  border-radius: 14px;
+  background: #fff;
 `;
 const MainUser = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 0px;
+  margin-bottom: 14px;
   cursor: pointer;
 `;
 const UserImg = styled.img`
-  width: 48px;
+  width: 38px;
+  border-radius: 25px;
 `;
 const User = styled.h3`
-  font-size: 25px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 500;
   letter-spacing: -1px;
 `;
 const ContentsBox = styled.div`
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px;
+  padding: 16px 20px 26px 20px;
   cursor: pointer;
+  cursor: pointer;
+`;
+
+const PostTitle = styled.h2`
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 26px;
 `;
 
 function Contents() {
@@ -107,11 +128,16 @@ function Contents() {
       filteredPosts = filteredPosts.filter((post) =>
         post.title.includes(searchQuery)
       );
-    } else if (clicksubcategory) {
+    }
+    if (clicksubcategory) {
       console.log(clicksubcategory);
       filteredPosts = filteredPosts.filter(
         (post) => post.subcategory === clicksubcategory
       );
+
+      if (clicksubcategory === "처음으로") {
+        return posts;
+      }
     }
 
     return filteredPosts;
@@ -157,37 +183,51 @@ function Contents() {
     fetchData();
   }, []);
 
+  const handleSearch1 = (e) => {
+    console.log("제출이 일어남", searchQuery);
+    e.preventDefault();
+    // onSearch(searchQuery);
+  };
+
   return (
     <AllContents>
-      <TopBar onSearch={handleSearch} />
+      <Form onSubmit={handleSearch}>
+        <Input
+          type="text"
+          placeholder="검색 가능합니다."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        ></Input>
+        <FaSistrix size="20" color="gray"></FaSistrix>
+      </Form>
       <div style={{ width: "650px" }}>
         {filterPosts().map((post) => {
           return (
             <Main key={post.CID}>
-              <MainInner>
-                <MainUser
-                  onClick={() => {
-                    navigate(`/mypage/${post.uid}`);
+              <MainUser
+                onClick={() => {
+                  navigate(`/mypage/${post.uid}`);
+                }}
+              >
+                <div
+                  style={{
+                    width: "45px",
+                    height: "45px",
+                    borderRadius: "70%",
+                    overflow: "hidden",
                   }}
                 >
-                  <div
-                    style={{
-                      width: "45px",
-                      height: "45px",
-                      borderRadius: "70%",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <UserImg src={post.img ? post.img : google} alt="" />
-                  </div>
-                  <User>{post.nickname}</User>
-                </MainUser>
+                  <UserImg src={post.img ? post.img : google} alt="" />
+                </div>
+                <User>{post.nickname}</User>
+              </MainUser>
+              <MainInner>
                 <ContentsBox
                   onClick={() => {
                     navigate(`/detail/${post.id}`);
                   }}
                 >
-                  <h2>{post.title}</h2>
+                  <PostTitle>{post.title}</PostTitle>
                   <img
                     style={{
                       width: "100%",

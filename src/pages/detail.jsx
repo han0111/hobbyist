@@ -24,15 +24,12 @@ const Browser = styled.div`
 `;
 
 const DetailContainer = styled.div`
-  margin-top: 100px;
-  background-color: #d9d9d9;
-  padding: 30px;
+  background-color: #fff;
+  padding: 15px 30px;
   box-shadow: 0px 1px 5px gray;
-  width: 65%;
+  width: 34%;
   border-radius: 2%;
-  display: flex;
-  flex-direction: column;
-  margin: 150px 20% 10px 15%;
+  margin: 50px auto 0px auto;
 `;
 const ContentHeader = styled.div`
   display: flex;
@@ -48,20 +45,19 @@ const ProfileGroup = styled.div`
   justify-content: center;
 `;
 const ProfileImage = styled.img`
-  background-color: gray;
   border-radius: 70%;
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   overflow: hidden;
 `;
 const ProfileName = styled.span`
-  font-size: 30px;
+  font-size: 24px;
   margin-left: 20px;
 `;
 
 const ContentImage = styled.div`
   background-color: white;
-  height: 500px;
+  height: 400px;
   width: 100%;
   margin-bottom: 10px;
   background-image: ${(props) => `url(${props.backgroundimg})`};
@@ -71,17 +67,24 @@ const ContentImage = styled.div`
   border-radius: 20px;
 `;
 
-const ContentTitle = styled.h2``;
+const ContentTitle = styled.h2`
+  font-size: 25px;
+  margin-bottom: 15px;
+`;
 
 const ContentBody = styled.p`
   margin-bottom: 20px;
-  height: 150px;
+  height: auto;
   font-size: 20px;
 `;
+
 const CommentTitle = styled.div`
-  font-size: 25px;
+  font-size: 22px;
   font-weight: bold;
+  border-bottom: solid 1px #ccc;
+  padding-bottom: 20px;
 `;
+
 const CommentBody = styled.div`
   margin-bottom: 20px;
   padding: 10px;
@@ -117,6 +120,17 @@ const CommentForm = styled.form`
   position: relative;
   right: 0;
   top: 0;
+`;
+const CommentNick = styled.p`
+  margin-bottom: 10px;
+`;
+const CommentUserDiv = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-left: 10px;
+`;
+const UserComment = styled.p`
+  font-size: 16px;
 `;
 
 function Detail() {
@@ -301,42 +315,47 @@ function Detail() {
                     {filteredComments.map((item) => {
                       return (
                         <div key={item.CID}>
-                          <p>
-                            <span>
-                              {item.nickname}: {item.comment}
-                              {editCommentId === item.CID ? (
-                                <>
-                                  <input
-                                    type="text"
-                                    value={editedComment}
-                                    onChange={(event) => {
-                                      setEditedComment(event.target.value);
-                                    }}
-                                  />
-                                  <button
-                                    onClick={() => handleCommentEdit(item.CID)}
-                                  >
-                                    완료
-                                  </button>
-                                </>
-                              ) : (
-                                <>
-                                  <button
-                                    onClick={() => setEditCommentId(item.CID)}
-                                  >
-                                    수정
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      handleCommentDelete(item.CID);
-                                    }}
-                                  >
-                                    삭제
-                                  </button>
-                                </>
-                              )}
-                            </span>
-                          </p>
+                          <div>
+                            <CommentNick>{item.nickname}</CommentNick>
+                            <CommentUserDiv>
+                              <UserComment>{item.comment}</UserComment>
+                              <div>
+                                {editCommentId === item.CID ? (
+                                  <>
+                                    <input
+                                      type="text"
+                                      value={editedComment}
+                                      onChange={(event) => {
+                                        setEditedComment(event.target.value);
+                                      }}
+                                    />
+                                    <button
+                                      onClick={() =>
+                                        handleCommentEdit(item.CID)
+                                      }
+                                    >
+                                      완료
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button
+                                      onClick={() => setEditCommentId(item.CID)}
+                                    >
+                                      수정
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        handleCommentDelete(item.CID);
+                                      }}
+                                    >
+                                      삭제
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </CommentUserDiv>
+                          </div>
                         </div>
                       );
                     })}

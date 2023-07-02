@@ -19,21 +19,17 @@ import google from "../img/google.png";
 import { generateRandomNickname } from "./Post";
 
 const OpenBtn = styled.button`
-  @media screen and (max-width: 1500px) {
-    margin-top: 10px;
-    max-width: 200px;
-    flex-direction: row;
-    align-items: flex-start;
-    margin-right: 30px;
-  }
-  margin-top: 4px;
-  font-size: 20px;
-  width: 120px;
+  font-size: 15px;
+  width: 130px;
+  height: 35px;
   border: none;
+  border-radius: 10px;
   background-color: transparent;
+  margin-left: 300px;
   cursor: pointer;
   &:hover {
-    transform: scale(1.2);
+    color: #5e5ee8;
+    background-color: #e3e3f0;
   }
 `;
 
@@ -42,7 +38,7 @@ const BcDiv = styled.div`
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 10;
+  z-index: 30;
   width: 100%;
   height: 100%;
   display: ${(props) => (props.open ? "block" : "none")};
@@ -279,12 +275,12 @@ function SignIn() {
                   placeholder="패스워드를 입력하세요."
                 />
               </p>
-              {passwordverify && (
+              {passwordverify && password && (
                 <VerifyMessage invalid={passwordverify ? "true" : undefined}>
                   비밀번호가 8자리 미만입니다.
                 </VerifyMessage>
               )}
-              {!passwordverify && (
+              {!passwordverify && password && (
                 <VerifyMessage>8자리 이상입니다.</VerifyMessage>
               )}
               <p />

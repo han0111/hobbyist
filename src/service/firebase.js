@@ -15,12 +15,12 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   // 우정님 firebase API 키
-  // apiKey: "AIzaSyBfNHo0wuQcZrrVWX8iUFdwpMwnqWNb-q0",
-  // authDomain: "fir-test-a8fe2.firebaseapp.com",
-  // projectId: "fir-test-a8fe2",
-  // storageBucket: "fir-test-a8fe2.appspot.com",
-  // messagingSenderId: "982481039500",
-  // appId: "1:982481039500:web:ef48c3e8ee16180e920ba9",
+  apiKey: "AIzaSyBfNHo0wuQcZrrVWX8iUFdwpMwnqWNb-q0",
+  authDomain: "fir-test-a8fe2.firebaseapp.com",
+  projectId: "fir-test-a8fe2",
+  storageBucket: "fir-test-a8fe2.appspot.com",
+  messagingSenderId: "982481039500",
+  appId: "1:982481039500:web:ef48c3e8ee16180e920ba9",
 
   // 유길
   // apiKey: "AIzaSyBwuJ3Uaom2GOUpID0A6OXb-ZeCoDm0d_k",
@@ -32,12 +32,12 @@ const firebaseConfig = {
   // measurementId: "G-CKE0B2V0W0",
 
   // 한희
-  apiKey: "AIzaSyAojcDu2jBPfdgiHohB7a6NS_EN5sqgXUE",
-  authDomain: "hobbyist-391107.firebaseapp.com",
-  projectId: "hobbyist-391107",
-  storageBucket: "hobbyist-391107.appspot.com",
-  messagingSenderId: "260045142119",
-  appId: "1:260045142119:web:2f84805b38876f7673bcc2",
+  // apiKey: "AIzaSyAojcDu2jBPfdgiHohB7a6NS_EN5sqgXUE",
+  // authDomain: "hobbyist-391107.firebaseapp.com",
+  // projectId: "hobbyist-391107",
+  // storageBucket: "hobbyist-391107.appspot.com",
+  // messagingSenderId: "260045142119",
+  // appId: "1:260045142119:web:2f84805b38876f7673bcc2",
 
   // // 윤건
   // apiKey: "AIzaSyBYtriPYjeOSg4WIEWBqyutqxu9oJTNzvI",

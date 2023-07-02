@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { styled } from "styled-components";
 import { useParams } from "react-router-dom";
-import { auth, db, storage } from "../service/firebase";
-import { uploadBytes, getDownloadURL, ref } from "firebase/storage";
+import { useState } from "react";
+import { useEffect } from "react";
+import { auth } from "../service/firebase";
+import { ref } from "firebase/storage";
+import { storage } from "../service/firebase";
+import { uploadBytes } from "firebase/storage";
+import { getDownloadURL } from "firebase/storage";
+import { updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import CategorySelect from "../components/CategorySelect/CategorySelect";
 import SubcategorySelect from "../components/CategorySelect/SubcategorySlect";
@@ -13,9 +19,9 @@ import {
   orderBy,
   deleteDoc,
   where,
-  updateDoc,
 } from "firebase/firestore";
 
+import { db } from "../service/firebase";
 const EditBtn = styled.button`
   background-image: url("https://img.icons8.com/?size=1x&id=47749&format=png");
   background-size: cover;
@@ -33,11 +39,18 @@ const MyContents = styled.div`
   height: 90%;
 `;
 
+const StH1 = styled.h1`
+  color: #5e5ee8;
+  font-size: 20px;
+  text-align: center;
+`;
+
 const ListContainer = styled.div`
-  background-color: #efefea;
+  background-color: #fff;
+  border-radius: 10px;
+  margin-bottom: 15px;
   height: 20%;
-  padding: 10px;
-  border: 0.5px solid #f5f5f5;
+  padding: 15px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -49,24 +62,24 @@ const ContentBody = styled.div`
   width: 30%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
 `;
 const ContentTitle = styled.div`
-  font-size: 30px;
+  font-size: 20px;
   font-weight: bold;
+  margin-bottom: 10px;
   cursor: pointer;
 `;
 const ContentMent = styled.p`
-  font-size: 20px;
+  font-size: 14px;
 `;
 const DeleteBtn = styled.button`
   background-image: url("https://img.icons8.com/?size=1x&id=102315&format=png");
   background-size: cover;
   border: none;
   background-color: transparent;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   margin-right: 50px;
   margin-left: 20px;
   cursor: pointer;
@@ -90,11 +103,19 @@ const BcDiv = styled.div`
 const TitleInput = styled.input`
   width: 400px;
   height: 30px;
+  border-radius: 5px;
+  padding: 10px;
+  border: none;
+  background-color: #f5f5f5;
 `;
 
-const BodyInput = styled.input`
+const BodyInput = styled.textarea`
   width: 400px;
   height: 200px;
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+  background-color: #f5f5f5;
 `;
 
 const StDiv = styled.div`
@@ -122,7 +143,20 @@ const Stbtn = styled.button`
   cursor: pointer;
 `;
 
-//카테고리 셀렉트바 하드코딩 부분
+const StSubmitBtn = styled.button`
+  background-color: #5e5ee8;
+  border: none;
+  border-radius: 5px;
+  width: 100px;
+  height: 30px;
+  color: white;
+  cursor: pointer;
+  float: right;
+  &:hover {
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+`;
+
 const categoryOptions = [
   { value: "", label: "카테고리를 선택해주세요!" },
   { value: "여행", label: "여행" },
@@ -141,7 +175,7 @@ export const subcategoryOptions = {
     { value: "💸 가상화폐", label: "가상화폐" },
     { value: "🏡 부동산", label: "부동산" },
     { value: "🪙 기타경제", label: "기타경제" },
-    { value: "🪙 전체보기", label: "전체보기" },
+    { value: "🔎 처음으로", label: "처음으로" },
   ],
 
   애완동식물: [
@@ -149,7 +183,7 @@ export const subcategoryOptions = {
     { value: "🍯 꿀팁", label: "꿀팁" },
     { value: "💳 쇼핑", label: "쇼핑" },
     { value: "🐱 기타정보", label: "기타정보" },
-    { value: "🐱 기타정보", label: "기타정보" },
+    { value: "🔎 처음으로", label: "처음으로" },
   ],
 
   여행: [
@@ -157,6 +191,7 @@ export const subcategoryOptions = {
     { value: "🚅 국내여행", label: "국내여행" },
     { value: "🛩️ 해외여행", label: "해외여행" },
     { value: "🗺️ 기타여행", label: "기타여행" },
+    { value: "🔎 처음으로", label: "처음으로" },
   ],
 
   음악: [
@@ -164,11 +199,13 @@ export const subcategoryOptions = {
     { value: "🇰🇷 국내음악", label: "국내음악" },
     { value: "🏳️‍🌈 해외음악", label: "해외음악" },
     { value: "🎸 기타음악", label: "기타음악" },
+    { value: "🔎 처음으로", label: "처음으로" },
   ],
 
   기타: [
     { value: "", label: "카테고리를 선택해주세요!" },
     { value: "📱 기타", label: "기타" },
+    { value: "🔎 처음으로", label: "처음으로" },
   ],
 };
 
@@ -325,10 +362,10 @@ function MyPost() {
             <ListContainer key={post.CID}>
               <img
                 style={{
-                  width: "300px",
-                  height: "100px",
+                  width: "240px",
+                  height: "80px",
                 }}
-                src={post.downloadURL}
+                src={post.downloadURL ? post.downloadURL : null}
                 alt=""
               ></img>
               <ContentBody>
@@ -342,8 +379,8 @@ function MyPost() {
                 <ContentMent>{post.body}</ContentMent>
               </ContentBody>
               <EditBtn
-                width="40px"
-                height="40px"
+                width="30px"
+                height="30px"
                 onClick={() => postModalHandler(post)}
                 params={params}
                 currentuserid={currentUserId}
@@ -352,7 +389,7 @@ function MyPost() {
               <BcDiv open={open} onClick={postModalHandler}>
                 <StDiv onClick={(e) => e.stopPropagation()}>
                   <form>
-                    <h1>글 작성하기</h1>
+                    <StH1>글 수정하기</StH1>
                     <p>
                       <TitleInput
                         type="text"
@@ -388,14 +425,14 @@ function MyPost() {
                     <p>
                       <input type="file" onChange={handleFileSelect} />
                     </p>
-                    <button
+                    <StSubmitBtn
                       onClick={(event) => {
                         event.preventDefault(); // 기본 동작인 새로고침을 막음
                         handlePostEdit(modalCID);
                       }}
                     >
                       수정
-                    </button>
+                    </StSubmitBtn>
                   </form>
                   <Stbtn onClick={postModalHandler}>x</Stbtn>
                 </StDiv>

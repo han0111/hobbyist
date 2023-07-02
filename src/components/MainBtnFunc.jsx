@@ -15,42 +15,41 @@ const ContentFunc = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 10px;
+  background: #f5f5f5;
+  border-radius: 0px 0px 14px 14px;
 `;
 
 const FunctionUl = styled.ul`
-  /* background-color: yellow; */
-  /* width: 100%; */
   display: flex;
-  /* justify-content: space-between; */
-  font-size: 25px;
-  margin: 20px 15px;
+  align-items: center;
+  font-size: 18px;
   margin-left: auto;
   list-style: none;
+  margin-top: 16px;
+  margin-bottom: 16px;
 `;
 
 const FunctionLi = styled.li`
   margin-right: 20px;
+  &:last-child {
+    margin-right: 0px;
+  }
 `;
 
 const IconSpan = styled.span`
   margin-right: 6px;
   cursor: pointer;
   transition: opacity 0.3s;
-
-  &:hover {
-    opacity: 0.5;
-  }
 `;
 
 const Icon = styled.img`
-  width: 35px;
-  height: 35px;
+  width: 16px;
+  height: 16px;
 `;
 
 const Likecount = styled.span`
-  font-weight: bold;
-  padding-top: 10px;
+  font-weight: 500;
+  line-height: 19px;
 `;
 
 const TextArea = styled.textarea`

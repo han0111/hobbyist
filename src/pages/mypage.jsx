@@ -6,37 +6,35 @@ import MyPost from "../components/MyPost";
 import BookedPost from "../components/BookedPost";
 
 const MypageLayout = styled.div`
-  margin-top: 100px;
-  background-color: #d9d9d9;
   padding: 30px;
-  box-shadow: 0px 1px 5px gray;
-
   display: flex;
-  flex-direction: row;
-
-  height: 1000px;
-
-  overflow: hidden;
+  justify-content: center;
+  gap: 20px;
+  width: 90%;
+  margin: 0 auto;
 `;
 
 const MyContents = styled.div`
-  /* background-color: gray; */
-  margin-left: 100px;
-
-  width: 100%;
+  button {
+    &:first-child {
+      margin-right: 5px;
+    }
+  }
+  width: 50%;
   height: 90%;
 `;
 
 const MyButton = styled.button`
-  width: 250px;
-  height: 50px;
-
-  font-size: 20px;
-  font-weight: bold;
-  border: none;
-  background-color: ${({ active }) => (active ? "#B8B8B8" : "#cccccc")};
-  box-shadow: ${({ active }) =>
-    active ? "0px 1px 3px gray" : "0px 1px 5px gray;"};
+  width: 150px;
+  height: 36px;
+  font-size: 13px;
+  border-radius: 7px;
+  font-weight: ${({ active }) => (active ? "400" : "600")};
+  border: solid 1px #c5c5c5;
+  color: ${({ active }) => (active ? "#fff" : "#111")};
+  background-color: ${({ active }) => (active ? "rgb(94, 94, 232)" : "#fff")};
+  margin-bottom: 8px;
+  cursor: pointer;
 `;
 
 function Mypage() {
