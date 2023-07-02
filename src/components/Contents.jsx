@@ -107,9 +107,7 @@ function Contents() {
       filteredPosts = filteredPosts.filter((post) =>
         post.title.includes(searchQuery)
       );
-    }
-
-    if (clicksubcategory) {
+    } else if (clicksubcategory) {
       console.log(clicksubcategory);
       filteredPosts = filteredPosts.filter(
         (post) => post.subcategory === clicksubcategory
