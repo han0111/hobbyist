@@ -25,6 +25,7 @@ const OpenBtn = styled.button`
   border: none;
   border-radius: 10px;
   background-color: transparent;
+  margin-left: 300px;
   cursor: pointer;
   &:hover {
     color: #5e5ee8;

@@ -47,10 +47,10 @@ const StH1 = styled.h1`
 
 const ListContainer = styled.div`
   background-color: #fff;
-  border-radius: 7px;
-  margin-bottom: 5px;
+  border-radius: 10px;
+  margin-bottom: 15px;
   height: 20%;
-  padding: 10px;
+  padding: 15px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -78,8 +78,8 @@ const DeleteBtn = styled.button`
   background-size: cover;
   border: none;
   background-color: transparent;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   margin-right: 50px;
   margin-left: 20px;
   cursor: pointer;
@@ -379,8 +379,8 @@ function MyPost() {
                 <ContentMent>{post.body}</ContentMent>
               </ContentBody>
               <EditBtn
-                width="40px"
-                height="40px"
+                width="30px"
+                height="30px"
                 onClick={() => postModalHandler(post)}
                 params={params}
                 currentuserid={currentUserId}
