@@ -3,7 +3,7 @@ import TopBar from "../components/TopBar";
 import Contents from "../components/Contents";
 import Post from "../components/Post";
 import Weather from "../components/Weather";
-import SideBar2 from "../components/SideBar2";
+import SideBar from "../components/SideBar";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
       >
         <div style={{ display: "flex" }}>
           <TopBar />
-          <SideBar2 />
+          <SideBar />
           <Contents />
           <Post />
           <Weather />

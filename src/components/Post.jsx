@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { collection, getDocs, addDoc, where, query } from "firebase/firestore";
-// import FileUpload from "./FileUpload";
 import { db } from "../service/firebase";
 import uuid from "react-uuid";
 import { getAuth } from "firebase/auth";
