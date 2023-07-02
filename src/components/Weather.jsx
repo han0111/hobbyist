@@ -75,15 +75,14 @@ function Weather() {
       <p
         style={{
           fontSize: "50px",
-
           position: "absolute",
-          top: "-45px",
+          top: "0px",
         }}
       >
         {Math.ceil(temp - 273.15)}°C
       </p>
-      <p style={{ position: "absolute", top: "45px" }}>{name}</p>
-      <p style={{ position: "absolute", bottom: "0", left: "0" }}>
+      <p style={{ position: "absolute", top: "55px" }}>{name}</p>
+      <p style={{ position: "absolute", bottom: "0", left: "20px" }}>
         {humidity}%
       </p>
       <p

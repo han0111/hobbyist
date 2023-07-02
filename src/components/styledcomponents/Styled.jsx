@@ -30,14 +30,11 @@ export const Button = styled.button`
 `;
 
 export const TopButton = styled.button`
-  font-size: 20px;
+  font-size: 16px;
   width: 120px;
   border: none;
   background-color: transparent;
   cursor: pointer;
-  &:hover {
-    transform: scale(1.2);
-  }
 `;
 
 export const ModalContainer = styled.div`
@@ -95,6 +92,24 @@ export const VerifyMessage = styled.span`
 `;
 
 export const StSelect = styled.select`
-  width: 400px;
+  width: 420px;
   height: 30px;
+  border: none;
+  background-color: #f5f5f5;
+`;
+
+export const CheckId = styled.button`
+  background-color: transparent;
+  border-radius: 6px;
+  width: 70px;
+  height: 40px;
+  border: none;
+  color: #343434;
+  cursor: pointer;
+  position: absolute;
+  right: 60px;
+  &:hover {
+    color: #5e5ee8;
+    background-color: #dfdff7;
+  }
 `;

@@ -4,36 +4,40 @@ import { useState } from "react";
 import { subcategoryOptions } from "./MyPost";
 import { useDispatch } from "react-redux";
 import { addCategory } from "../modules/subcategoryReducer";
+import Weather from "./Weather";
+import Post from "./Post";
+
+const SidebarWrap = styled.div`
+  position: sticky;
+  left: 0;
+  top: 100px;
+`;
 
 const AllList = styled.button`
-  margin-top: 200px;
   width: 220px;
   padding: 10px;
-  border-radius: 20px;
+  border-radius: 8px;
+  background: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding-top: 20px;
   border: none;
-  position: fixed;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 `;
 const CategoryFont = styled.div`
-  margin-bottom: 20px;
-  font-size: 20px;
+  margin-bottom: 10px;
+  font-size: 16px;
   font-weight: bold;
 `;
 const List = styled.div`
   display: flex;
+  text-align: left;
   justify-content: center;
   flex-direction: column;
   background-color: transparent;
   border: none;
-  font-size: 18px;
-  padding: 15px;
+  font-size: 15px;
   width: 180px;
-  cursor: pointer;
+  margin-bottom: 6px;
+  margin-left: 10px;
 `;
 const SmallLists = styled.div`
   display: ${(props) => (props.isopen === "true" ? "flex" : "none")};
@@ -41,12 +45,13 @@ const SmallLists = styled.div`
   justify-content: center;
 `;
 const SmallList = styled.div`
-  font-size: 15px;
-  padding-top: 10px;
-  text-align: center;
+  font-size: 13px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  text-align: left;
+  margin-left: 14px;
   border: none;
-
-  cursor: pointer;
+  background: #fff;
 `;
 
 const initialallLists = [
@@ -112,35 +117,62 @@ function SideBar() {
   };
 
   return (
-    <AllList>
-      <CategoryFont>♞ Category</CategoryFont>
-      {allLists.map((allList) => {
-        return (
-          <List
-            className="큰목차"
-            key={allList.id}
-            onClick={() => handleList(allList.id)}
-          >
-            <div>{allList.list}</div>
-            <SmallLists
-              className="작은목차"
-              isopen={allList.isopen ? "true" : "false"}
-            >
-              {allList.sublist.map((subListItem, i) => {
-                return (
-                  <SmallList
-                    key={i}
-                    onClick={() => handleSubcategory(subListItem)}
-                  >
-                    {subListItem}
-                  </SmallList>
-                );
-              })}
-            </SmallLists>
-          </List>
-        );
-      })}
-    </AllList>
+    <>
+      <SidebarWrap>
+        <Post />
+        <AllList>
+          <CategoryFont>♞ Category</CategoryFont>
+          {allLists.map((allList) => {
+            return (
+              <List
+                className="큰목차"
+                key={allList.id}
+                onClick={() => handleList(allList.id)}
+              >
+                <div>{allList.list}</div>
+                <SmallLists
+                  className="작은목차"
+                  isopen={allList.isopen ? "true" : "false"}
+                >
+                  {allList.sublist.map((subListItem, i) => {
+                    return (
+                      <SmallList
+                        key={i}
+                        onClick={() => handleSubcategory(subListItem)}
+                      >
+                        {subListItem}
+                      </SmallList>
+                    );
+                  })}
+                </SmallLists>
+              </List>
+            );
+          })}
+        </AllList>
+      </SidebarWrap>
+      <Weather />
+      <button
+        style={{
+          width: "50px",
+          height: "50px",
+          position: "fixed",
+          bottom: "50px",
+          right: "80px",
+          borderRadius: "30px",
+          border: "none",
+          cursor: "pointer",
+          boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+        }}
+        onClick={() => {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }}
+      >
+        Top
+      </button>
+    </>
   );
 }
 export default SideBar;

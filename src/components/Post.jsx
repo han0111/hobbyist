@@ -9,6 +9,12 @@ import CategorySelect from "../components/CategorySelect/CategorySelect";
 import SubcategorySelect from "../components/CategorySelect/SubcategorySlect";
 import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
 
+const StH1 = styled.h1`
+  color: #5e5ee8;
+  font-size: 20px;
+  text-align: center;
+`;
+
 const BcDiv = styled.div`
   position: fixed;
   top: 0;
@@ -23,11 +29,19 @@ const BcDiv = styled.div`
 const TitleInput = styled.input`
   width: 400px;
   height: 30px;
+  border-radius: 5px;
+  padding: 10px;
+  border: none;
+  background-color: #f5f5f5;
 `;
 
-const BodyInput = styled.input`
+const BodyInput = styled.textarea`
   width: 400px;
   height: 200px;
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+  background-color: #f5f5f5;
 `;
 
 const StDiv = styled.div`
@@ -53,6 +67,20 @@ const Stbtn = styled.button`
   top: 10px;
   font-size: 17px;
   cursor: pointer;
+`;
+
+const StSubmitBtn = styled.button`
+  background-color: #5e5ee8;
+  border: none;
+  border-radius: 5px;
+  width: 100px;
+  height: 30px;
+  color: white;
+  cursor: pointer;
+  float: right;
+  &:hover {
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
 `;
 
 //랜덤닉네임 만드는 함수 하드코딩부분
@@ -266,7 +294,7 @@ function Post() {
       <BcDiv open={open} onClick={postModalHandler}>
         <StDiv onClick={(e) => e.stopPropagation()}>
           <form onSubmit={handlePostSubmit}>
-            <h1>글 작성하기</h1>
+            <StH1>글 작성하기</StH1>
             <p>
               <TitleInput
                 type="text"
@@ -302,7 +330,7 @@ function Post() {
             <p>
               <input type="file" onChange={handleFileSelect} />
             </p>
-            <button onClick={handlePostSubmit}>등록</button>
+            <StSubmitBtn onClick={handlePostSubmit}>등록</StSubmitBtn>
           </form>
           <Stbtn onClick={postModalHandler}>x</Stbtn>
         </StDiv>
@@ -310,13 +338,14 @@ function Post() {
       <button
         style={{
           width: "220px",
-          height: "50px",
-          marginTop: "130px",
-          position: "fixed",
+          marginBottom: "18px",
           border: "none",
-          borderRadius: "15px",
-          fontWeight: "bold",
-          boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+          padding: "13px 0px",
+          fontSize: "14px",
+          background: "#5e5ee8",
+          color: "#fff",
+          borderRadius: "8px",
+          fontWeight: "500",
         }}
         onClick={postModalHandler}
       >
