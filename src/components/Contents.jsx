@@ -159,11 +159,47 @@ function Contents() {
       return posts;
     }
   };
+  //무한스크롤
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      const fetchedData = querySnapshot.docs.map((doc) => doc.data());
+      setData((prevData) => [...prevData, ...fetchedData]);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+        !isLoading
+      ) {
+        fetchData();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isLoading]); // isLoading을 의존성으로 포함
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <AllContents>
       <div style={{ width: "650px" }}>
-        {filterPosts().map((post) => {
+        {data.map((post) => {
           return (
             <Main key={post.CID}>
               <MainInner>
