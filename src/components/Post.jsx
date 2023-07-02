@@ -31,6 +31,7 @@ const TitleInput = styled.input`
   height: 30px;
   border-radius: 5px;
   padding: 10px;
+  margin-top: 20px;
   border: none;
   background-color: #f5f5f5;
 `;
@@ -41,6 +42,7 @@ const BodyInput = styled.textarea`
   border-radius: 10px;
   padding: 10px;
   border: none;
+  margin-top: 20px;
   background-color: #f5f5f5;
 `;
 
@@ -66,6 +68,7 @@ const Stbtn = styled.button`
   right: 10px;
   top: 10px;
   font-size: 17px;
+
   cursor: pointer;
 `;
 
@@ -82,7 +85,6 @@ const StSubmitBtn = styled.button`
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   }
 `;
-
 //랜덤닉네임 만드는 함수 하드코딩부분
 const generateRandomNickname = () => {
   const adjectiveList = [

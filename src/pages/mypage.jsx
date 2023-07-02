@@ -36,9 +36,14 @@ const MyButton = styled.button`
 
 function Mypage() {
   const [isActive, setIsActive] = useState(false);
+  const [isLoggedIn] = useState(false);
 
   const handleButtonClick = () => {
-    setIsActive(!isActive);
+    if (isLoggedIn) {
+      setIsActive(!isActive);
+    } else {
+      alert("로그인이 필요합니다."); // 경고 메시지 표시
+    }
   };
 
   const myPost = useRef(null);
@@ -65,7 +70,7 @@ function Mypage() {
           >
             북마크 한 글
           </MyButton>
-          {(myPost.active = isActive ? <MyPost /> : <BookedPost />)}
+          {isActive ? <MyPost /> : <BookedPost />}
         </MyContents>
       </MypageLayout>
     </div>

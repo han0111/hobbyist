@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import MainBtnFunc from "./MainBtnFunc";
 import google from "../img/google.png";
 import { useSelector } from "react-redux";
-import { FaSistrix, FaGlobe } from "react-icons/fa";
+import { FaSistrix } from "react-icons/fa";
 
 const AllContents = styled.div``;
 
@@ -143,51 +143,49 @@ function Contents() {
     return filteredPosts;
   };
 
-  //무한스크롤
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      const querySnapshot = await getDocs(collection(db, "posts"));
-      const fetchedData = querySnapshot.docs.map((doc) => doc.data());
-      setData((prevData) => [...prevData, ...fetchedData]);
-      setIsLoading(false);
-      console.log(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setIsLoading(false);
-    }
+  const preventDefault = (event) => {
+    event.preventDefault();
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >= document.body.offsetHeight &&
-        !isLoading
-      ) {
-        fetchData();
-      }
-    };
+  //무한스크롤 부분 기능은 구현했으나 아이콘버튼과의 연동 에러로 주석처리
+  // const [data, setData] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
 
-    console.log("얼마나 실행되지?");
+  // const fetchData = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     const querySnapshot = await getDocs(collection(db, "posts"));
+  //     const fetchedData = querySnapshot.docs.map((doc) => doc.data());
+  //     setData((prevData) => [...prevData, ...fetchedData]);
+  //     setIsLoading(false);
+  //     console.log(data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     setIsLoading(false);
+  //   }
+  // };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [isLoading]); // isLoading을 의존성으로 포함
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (
+  //       window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+  //       !isLoading
+  //     ) {
+  //       fetchData();
+  //     }
+  //   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  //   console.log("얼마나 실행되지?");
 
-  const handleSearch1 = (e) => {
-    console.log("제출이 일어남", searchQuery);
-    e.preventDefault();
-    // onSearch(searchQuery);
-  };
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, [isLoading]); // isLoading을 의존성으로 포함
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   return (
     <AllContents>
@@ -197,8 +195,10 @@ function Contents() {
           placeholder="검색 가능합니다."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-        ></Input>
-        <FaSistrix size="20" color="gray"></FaSistrix>
+        />
+        <button type="submit" onClick={preventDefault}>
+          <FaSistrix size="20" color="gray" />
+        </button>
       </Form>
       <div style={{ width: "650px" }}>
         {filterPosts().map((post) => {

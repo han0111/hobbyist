@@ -18,6 +18,7 @@ export const Label = styled.span`
 export const Input = styled.input`
   width: 250px;
   height: 40px;
+  margin-top: 20px;
   background-color: #f5f3f3;
   border-style: none;
   border-radius: 8px;
@@ -83,6 +84,7 @@ export const SubmitBtn = styled(Button)`
   background-color: #6969ed;
   cursor: pointer;
   color: white;
+  margin-top: 20px;
   margin-bottom: 10px;
 `;
 
@@ -95,6 +97,7 @@ export const StSelect = styled.select`
   width: 420px;
   height: 30px;
   border: none;
+  margin-top: 20px;
   background-color: #f5f5f5;
 `;
 
@@ -108,6 +111,7 @@ export const CheckId = styled.button`
   cursor: pointer;
   position: absolute;
   right: 60px;
+  margin-top: 20px;
   &:hover {
     color: #5e5ee8;
     background-color: #dfdff7;

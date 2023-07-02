@@ -77,6 +77,7 @@ const StH2 = styled.h2`
 
 const StInput = styled.input`
   width: 250px;
+  margin-top: 20px;
   height: 40px;
   background-color: #f5f3f3;
   border-style: none;
@@ -87,6 +88,7 @@ const StInput = styled.input`
 const StLoginBtn = styled.button`
   width: 100px;
   height: 30px;
+  margin-top: 20px;
   border-radius: 5px;
   border-style: none;
   background-color: #6969ed;

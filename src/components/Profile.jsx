@@ -67,6 +67,7 @@ const StH2 = styled.h2`
 const StNameInput = styled.input`
   width: 400px;
   height: 40px;
+  margin-top: 20px;
   background-color: #f5f3f3;
   border-style: none;
   border-radius: 8px;
@@ -76,6 +77,7 @@ const StNameInput = styled.input`
 const StMemoInput = styled.input`
   width: 400px;
   height: 120px;
+  margin-top: 20px;
   background-color: #f5f3f3;
   border-style: none;
   border-radius: 8px;
@@ -355,6 +357,7 @@ function Profile() {
               </p>
               <>
                 <p>
+                  <br />
                   <input type="file" onChange={handleFileSelect} />
                 </p>
               </>

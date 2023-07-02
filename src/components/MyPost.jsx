@@ -114,6 +114,7 @@ const BodyInput = styled.textarea`
   height: 200px;
   border-radius: 10px;
   padding: 10px;
+  margin-top: 20px;
   border: none;
   background-color: #f5f5f5;
 `;
@@ -390,6 +391,7 @@ function MyPost() {
                 <StDiv onClick={(e) => e.stopPropagation()}>
                   <form>
                     <StH1>글 수정하기</StH1>
+                    <br />
                     <p>
                       <TitleInput
                         type="text"

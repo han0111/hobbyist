@@ -7,8 +7,6 @@ import {
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { styled } from "styled-components";
-
 import {
   Input,
   ModalContainer,
@@ -18,25 +16,17 @@ import {
   TopButton,
   StH2,
   VerifyMessage,
+  CheckId,
 } from "./styledcomponents/Styled";
 
-import { collection, addDoc, getFirestore } from "firebase/firestore";
-
-const CheckId = styled.button`
-  background-color: transparent;
-  border-radius: 6px;
-  width: 70px;
-  height: 40px;
-  border: none;
-  color: #343434;
-  cursor: pointer;
-  position: absolute;
-  right: 60px;
-  &:hover {
-    color: #5e5ee8;
-    background-color: #dfdff7;
-  }
-`;
+import {
+  collection,
+  addDoc,
+  getFirestore,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 function SignUp() {
   const [isModalOpen2, setIsModalOpen2] = useState(false);
@@ -46,6 +36,7 @@ function SignUp() {
   const [nickname, setNickName] = useState("");
   const [join, setJoin] = useState("회원가입");
   const [passwordverify, setPasswordVerify] = useState(true);
+  const [isNicknameAvailable] = useState(true);
 
   const auth = getAuth();
   const navigate = useNavigate();
@@ -96,8 +87,23 @@ function SignUp() {
       alert("비밀번호가 일치하지 않습니다!");
       return;
     }
+    if (password.length < 8) {
+      alert("비밀번호는 8자리 이상이어야 합니다!");
+      return;
+    }
 
     try {
+      const db = getFirestore();
+      const usersCollectionRef = collection(db, "users");
+      const querySnapshot = await getDocs(
+        query(usersCollectionRef, where("nickname", "==", nickname))
+      );
+
+      if (!querySnapshot.empty) {
+        alert("이미 사용 중인 닉네임입니다.");
+        return;
+      }
+
       //이메일 패스워드 받아서 회원가입 하는 코드
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -110,7 +116,6 @@ function SignUp() {
 
       const uid = userCredential.user.uid;
 
-      const db = getFirestore();
       await addDoc(collection(db, "users"), {
         uid: uid,
         email: email,
@@ -162,6 +167,31 @@ function SignUp() {
     } catch (error) {
       alert("이메일 확인에 실패했습니다!");
       console.log("이메일 확인 실패", error.code, error.message);
+    }
+  };
+
+  const verifyNicknameHandler = async (event) => {
+    event.preventDefault();
+    if (nickname.trim() === "") {
+      alert("닉네임을 입력해 주세요!");
+      return;
+    }
+    try {
+      const db = getFirestore();
+      const usersCollectionRef = collection(db, "users");
+      const q = query(usersCollectionRef, where("nickname", "==", nickname));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // 이미 존재하는 닉네임입니다
+        alert("이미 존재하는 닉네임입니다.");
+      } else {
+        // 사용 가능한 닉네임
+        alert("사용할 수 있는 닉네임입니다!");
+      }
+    } catch (error) {
+      alert("닉네임 확인에 실패했습니다!");
+      console.log("닉네임 확인 실패", error);
     }
   };
 
@@ -232,6 +262,14 @@ function SignUp() {
                   onChange={nicknameChangeHandler}
                   placeholder="닉네임"
                 />
+                <CheckId onClick={verifyNicknameHandler}>중복확인</CheckId>
+                {!isNicknameAvailable && (
+                  <VerifyMessage
+                    invalid={!isNicknameAvailable ? "true" : undefined}
+                  >
+                    이미 사용 중인 닉네임입니다.
+                  </VerifyMessage>
+                )}
               </p>
               <CancelBtn onClick={CancelBtnHandler}>x</CancelBtn>
               <SubmitBtn onClick={SubmitBtnHandler}>가입하기</SubmitBtn>
