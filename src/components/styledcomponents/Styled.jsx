@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const StH2 = styled.h2`
   color: #5e5ee8;
+  margin-top: 20px;
   font-size: 28px;
   padding-top: 20px;
 `;

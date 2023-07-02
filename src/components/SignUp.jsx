@@ -121,7 +121,7 @@ function SignUp() {
         email: email,
         nickname: nickname,
         memo: "자기소개를 입력해주세요.",
-        img: "사진파일이름",
+        img: "https://ca.slack-edge.com/T043597JK8V-U057B2LN1NU-f07fd31753d9-512",
       });
 
       console.log("가입에 성공했습니다", userCredential);
