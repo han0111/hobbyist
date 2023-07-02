@@ -1,8 +1,9 @@
 import React from "react";
 import TopBar from "../components/TopBar";
-import SideBar from "../components/SideBar";
 import Contents from "../components/Contents";
 import Post from "../components/Post";
+import Weather from "../components/Weather";
+import SideBar from "../components/SideBar";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <SideBar />
           <Contents />
           <Post />
+          <Weather />
         </div>
       </div>
     </>

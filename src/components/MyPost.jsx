@@ -1,14 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "styled-components";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
-import { auth } from "../service/firebase";
-import { ref } from "firebase/storage";
-import { storage } from "../service/firebase";
-import { uploadBytes } from "firebase/storage";
-import { getDownloadURL } from "firebase/storage";
-import { updateDoc } from "firebase/firestore";
+import { auth, db, storage } from "../service/firebase";
+import { uploadBytes, getDownloadURL, ref } from "firebase/storage";
+import { useNavigate } from "react-router-dom";
 import CategorySelect from "../components/CategorySelect/CategorySelect";
 import SubcategorySelect from "../components/CategorySelect/SubcategorySlect";
 import {
@@ -18,10 +13,9 @@ import {
   orderBy,
   deleteDoc,
   where,
+  updateDoc,
 } from "firebase/firestore";
 
-import { VerifyMessage } from "./styledcomponents/Styled";
-import { db } from "../service/firebase";
 const EditBtn = styled.button`
   background-image: url("https://img.icons8.com/?size=1x&id=47749&format=png");
   background-size: cover;
@@ -31,21 +25,14 @@ const EditBtn = styled.button`
   height: ${(props) => props.height};
   margin-left: auto;
   cursor: pointer;
+  display: ${(props) =>
+    props.currentuserid === props.params.id ? "block" : "none"};
 `;
 const MyContents = styled.div`
-  margin-left: 100px;
   width: 100%;
   height: 90%;
 `;
-const MyButton = styled.button`
-  width: 250px;
-  height: 50px;
-  font-size: 20px;
-  font-weight: bold;
-  border: none;
-  background-color: #cccccc;
-  box-shadow: 0px 1px 5px gray;
-`;
+
 const ListContainer = styled.div`
   background-color: #efefea;
   height: 20%;
@@ -54,7 +41,6 @@ const ListContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
 `;
 
 const ContentBody = styled.div`
@@ -69,6 +55,7 @@ const ContentBody = styled.div`
 const ContentTitle = styled.div`
   font-size: 30px;
   font-weight: bold;
+  cursor: pointer;
 `;
 const ContentMent = styled.p`
   font-size: 20px;
@@ -83,6 +70,8 @@ const DeleteBtn = styled.button`
   margin-right: 50px;
   margin-left: 20px;
   cursor: pointer;
+  display: ${(props) =>
+    props.currentuserid === props.params.id ? "block" : "none"};
 `;
 
 // 모달디자인
@@ -132,7 +121,7 @@ const Stbtn = styled.button`
   font-size: 17px;
   cursor: pointer;
 `;
-
+//카테고리 셀렉트바 하드코딩 부분
 export const categoryOptions = [
   { value: "", label: "카테고리를 선택해주세요!" },
   { value: "경제", label: "경제" },
@@ -149,12 +138,15 @@ export const subcategoryOptions = {
     { value: "💸 가상화폐", label: "가상화폐" },
     { value: "🏡 부동산", label: "부동산" },
     { value: "🪙 기타경제", label: "기타경제" },
+    { value: "🪙 전체보기", label: "전체보기" },
+
   ],
 
   애완동식물: [
     { value: "", label: "카테고리를 선택해주세요!" },
     { value: "🍯 꿀팁", label: "꿀팁" },
     { value: "💳 쇼핑", label: "쇼핑" },
+    { value: "🐱 기타정보", label: "기타정보" },
     { value: "🐱 기타정보", label: "기타정보" },
   ],
 
@@ -184,12 +176,16 @@ function MyPost() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [downloadURL, setDownloadURL] = useState(null);
-  const [uploadComplete, setUploadComplete] = useState(false);
+  const [, setDownloadURL] = useState(null);
   const [category, setCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
+  const [modalCID, setModalCID] = useState("");
+
+  const navigate = useNavigate();
 
   const params = useParams();
+
+  //피드 정보 불러오는 함수
   const fetchMyposts = async () => {
     try {
       const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
@@ -204,8 +200,11 @@ function MyPost() {
       console.error("Error fetching MyPosts:", error);
     }
   };
+
+  //피드 삭제 버튼 핸들러
   const PostDeleteBtn = async (CID) => {
     try {
+      console.log("삭제한 피드의CID값은?", CID);
       const querySnapshot = await getDocs(
         query(collection(db, "posts"), where("CID", "==", CID))
       );
@@ -221,7 +220,6 @@ function MyPost() {
   }, []);
 
   const handleFileSelect = (e) => {
-    setUploadComplete(false);
     setSelectedFile(e.target.files[0]);
   };
 
@@ -245,57 +243,66 @@ function MyPost() {
 
     setDownloadURL(downloadURL);
 
-    setUploadComplete(true);
+    return downloadURL;
   };
 
   // 글 수정
-
-  const handlePostEdit = async (CID, downloadURL) => {
-    await handleUpload();
+  const handlePostEdit = async (CID) => {
     try {
+      let updatedData = {
+        title,
+        body,
+        category,
+        subcategory,
+      };
+
+      if (selectedFile) {
+        const downloadURL = await handleUpload();
+        updatedData.downloadURL = downloadURL;
+      }
+
       const querySnapshot = await getDocs(
         query(collection(db, "posts"), where("CID", "==", CID))
       );
-      querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {
-          title,
-          body,
-          downloadURL,
-          category,
-          subcategory,
-        });
-      });
+
+      await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          await updateDoc(doc.ref, updatedData);
+        })
+      );
+
       setSelectedFile("");
       fetchMyposts();
       setOpen(!open);
-      alert("수정이 완료됐습니다!");
+      alert("수정이 완료되었습니다!");
     } catch (error) {
-      console.error("프로필 수정 오류:", error);
+      console.error("피드 수정 오류:", error);
     }
+  };
+
+  const showItsCID = (CID) => {
+    console.log(`cid는 ${CID}`);
   };
 
   // 글쓰기 모달창 열기
   const postModalHandler = async (post) => {
+    setModalCID(post.CID);
     if (!auth.currentUser) {
       alert("로그인 후 사용해주세요.");
       return;
     }
 
+    console.log(post.CID);
+
     setOpen(!open);
 
-    const thisUser = {};
-
-    if (thisUser) {
-      // 기존 게시물 값으로 입력 필드 설정
-      setTitle(post.title);
-      setBody(post.body);
-      setCategory(post.category);
-      setSubcategory(post.subcategory);
-    }
-
-    console.log("수정폼 유저데이터", thisUser);
-
     await fetchMyposts();
+    showItsCID(post.CID);
+
+    setTitle(post.title);
+    setBody(post.body);
+    setCategory(post.category);
+    setSubcategory(post.subcategory);
   };
 
   //카테고리 핸들러
@@ -304,15 +311,16 @@ function MyPost() {
     setSubcategory("");
   };
 
+  const currentUserId = auth.currentUser.uid;
+  console.log(currentUserId);
+
   return (
     <>
       <MyContents>
-        <MyButton>내가 쓴 글</MyButton>
-        <MyButton>북마크 한 글</MyButton>
         {myPost
           .filter((post) => post.uid === params.id)
           .map((post) => (
-            <ListContainer key={post.id}>
+            <ListContainer key={post.CID}>
               <img
                 style={{
                   width: "300px",
@@ -322,13 +330,21 @@ function MyPost() {
                 alt=""
               ></img>
               <ContentBody>
-                <ContentTitle>{post.title}</ContentTitle>
+                <ContentTitle
+                  onClick={() => {
+                    navigate(`/detail/${post.id}`);
+                  }}
+                >
+                  {post.title}
+                </ContentTitle>
                 <ContentMent>{post.body}</ContentMent>
               </ContentBody>
               <EditBtn
                 width="40px"
                 height="40px"
                 onClick={() => postModalHandler(post)}
+                params={params}
+                currentuserid={currentUserId}
               ></EditBtn>
               {/* 수정 모달창부분 */}
               <BcDiv open={open} onClick={postModalHandler}>
@@ -369,21 +385,11 @@ function MyPost() {
                     </p>
                     <p>
                       <input type="file" onChange={handleFileSelect} />
-                      <button onClick={(e) => handleUpload(e)}>Upload</button>
-                      {!uploadComplete && (
-                        <VerifyMessage invalid="true">
-                          업로드 안 함
-                        </VerifyMessage>
-                      )}
-
-                      {uploadComplete && (
-                        <VerifyMessage>업로드 완료</VerifyMessage>
-                      )}
                     </p>
                     <button
                       onClick={(event) => {
                         event.preventDefault(); // 기본 동작인 새로고침을 막음
-                        handlePostEdit(post.CID, downloadURL);
+                        handlePostEdit(modalCID);
                       }}
                     >
                       수정
@@ -393,7 +399,11 @@ function MyPost() {
                 </StDiv>
               </BcDiv>
               {/* 수정모달창부분 */}
-              <DeleteBtn onClick={() => PostDeleteBtn(post.CID)}></DeleteBtn>
+              <DeleteBtn
+                onClick={() => PostDeleteBtn(post.CID)}
+                params={params}
+                currentuserid={currentUserId}
+              ></DeleteBtn>
             </ListContainer>
           ))}
       </MyContents>

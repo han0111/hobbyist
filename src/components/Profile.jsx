@@ -17,8 +17,6 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-
-import { VerifyMessage } from "./styledcomponents/Styled";
 import { db, auth } from "../service/firebase";
 
 // 모달 디자인//
@@ -151,15 +149,12 @@ const EditBtn = styled.button`
   height: ${(props) => props.height};
   margin-left: auto;
   cursor: pointer;
+  display: ${(props) =>
+    props.currentuserid === props.params ? "block" : "none"};
 `;
 
 const IntroduceMent = styled.p`
   font-size: 20px;
-`;
-
-const ProfileEditBtn = styled.button`
-  display: ${(props) =>
-    props.currentuserid === props.params ? "block" : "none"};
 `;
 
 function Profile() {
@@ -172,7 +167,7 @@ function Profile() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [downloadURL, setDownloadURL] = useState("");
   const [image, setImage] = useState(github);
-  const [uploadComplete, setUploadComplete] = useState(false);
+  const [, setUploadComplete] = useState(false);
 
   // 현재 유저 아이디 가져옴
   const params = useParams().id;
@@ -211,8 +206,9 @@ function Profile() {
   };
 
   const handleUpload = async (e) => {
-    e.preventDefault();
-
+    if (e) {
+      e.preventDefault();
+    }
     if (!selectedFile) {
       alert("파일을 선택해주세요.");
       return;
@@ -225,24 +221,34 @@ function Profile() {
     await uploadBytes(imageRef, selectedFile);
 
     const downloadURL = await getDownloadURL(imageRef);
+    console.log("downloadURL", downloadURL);
+
     setDownloadURL(downloadURL);
 
-    setUploadComplete(true);
+    return downloadURL;
   };
 
   // 수정
   const handleProfileEdit = async (params, downloadURL) => {
     try {
+      let updatedData = {
+        nickname: editedName,
+        memo: editedMemo,
+      };
+
+      if (selectedFile) {
+        const downloadURL = await handleUpload();
+        updatedData.img = downloadURL;
+      }
+
       const querySnapshot = await getDocs(
         query(collection(db, "users"), where("uid", "==", params))
       );
+
       querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, {
-          nickname: editedName,
-          memo: editedMemo,
-          img: downloadURL,
-        });
+        await updateDoc(doc.ref, updatedData);
       });
+
       setEditedName("");
       setEditedMemo("");
       setSelectedFile(null);
@@ -312,24 +318,18 @@ function Profile() {
         <MyDiv>
           <img src={image} alt="프로필 이미지" style={{ width: "250px" }} />
         </MyDiv>
-        <ProfileEditBtn
-          currentuserid={currentUserId}
-          params={params}
-          onClick={profileModalHandler}
-        >
-          수정
-        </ProfileEditBtn>
         <NameContainer>
           <MyName>{users}</MyName>
           <EditBtn
             width="30px"
             height="30px"
             onClick={profileModalHandler}
+            currentuserid={currentUserId}
+            params={params}
           ></EditBtn>
         </NameContainer>
         <IntroduceMe>
           <IntroduceMent>{memo}</IntroduceMent>
-          <EditBtn width="30px" height="30px"></EditBtn>
         </IntroduceMe>
       </ProfileContainer>
       <div>
@@ -356,12 +356,6 @@ function Profile() {
               <>
                 <p>
                   <input type="file" onChange={handleFileSelect} />
-                  <button onClick={handleUpload}>Upload</button>
-                  {!uploadComplete && (
-                    <VerifyMessage invalid="true">업로드 안 함</VerifyMessage>
-                  )}
-
-                  {uploadComplete && <VerifyMessage>업로드 완료</VerifyMessage>}
                 </p>
               </>
               <div style={{ marginTop: "20px" }}>

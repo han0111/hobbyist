@@ -53,7 +53,6 @@ const ProfileGroup = styled.div`
   justify-content: center;
 `;
 const ProfileImage = styled.img`
-  /* background-image: ; */
   background-color: gray;
   border-radius: 70%;
   width: 80px;
@@ -125,28 +124,9 @@ const CommentBody = styled.div`
 const NicknameComment = styled.div`
   background-color: red;
 `;
-const EditDeleteLikeContainer = styled.div`
-  background-color: orange;
-  margin-left: auto;
-  position: relative;
-  justify-content: flex-end;
-`;
 
-const CommentContainer = styled.div`
-  background-color: blue;
-`;
+const CommentContainer = styled.div``;
 
-const CommentLike = styled.button`
-  border: 0;
-  background-color: white;
-  /* transparent; */
-  background-image: url("https://img.icons8.com/?size=1x&id=581&format=png");
-  background-size: cover;
-  font-size: 30px;
-  width: 30px;
-  height: 30px;
-  margin-left: auto;
-`;
 
 const CommentInput = styled.input`
   width: 100%;
@@ -187,24 +167,6 @@ function Detail() {
   const [comment, setComment] = useState("");
   const { id } = useParams();
 
-  // 랜덤 닉네임 생성 함수
-  const generateRandomNickname = () => {
-    const adjectives = [
-      "행복한 ",
-      "용감한 ",
-      "사나운 ",
-      "최고의 ",
-      "똑똑한 ",
-      "섹시한 ",
-      "춤추는 ",
-      "기쁜 ",
-    ];
-    const nouns = ["홍정기", "최원장", "안동훈", "예병수", "류명한"];
-    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const noun = nouns[Math.floor(Math.random() * nouns.length)];
-    return adjective + noun;
-  };
-
   // 현재 로그인 된 아이디 알아오는 함수
   const getCurrentUserUid = () => {
     const auth = getAuth();
@@ -241,9 +203,6 @@ function Detail() {
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0].data();
         return userData.nickname || email;
-      } else {
-        const randomNickname = generateRandomNickname();
-        return randomNickname;
       }
     } catch (error) {
       console.error("Error getting nickname:", error);
@@ -447,7 +406,7 @@ function Detail() {
                                   <CommentLike />
                                 </EditDeleteLikeContainer>
                               )}
-                            </CommentsAllContainer>
+                            </span>
                           </p>
                         </div>
                       );

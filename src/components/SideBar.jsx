@@ -2,10 +2,11 @@ import React from "react";
 import { styled } from "styled-components";
 import { useState } from "react";
 import { categoryOptions, subcategoryOptions } from "./MyPost";
+import { useDispatch } from "react-redux";
+import { addCategory } from "../modules/subcategoryReducer";
 
 const AllList = styled.button`
   margin-top: 200px;
-  /* height: 540px; */
   width: 220px;
   padding: 10px;
   border-radius: 20px;
@@ -13,34 +14,35 @@ const AllList = styled.button`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  /* margin-bottom: 10px; */
-  padding-top: 20px;
-  border: none;
-  position: fixed;
-`;
+  `;
+
 const CategoryFont = styled.div`
   margin-bottom: 20px;
   font-size: 20px;
   font-weight: bold;
 `;
-const List = styled.button`
+const List = styled.div`
   display: flex;
-  /* align-items: center; */
   justify-content: center;
   flex-direction: column;
   background-color: transparent;
   border: none;
-  /* font-weight: bold; */
   font-size: 18px;
   padding: 15px;
   width: 180px;
-  /* margin-top: 10px; */
+  cursor: pointer;
 `;
 const SmallLists = styled.div`
-  display: ${(props) => (props.isOpen ? "flex" : "none")};
+  display: ${(props) => (props.isopen === "true" ? "flex" : "none")};
   flex-direction: column;
-  /* align-items: center; */
   justify-content: center;
+`;
+const SmallList = styled.div`
+  font-size: 15px;
+  padding-top: 10px;
+  text-align: center;
+  border: none;
+  cursor: pointer;
 `;
 const SmallList = styled.button`
   font-size: 15px;
@@ -49,64 +51,68 @@ const SmallList = styled.button`
   border: none;
 `;
 
-function SideBar2() {
-  console.log(subcategoryOptions);
-  const initialallLists = [
-    {
-      id: 1,
-      list: "💰 경제",
-      sublist: subcategoryOptions["경제"].map((option) => option.value),
-      // sublist: ["📈 주식", "💸 가상화폐"],
-      isOpen: false,
-    },
-    {
-      id: 2,
-      list: "🐶 애완동.식물",
-      sublist: subcategoryOptions["애완동식물"].map((option) => option.value),
-      // sublist: ["🍯 꿀팁", "💳 쇼핑"],
-      isOpen: false,
-    },
-    {
-      id: 3,
-      list: "🚙 여행",
-      sublist: subcategoryOptions["여행"].map((option) => option.value),
-      // sublist: ["🚅 국내", "🛩️ 해외"],
-      isOpen: false,
-    },
-    {
-      id: 4,
-      list: "🎧 음악",
-      sublist: subcategoryOptions["음악"].map((option) => option.value),
-      // sublist: ["🎤 추천", "🎹 정보"],
-      isOpen: false,
-    },
-    {
-      id: 5,
-      list: "🍀 기타",
-      sublist: subcategoryOptions["기타"].map((option) => option.value),
-      // sublist: ["🎤 추천", "🎹 정보"],
-      isOpen: false,
-    },
-  ];
 
-  // const [isOpen, setIsOpen] = useState(false);
-  // const handleList = () => {
-  //   setIsOpen(!isOpen);
-  // };
+const initialallLists = [
+  {
+    id: 1,
+    list: "💰 경제",
+    sublist: subcategoryOptions["경제"].map((option) => option.value),
+    isOpen: false,
+  },
+  {
+    id: 2,
+    list: "🐶 애완동.식물",
+    sublist: subcategoryOptions["애완동식물"].map((option) => option.value),
+    isOpen: false,
+  },
+  {
+    id: 3,
+    list: "🚙 여행",
+    sublist: subcategoryOptions["여행"].map((option) => option.value),
+    isOpen: false,
+  },
+  {
+    id: 4,
+    list: "🎧 음악",
+    sublist: subcategoryOptions["음악"].map((option) => option.value),
+    isOpen: false,
+  },
+  {
+    id: 5,
+    list: "🍀 기타",
+    sublist: subcategoryOptions["기타"].map((option) => option.value),
+
+    isOpen: false,
+  },
+];
+
+function SideBar() {
+  const dispatch = useDispatch();
+
+  const [allLists, setAllLists] = useState(initialallLists);
+
   const handleList = (id) => {
     const updatedLists = allLists.map((item) => {
       if (item.id === id) {
         return {
           ...item,
-          isOpen: !item.isOpen,
+          isopen: !item.isopen,
         };
       }
-      return item;
+
+      return {
+        ...item,
+        isopen: false,
+      };
     });
     setAllLists(updatedLists);
   };
 
-  const [allLists, setAllLists] = useState(initialallLists);
+  const handleSubcategory = (subcategory) => {
+    const cleanSubcategory = subcategory.substring(2).trim();
+    console.log(cleanSubcategory);
+    dispatch(addCategory(cleanSubcategory));
+  };
 
   return (
     <AllList>
@@ -119,16 +125,19 @@ function SideBar2() {
             onClick={() => handleList(allList.id)}
           >
             <div>{allList.list}</div>
-            <SmallLists className="작은목차" isOpen={allList.isOpen}>
-              {allLists.map((subList, i) => {
-                if (allList.sublist[i]) {
-                  return (
-                    allList.sublist.length > 0 && (
-                      <SmallList key={i}>{allList.sublist[i]}</SmallList>
-                    )
-                  );
-                }
-                return null;
+            <SmallLists
+              className="작은목차"
+              isopen={allList.isopen ? "true" : "false"}
+            >
+              {allList.sublist.map((subListItem, i) => {
+                return (
+                  <SmallList
+                    key={i}
+                    onClick={() => handleSubcategory(subListItem)}
+                  >
+                    {subListItem}
+                  </SmallList>
+                );
               })}
             </SmallLists>
           </List>
@@ -137,4 +146,6 @@ function SideBar2() {
     </AllList>
   );
 }
-export default SideBar2;
+
+export default SideBar;
+
