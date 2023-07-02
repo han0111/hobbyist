@@ -57,7 +57,7 @@ const User = styled.h3`
 `;
 const ContentsBox = styled.div`
   padding: 16px 20px 26px 20px;
-  cursor: pointer;
+  line-height: 20px;
   cursor: pointer;
 `;
 
@@ -143,10 +143,6 @@ function Contents() {
     return filteredPosts;
   };
 
-  const preventDefault = (event) => {
-    event.preventDefault();
-  };
-
   //무한스크롤 부분 기능은 구현했으나 아이콘버튼과의 연동 에러로 주석처리
   // const [data, setData] = useState([]);
   // const [isLoading, setIsLoading] = useState(false);
@@ -195,10 +191,8 @@ function Contents() {
           placeholder="검색 가능합니다."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button type="submit" onClick={preventDefault}>
-          <FaSistrix size="20" color="gray" />
-        </button>
+        ></Input>
+        <FaSistrix size="20" color="gray"></FaSistrix>
       </Form>
       <div style={{ width: "650px" }}>
         {filterPosts().map((post) => {

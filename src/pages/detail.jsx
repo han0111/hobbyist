@@ -75,6 +75,7 @@ const ContentTitle = styled.h2`
 const ContentBody = styled.p`
   margin-bottom: 20px;
   height: auto;
+  line-height: 30px;
   font-size: 20px;
 `;
 
@@ -131,6 +132,19 @@ const CommentUserDiv = styled.div`
 `;
 const UserComment = styled.p`
   font-size: 16px;
+`;
+
+const Btn = styled.button`
+  width: 50px;
+  background-color: transparent;
+  border: none;
+  &: hover {
+    background-color: gray;
+    color: white;
+  }
+  height: 25px;
+  border-radius: 7px;
+  cursor: pointer;
 `;
 
 function Detail() {
@@ -305,10 +319,10 @@ function Detail() {
                     </ProfileGroup>
                   </ContentHeader>
                   <ContentImage backgroundimg={post.downloadURL}></ContentImage>
-                  <ButtonFunc />
                   <ContentTitle>{post.title}</ContentTitle>
                   <ContentBody>{post.body}</ContentBody>
                 </div>
+                <ButtonFunc />
                 <CommentContainer>
                   <CommentTitle>댓글</CommentTitle>
                   <CommentBody>
@@ -329,28 +343,28 @@ function Detail() {
                                         setEditedComment(event.target.value);
                                       }}
                                     />
-                                    <button
+                                    <Btn
                                       onClick={() =>
                                         handleCommentEdit(item.CID)
                                       }
                                     >
                                       완료
-                                    </button>
+                                    </Btn>
                                   </>
                                 ) : (
                                   <>
-                                    <button
+                                    <Btn
                                       onClick={() => setEditCommentId(item.CID)}
                                     >
                                       수정
-                                    </button>
-                                    <button
+                                    </Btn>
+                                    <Btn
                                       onClick={() => {
                                         handleCommentDelete(item.CID);
                                       }}
                                     >
                                       삭제
-                                    </button>
+                                    </Btn>
                                   </>
                                 )}
                               </div>

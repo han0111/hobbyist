@@ -183,7 +183,7 @@ function SignIn() {
         const { email, uid } = user;
 
         // 추가 필드 값들을 원하는 값으로 설정
-        const nickname = "감성적인 홍정기";
+        const nickname = generateRandomNickname();
         const memo = "메모가 없습니다";
         const img =
           "https://ca.slack-edge.com/T043597JK8V-U057B2LN1NU-f07fd31753d9-512";
