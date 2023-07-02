@@ -6,7 +6,7 @@ import { db } from "../service/firebase";
 import { useNavigate } from "react-router-dom";
 import MainBtnFunc from "./MainBtnFunc";
 import google from "../img/google.png";
-import SideBar2 from "./SideBar2";
+import { useSelector } from "react-redux";
 
 const AllContents = styled.div`
   margin-left: 200px;
@@ -18,6 +18,8 @@ const Main = styled.main`
   width: 600px;
   margin-top: 150px;
   margin-left: 100px;
+  border-radius: 20px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 `;
 const MainInner = styled.div`
   margin-bottom: 20px;
@@ -45,12 +47,10 @@ const ContentsBox = styled.div`
 `;
 
 function Contents() {
-  const [, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
   const [, setUsers] = useState();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSubcategory] = useState(null);
-  const [subcategory, setSubcategory] = useState(null);
+  const clicksubcategory = useSelector((state) => state.subcategoryReducer);
 
   //db에서 유저 데이터 불러오는 함수
   const fetchUsers = async () => {
@@ -64,7 +64,6 @@ function Contents() {
       }));
 
       setUsers(fetchedUsers);
-      console.log(fetchedUsers);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
@@ -72,24 +71,6 @@ function Contents() {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
-
-  // DB에서 저장된 값 불러오는 부분과 재렌더링
-  const fetchComments = async () => {
-    try {
-      const q = query(collection(db, "Comments"), orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
-      const fetchedComments = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setComments(fetchedComments);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
-  useEffect(() => {
-    fetchComments();
   }, []);
 
   // DB에서 저장된 포스트를 불러오는 함수
@@ -109,7 +90,6 @@ function Contents() {
   };
 
   useEffect(() => {
-    console.log("피드데이터 호출");
     fetchPosts();
   }, []);
 
@@ -127,27 +107,60 @@ function Contents() {
       filteredPosts = filteredPosts.filter((post) =>
         post.title.includes(searchQuery)
       );
-    }
-
-    if (subcategory) {
-      console.log(selectedSubcategory);
+    } else if (clicksubcategory) {
+      console.log(clicksubcategory);
       filteredPosts = filteredPosts.filter(
-        (post) => post.subcategory === subcategory
+        (post) => post.subcategory === clicksubcategory
       );
     }
 
     return filteredPosts;
   };
 
+  //무한스크롤
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      const fetchedData = querySnapshot.docs.map((doc) => doc.data());
+      setData((prevData) => [...prevData, ...fetchedData]);
+      setIsLoading(false);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight &&
+        !isLoading
+      ) {
+        fetchData();
+      }
+    };
+
+    console.log("얼마나 실행되지?");
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isLoading]); // isLoading을 의존성으로 포함
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <AllContents>
       <TopBar onSearch={handleSearch} />
-      <SideBar2
-        selectedSubcategory={subcategory}
-        setSelectedSubcategory={setSubcategory}
-      />
       <div style={{ width: "650px" }}>
-        {console.log(subcategory)}
         {filterPosts().map((post) => {
           return (
             <Main key={post.CID}>
@@ -157,7 +170,16 @@ function Contents() {
                     navigate(`/mypage/${post.uid}`);
                   }}
                 >
-                  <UserImg src={post.img ? post.img : google} alt="" />
+                  <div
+                    style={{
+                      width: "45px",
+                      height: "45px",
+                      borderRadius: "70%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <UserImg src={post.img ? post.img : google} alt="" />
+                  </div>
                   <User>{post.nickname}</User>
                 </MainUser>
                 <ContentsBox

@@ -1,14 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "styled-components";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
-import { auth } from "../service/firebase";
-import { ref } from "firebase/storage";
-import { storage } from "../service/firebase";
-import { uploadBytes } from "firebase/storage";
-import { getDownloadURL } from "firebase/storage";
-import { updateDoc } from "firebase/firestore";
+import { auth, db, storage } from "../service/firebase";
+import { uploadBytes, getDownloadURL, ref } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import CategorySelect from "../components/CategorySelect/CategorySelect";
 import SubcategorySelect from "../components/CategorySelect/SubcategorySlect";
@@ -19,9 +13,9 @@ import {
   orderBy,
   deleteDoc,
   where,
+  updateDoc,
 } from "firebase/firestore";
 
-import { db } from "../service/firebase";
 const EditBtn = styled.button`
   background-image: url("https://img.icons8.com/?size=1x&id=47749&format=png");
   background-size: cover;
@@ -128,6 +122,7 @@ const Stbtn = styled.button`
   cursor: pointer;
 `;
 
+//카테고리 셀렉트바 하드코딩 부분
 const categoryOptions = [
   { value: "", label: "카테고리를 선택해주세요!" },
   { value: "여행", label: "여행" },
@@ -146,12 +141,14 @@ export const subcategoryOptions = {
     { value: "💸 가상화폐", label: "가상화폐" },
     { value: "🏡 부동산", label: "부동산" },
     { value: "🪙 기타경제", label: "기타경제" },
+    { value: "🪙 전체보기", label: "전체보기" },
   ],
 
   애완동식물: [
     { value: "", label: "카테고리를 선택해주세요!" },
     { value: "🍯 꿀팁", label: "꿀팁" },
     { value: "💳 쇼핑", label: "쇼핑" },
+    { value: "🐱 기타정보", label: "기타정보" },
     { value: "🐱 기타정보", label: "기타정보" },
   ],
 
@@ -254,34 +251,34 @@ function MyPost() {
   // 글 수정
   const handlePostEdit = async (CID) => {
     try {
-      let downloadURL = "";
+      let updatedData = {
+        title,
+        body,
+        category,
+        subcategory,
+      };
 
       if (selectedFile) {
-        downloadURL = await handleUpload();
+        const downloadURL = await handleUpload();
+        updatedData.downloadURL = downloadURL;
       }
 
       const querySnapshot = await getDocs(
         query(collection(db, "posts"), where("CID", "==", CID))
       );
-      console.log("현재 CID 값은?", CID);
+
       await Promise.all(
         querySnapshot.docs.map(async (doc) => {
-          await updateDoc(doc.ref, {
-            title,
-            body,
-            downloadURL,
-            category,
-            subcategory,
-          });
+          await updateDoc(doc.ref, updatedData);
         })
       );
 
       setSelectedFile("");
       fetchMyposts();
       setOpen(!open);
-      alert("수정이 완료됐습니다!");
+      alert("수정이 완료되었습니다!");
     } catch (error) {
-      console.error("프로필 수정 오류:", error);
+      console.error("피드 수정 오류:", error);
     }
   };
 

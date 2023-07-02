@@ -10,12 +10,13 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 import { VerifyMessage } from "./styledcomponents/Styled";
 
 import github from "../img/github.png";
 import google from "../img/google.png";
+import { generateRandomNickname } from "./Post";
 
 const OpenBtn = styled.button`
   @media screen and (max-width: 1500px) {
@@ -111,14 +112,11 @@ function SignIn() {
   }, [login]);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      console.log("user", user);
-    });
+    onAuthStateChanged(auth, (user) => {});
   }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log("user", user);
       setLogin(user ? "로그아웃" : "로그인");
     });
     return () => unsubscribe();
@@ -144,26 +142,32 @@ function SignIn() {
         const user = data.user;
         const { email, uid } = user;
 
-        // 추가 필드 값들을 원하는 값으로 설정
-        const nickname = "사나운 홍정기";
-        const memo = "메모가 없습니다";
-        const img =
-          "https://ca.slack-edge.com/T043597JK8V-U057B2LN1NU-f07fd31753d9-512";
-
         const userDocRef = doc(db, "users", uid); // 해당 유저의 문서 참조
+        getDoc(userDocRef)
+          .then((docSnapshot) => {
+            if (!docSnapshot.exists()) {
+              // 데이터가 없는 경우에만 초기값으로 설정
+              const nickname = generateRandomNickname();
+              const memo = "메모가 없습니다";
+              const img =
+                "https://ca.slack-edge.com/T043597JK8V-U057B2LN1NU-f07fd31753d9-512";
 
-        setDoc(
-          userDocRef,
-          {
-            // 문서에 필드 추가
-            email: email,
-            nickname: nickname,
-            uid: uid,
-            memo: memo,
-            img: img,
-          },
-          { merge: true }
-        ); // 필드를 merge하여 기존 필드와 병합
+              setDoc(
+                userDocRef,
+                {
+                  email: email,
+                  nickname: nickname,
+                  uid: uid,
+                  memo: memo,
+                  img: img,
+                },
+                { merge: true }
+              );
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
 
         setIsOpen(false);
         setLogin("로그아웃");

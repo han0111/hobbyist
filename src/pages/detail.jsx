@@ -48,7 +48,6 @@ const ProfileGroup = styled.div`
   justify-content: center;
 `;
 const ProfileImage = styled.img`
-  /* background-image: ; */
   background-color: gray;
   border-radius: 70%;
   width: 80px;
@@ -128,24 +127,6 @@ function Detail() {
   const [comment, setComment] = useState("");
   const { id } = useParams();
 
-  // 랜덤 닉네임 생성 함수
-  const generateRandomNickname = () => {
-    const adjectives = [
-      "행복한 ",
-      "용감한 ",
-      "사나운 ",
-      "최고의 ",
-      "똑똑한 ",
-      "섹시한 ",
-      "춤추는 ",
-      "기쁜 ",
-    ];
-    const nouns = ["홍정기", "최원장", "안동훈", "예병수", "류명한"];
-    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const noun = nouns[Math.floor(Math.random() * nouns.length)];
-    return adjective + noun;
-  };
-
   // 현재 로그인 된 아이디 알아오는 함수
   const getCurrentUserUid = () => {
     const auth = getAuth();
@@ -182,9 +163,6 @@ function Detail() {
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0].data();
         return userData.nickname || email;
-      } else {
-        const randomNickname = generateRandomNickname();
-        return randomNickname;
       }
     } catch (error) {
       console.error("Error getting nickname:", error);
@@ -385,8 +363,3 @@ function Detail() {
   );
 }
 export default Detail;
-
-//사진크기조절
-// 백그라운드 커버말고 다른거? 모지란거 검은배경 비율지키기!
-
-//사이드바 카테고리

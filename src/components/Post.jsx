@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { collection, getDocs, addDoc, where, query } from "firebase/firestore";
-// import FileUpload from "./FileUpload";
 import { db } from "../service/firebase";
 import uuid from "react-uuid";
 import { getAuth } from "firebase/auth";
@@ -56,6 +55,7 @@ const Stbtn = styled.button`
   cursor: pointer;
 `;
 
+//랜덤닉네임 만드는 함수 하드코딩부분
 const generateRandomNickname = () => {
   const adjectiveList = [
     "행복한 ",
@@ -74,6 +74,7 @@ const generateRandomNickname = () => {
 
 export { generateRandomNickname };
 
+//셀렉트바 옵션 하드코딩 부분
 const categoryOptions = [
   { value: "", label: "카테고리를 선택해주세요!" },
   { value: "경제", label: "경제" },
@@ -128,17 +129,6 @@ function Post() {
   const [subcategory, setSubcategory] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const fetchData = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "posts"));
-      querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
-      });
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
-
   const handleFileSelect = (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -165,10 +155,6 @@ function Post() {
 
     return downloadURL;
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   // 글쓰기 모달창 열기
   const postModalHandler = () => {
@@ -243,8 +229,6 @@ function Post() {
       const nickname = await getNickname(uid);
       const img = await getImg(uid);
 
-      console.log(downloadURL);
-
       const newPost = {
         CID: uuid(),
         title,
@@ -281,7 +265,7 @@ function Post() {
     <>
       <BcDiv open={open} onClick={postModalHandler}>
         <StDiv onClick={(e) => e.stopPropagation()}>
-          <form>
+          <form onSubmit={handlePostSubmit}>
             <h1>글 작성하기</h1>
             <p>
               <TitleInput
@@ -332,10 +316,11 @@ function Post() {
           border: "none",
           borderRadius: "15px",
           fontWeight: "bold",
+          boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
         }}
         onClick={postModalHandler}
       >
-        글쓰기버튼
+        글 작성하기
       </button>
     </>
   );
